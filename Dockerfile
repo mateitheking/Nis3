@@ -23,7 +23,7 @@ COPY pyproject.toml ./
 RUN pip install --no-cache-dir \
     "httpx>=0.28" "pydantic>=2.10" "bcrypt>=4.1" "python-multipart>=0.0.9" \
     "openai>=1.50" "python-dotenv>=1.0" "fastapi>=0.115" "uvicorn[standard]>=0.30" \
-    "sqlalchemy>=2.0" "cryptography>=42" "edupage_api>=0.12.5"
+    "sqlalchemy>=2.0" "cryptography>=42" "edupage_api>=0.12.5" "curl_cffi>=0.16"
 
 COPY apps/api ./apps/api
 COPY --from=frontend /web/dist ./apps/api/static

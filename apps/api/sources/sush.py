@@ -19,11 +19,12 @@
 
 from __future__ import annotations
 
+import os
 import re
 import time as _time
 from typing import Any, Callable, TypeVar
 
-import httpx
+from curl_cffi import requests as curl_requests
 from pydantic import BaseModel, ConfigDict, ValidationError
 
 __all__ = [
@@ -49,14 +50,7 @@ __all__ = [
     "invariant_report_card",
 ]
 
-_TIMEOUT = httpx.Timeout(30.0)
-
-# СУШ отклоняет небраузерные запросы «Security error» (enis2 не зря держал
-# FAKE_USER_AGENT). Шлём браузерный UA на всех запросах.
-_BROWSER_UA = (
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
-    "(KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36 Edg/152.0.0.0"
-)
+_TIMEOUT = 30.0
 
 # Сообщения СУШ об истёкшей сессии (из enis2 + HAR + живых прогонов).
 _SESSION_EXPIRED_MARKERS = (
@@ -401,16 +395,24 @@ def period_by_quarter(periods: list[Period], quarter: int) -> Period:
 class SushClient:
     """Сессия к СУШ одной школы. Держит куки; логинится только при нужде."""
 
-    def __init__(self, school: str, client: httpx.Client | None = None):
+    def __init__(self, school: str, client: curl_requests.Session | None = None):
         self.school = school
         self.base = f"https://sms.{school}.nis.edu.kz"
-        self._client = client or httpx.Client(
+        self._client = client or curl_requests.Session(
+            # impersonate= — не только заголовок, а настоящий TLS/HTTP2-отпечаток
+            # Chrome (JA3), это и есть реальный фикс капчи, не сам факт прокси
+            # (см. комментарий у _BROWSER_UA). Заодно сам расставляет
+            # Sec-Ch-Ua/Sec-Fetch-*/User-Agent согласованным набором — свой
+            # User-Agent сюда больше не пишем, чтобы не расходиться с TLS.
+            impersonate="chrome150",
             timeout=_TIMEOUT,
-            follow_redirects=False,  # 302 на логин детектим сами (SessionExpired)
+            allow_redirects=False,  # 302 на логин детектим сами (SessionExpired)
+            # СУШ показывает reCAPTCHA на логине с адресов датацентров (Railway,
+            # Fly — подтверждено вживую 16.09.2026). SUSH_PROXY_URL — резидентный/
+            # ISP-прокси (http://user:pass@host:port), пусто = без прокси, как раньше.
+            proxy=os.environ.get("SUSH_PROXY_URL") or None,
             headers={
-                "User-Agent": _BROWSER_UA,
                 "Origin": self.base,
-                "Accept": "*/*",
                 "Accept-Language": "ru-RU,ru;q=0.9,en;q=0.8",
             },
         )
@@ -427,7 +429,7 @@ class SushClient:
         self.close()
 
     @property
-    def cookies(self) -> httpx.Cookies:
+    def cookies(self) -> curl_requests.Cookies:
         """Куки сессии как есть — для отладки. Для сохранения/восстановления
         см. ``export_cookies``/``restore_cookies`` ниже, не эту куку-джар
         напрямую."""
@@ -456,7 +458,7 @@ class SushClient:
         """Подставляет ранее сохранённые куки — вместо повторного логина.
 
         Держит браузерный UA/заголовки, выставленные в ``__init__``: строить
-        httpx.Client снаружи и передавать его в конструктор означало бы
+        curl_cffi.Session снаружи и передавать его в конструктор означало бы
         дублировать эту настройку у каждого вызывающего, включая
         обязательный User-Agent (без него СУШ отвечает «Security error»
         ещё до проверки пароля — не только на логине, но и на любом запросе).
@@ -479,9 +481,9 @@ class SushClient:
         login_page = "/root/Account/Login"
         try:
             self._client.get(
-                f"{self.base}{login_page}", follow_redirects=True
+                f"{self.base}{login_page}", allow_redirects=True
             )
-        except httpx.HTTPError as exc:
+        except curl_requests.exceptions.RequestException as exc:
             raise SourceError(f"{self.school}: страница входа недоступна ({exc})") from exc
 
         resp = self._post(
@@ -538,14 +540,14 @@ class SushClient:
         path: str,
         data: dict[str, Any] | None = None,
         referer: str | None = None,
-    ) -> httpx.Response:
+    ) -> curl_requests.Response:
         url = f"{self.base}{path}"
         headers = {"X-Requested-With": "XMLHttpRequest"}
         if referer:
             headers["Referer"] = referer
         try:
             resp = self._client.post(url, data=data or {}, headers=headers)
-        except httpx.HTTPError as exc:
+        except curl_requests.exceptions.RequestException as exc:
             raise SourceError(f"{self.school}: сеть недоступна ({exc})") from exc
         # редирект на логин = сессия истекла / нет доступа
         if resp.status_code in (301, 302) and "Account/Login" in resp.headers.get(
@@ -644,8 +646,8 @@ class SushClient:
         # не POST — здесь это отдельная от report_card подсистема со своим
         # набором эндпоинтов, совпадение приёма не значит совпадение деталей)
         try:
-            self._client.get(url, follow_redirects=True)
-        except httpx.HTTPError as exc:
+            self._client.get(url, allow_redirects=True)
+        except curl_requests.exceptions.RequestException as exc:
             raise SourceError(f"{self.school}: не открылся дневник ({exc})") from exc
 
         raw = self._post_json(
@@ -773,8 +775,8 @@ class SushClient:
 
         # GET внутреннего отчёта ставит сессию (токен ch в URL)
         try:
-            self._client.get(inner_url, follow_redirects=True)
-        except httpx.HTTPError as exc:
+            self._client.get(inner_url, allow_redirects=True)
+        except curl_requests.exceptions.RequestException as exc:
             raise SourceError(f"{self.school}: не открылся отчёт ({exc})") from exc
 
         raw = self._post_json(
