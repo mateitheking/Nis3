@@ -1,0 +1,34 @@
+{
+ "success": true,
+ "state": 0,
+ "data": [
+  {
+   "Name": "4-я четверть",
+   "Data": null,
+   "Id": "9b236734-89ca-4938-b07b-f0e68b32ba3f"
+  },
+  {
+   "Name": "3-я четверть",
+   "Data": null,
+   "Id": "f1b381f0-c48c-40b8-905b-d284a9fea4dc"
+  },
+  {
+   "Name": "2-я четверть",
+   "Data": null,
+   "Id": "9ecb483c-fe98-416c-8e3d-a2f81d262851"
+  },
+  {
+   "Name": "1-я четверть",
+   "Data": null,
+   "Id": "b49c9414-a87c-469a-ba53-417dc087eed6"
+  }
+ ],
+ "message": "",
+ "details": null,
+ "code": null,
+ "closable": null,
+ "refreshPage": null,
+ "title": null,
+ "duration": null,
+ "total": null
+}

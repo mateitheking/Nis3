@@ -1,0 +1,21 @@
+{
+ "success": true,
+ "state": 0,
+ "data": [
+  {
+   "Name": "НИШ Петропавловск",
+   "Data": {
+    "IsCurrent": true
+   },
+   "Id": "e23850ae-3fb3-4eff-a506-0426ee6f1e09"
+  }
+ ],
+ "message": "",
+ "details": null,
+ "code": null,
+ "closable": null,
+ "refreshPage": null,
+ "title": null,
+ "duration": null,
+ "total": null
+}

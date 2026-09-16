@@ -1,0 +1,617 @@
+<title>Единый кабинет НИШ</title>
+<meta name="description" content="Прототип: оценки, табель, расписание и AI-ассистент ученика НИШ в одном месте.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+:root{
+  --ground:#F4F7FA; --surface:#FFFFFF; --surface-2:#EDF2F7; --raise:#FFFFFF;
+  --ink:#14202C; --ink-2:#48596A; --ink-3:#7E8FA0; --line:#DBE3EC; --line-2:#C8D3DE;
+  --primary:#1668A6; --primary-deep:#0C4C7E; --primary-soft:#E4EFF7;
+  --g5:#2E9E5B; --g5-bg:#E4F3EA; --g4:#2F7DB0; --g4-bg:#E3EFF7;
+  --g3:#C0851F; --g3-bg:#F6EDD8; --g2:#C24A3A; --g2-bg:#F7E4E0;
+  --pass:#5C748A; --pass-bg:#E8EDF2;
+  --shadow:0 1px 2px rgba(20,32,44,.06),0 4px 16px rgba(20,32,44,.06);
+  --shadow-lift:0 2px 6px rgba(20,32,44,.10),0 12px 32px rgba(20,32,44,.12);
+  --r:12px; --r-sm:8px;
+  --sans:"Golos Text",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,"Cascadia Code",Consolas,monospace;
+}
+:root:not([data-theme="light"]){ @media (prefers-color-scheme:dark){
+  --ground:#0D141B; --surface:#141E28; --surface-2:#1A2530; --raise:#1D2A36;
+  --ink:#E8EEF4; --ink-2:#9CACBB; --ink-3:#6C7E8E; --line:#243240; --line-2:#2F3F4E;
+  --primary:#54A6E0; --primary-deep:#8CC6EE; --primary-soft:#16303F;
+  --g5:#4CBE78; --g5-bg:#153025; --g4:#5AA6D8; --g4-bg:#13293A;
+  --g3:#D8A544; --g3-bg:#2E2413; --g2:#E06A58; --g2-bg:#331b18;
+  --pass:#8CA3B5; --pass-bg:#1C2833;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 4px 16px rgba(0,0,0,.3);
+  --shadow-lift:0 2px 6px rgba(0,0,0,.4),0 12px 32px rgba(0,0,0,.45);
+}}
+:root[data-theme="dark"]{
+  --ground:#0D141B; --surface:#141E28; --surface-2:#1A2530; --raise:#1D2A36;
+  --ink:#E8EEF4; --ink-2:#9CACBB; --ink-3:#6C7E8E; --line:#243240; --line-2:#2F3F4E;
+  --primary:#54A6E0; --primary-deep:#8CC6EE; --primary-soft:#16303F;
+  --g5:#4CBE78; --g5-bg:#153025; --g4:#5AA6D8; --g4-bg:#13293A;
+  --g3:#D8A544; --g3-bg:#2E2413; --g2:#E06A58; --g2-bg:#331b18;
+  --pass:#8CA3B5; --pass-bg:#1C2833;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 4px 16px rgba(0,0,0,.3);
+  --shadow-lift:0 2px 6px rgba(0,0,0,.4),0 12px 32px rgba(0,0,0,.45);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--sans);
+  font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+h1,h2,h3{margin:0;text-wrap:balance;letter-spacing:-.01em}
+button{font-family:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--primary);outline-offset:2px;border-radius:4px}
+.wrap{max-width:1180px;margin:0 auto;padding:0 20px}
+
+/* header */
+header{background:var(--surface);border-bottom:1px solid var(--line)}
+.top{display:flex;align-items:center;gap:16px;padding:14px 0}
+.brand{display:flex;align-items:center;gap:11px;min-width:0}
+.mark{width:38px;height:38px;border-radius:10px;flex:none;display:grid;place-items:center;
+  background:linear-gradient(145deg,var(--primary),var(--primary-deep));color:#fff;
+  font-weight:700;font-size:19px;box-shadow:var(--shadow)}
+.brand .name{font-weight:700;font-size:17px;letter-spacing:-.02em;line-height:1.1}
+.brand .sub{font-size:12px;color:var(--ink-3);font-family:var(--mono)}
+.who{margin-left:auto;display:flex;align-items:center;gap:14px}
+.who .stud{text-align:right;line-height:1.2}
+.who .stud b{font-weight:600;font-size:14px}
+.who .stud span{display:block;font-size:12px;color:var(--ink-3)}
+.avatar{width:38px;height:38px;border-radius:50%;flex:none;display:grid;place-items:center;
+  background:var(--primary-soft);color:var(--primary-deep);font-weight:600;font-size:14px}
+.icon-btn{width:38px;height:38px;border-radius:10px;border:1px solid var(--line);background:var(--surface-2);
+  color:var(--ink-2);display:grid;place-items:center;font-size:16px}
+.icon-btn:hover{color:var(--ink);border-color:var(--line-2)}
+
+/* tabs */
+.tabs{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{border:0;background:none;padding:12px 16px 14px;color:var(--ink-2);font-weight:500;font-size:14px;
+  border-bottom:2px solid transparent;white-space:nowrap;display:flex;align-items:center;gap:8px}
+.tab:hover{color:var(--ink)}
+.tab[aria-selected="true"]{color:var(--primary);border-bottom-color:var(--primary);font-weight:600}
+.tab .badge{font-family:var(--mono);font-size:11px;background:var(--primary-soft);color:var(--primary-deep);
+  padding:1px 6px;border-radius:20px;font-weight:600}
+
+main{padding:24px 0 60px}
+.panel{display:none}
+.panel[data-active]{display:block;animation:fade .3s ease}
+@keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.panel[data-active]{animation:none}}
+
+/* year selector + summary */
+.bar{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:20px}
+.year-sel{display:inline-flex;background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:3px}
+.year-sel button{border:0;background:none;padding:7px 13px;border-radius:7px;font-size:13px;font-weight:500;
+  color:var(--ink-2);font-family:var(--mono)}
+.year-sel button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:var(--shadow);font-weight:600}
+.stats{display:flex;gap:10px;margin-left:auto;flex-wrap:wrap}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-sm);padding:8px 14px;min-width:74px}
+.stat .v{font-family:var(--mono);font-weight:600;font-size:20px;line-height:1;font-variant-numeric:tabular-nums}
+.stat .l{font-size:11px;color:var(--ink-3);margin-top:3px;text-transform:uppercase;letter-spacing:.04em}
+
+/* grades layout */
+.grades-grid{display:grid;grid-template-columns:1fr 340px;gap:20px;align-items:start}
+@media (max-width:860px){.grades-grid{grid-template-columns:1fr}}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow)}
+.card-h{display:flex;align-items:center;justify-content:space-between;padding:15px 18px;border-bottom:1px solid var(--line)}
+.card-h h2{font-size:15px;font-weight:600}
+.card-h .hint{font-size:12px;color:var(--ink-3);font-family:var(--mono)}
+
+/* report table */
+.rc{width:100%;border-collapse:collapse;font-size:14px}
+.rc th{font-family:var(--mono);font-size:11px;font-weight:500;color:var(--ink-3);text-transform:uppercase;
+  letter-spacing:.04em;padding:10px 8px;text-align:center;border-bottom:1px solid var(--line)}
+.rc th.subj{text-align:left;padding-left:18px}
+.rc td{padding:7px 8px;text-align:center;border-bottom:1px solid var(--line)}
+.rc tr:last-child td{border-bottom:0}
+.rc tr.row:hover{background:var(--surface-2)}
+.rc tr.row{cursor:pointer}
+.rc tr.sel{background:var(--primary-soft)}
+.rc td.subj{text-align:left;padding-left:18px;font-weight:500;white-space:nowrap;max-width:210px;overflow:hidden;text-overflow:ellipsis}
+.rc td.trend{width:64px}
+.rc .final{border-left:1px solid var(--line)}
+.g{display:inline-grid;place-items:center;width:27px;height:27px;border-radius:7px;font-family:var(--mono);
+  font-weight:600;font-size:14px;font-variant-numeric:tabular-nums}
+.g5{background:var(--g5-bg);color:var(--g5)} .g4{background:var(--g4-bg);color:var(--g4)}
+.g3{background:var(--g3-bg);color:var(--g3)} .g2{background:var(--g2-bg);color:var(--g2)}
+.g.empty{color:var(--ink-3);background:transparent;font-weight:400}
+.pass{display:inline-block;font-family:var(--mono);font-size:11px;color:var(--pass);background:var(--pass-bg);
+  padding:3px 8px;border-radius:6px}
+.spark{display:block}
+
+/* side detail */
+.side{display:flex;flex-direction:column;gap:16px;position:sticky;top:16px}
+.detail-sub{font-size:12px;color:var(--ink-3);font-family:var(--mono);margin-bottom:2px}
+.detail-name{font-size:18px;font-weight:700;margin-bottom:14px}
+.evrow{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--line)}
+.evrow:last-child{border-bottom:0}
+.evrow .nm{font-size:13px} .evrow .nm small{display:block;color:var(--ink-3);font-family:var(--mono);font-size:11px}
+.bar-track{height:6px;background:var(--surface-2);border-radius:4px;overflow:hidden;margin-top:8px}
+.bar-fill{height:100%;border-radius:4px;background:var(--primary)}
+.crit{display:flex;justify-content:space-between;font-size:12px;padding:4px 0;font-family:var(--mono);color:var(--ink-2)}
+.crit b{color:var(--ink);font-variant-numeric:tabular-nums}
+
+/* calculator */
+.calc label{display:block;font-size:12px;color:var(--ink-2);margin:12px 0 5px;font-weight:500}
+.calc select,.calc input{width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:var(--r-sm);
+  background:var(--surface-2);color:var(--ink);font-family:var(--sans);font-size:14px}
+.seg{display:flex;gap:6px}
+.seg button{flex:1;padding:9px 0;border:1px solid var(--line);border-radius:var(--r-sm);background:var(--surface-2);
+  font-family:var(--mono);font-weight:600;color:var(--ink-2)}
+.seg button[aria-pressed="true"]{background:var(--primary);border-color:var(--primary);color:#fff}
+.calc-out{margin-top:16px;padding:14px;border-radius:var(--r-sm);background:var(--primary-soft);
+  border:1px solid var(--line);font-size:14px;line-height:1.5}
+.calc-out .big{font-family:var(--mono);font-weight:600;font-size:26px;color:var(--primary-deep);
+  font-variant-numeric:tabular-nums}
+
+/* schedule */
+.day-sel{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px}
+.day-sel button{flex:1;min-width:82px;border:1px solid var(--line);background:var(--surface-2);
+  border-radius:var(--r-sm);padding:8px 4px;text-align:center;color:var(--ink-2)}
+.day-sel button .dn{display:block;font-size:12px;font-weight:600}
+.day-sel button .dd{display:block;font-size:11px;color:var(--ink-3);font-family:var(--mono);margin-top:2px}
+.day-sel button[aria-pressed="true"]{background:var(--primary);border-color:var(--primary)}
+.day-sel button[aria-pressed="true"] .dn,.day-sel button[aria-pressed="true"] .dd{color:#fff}
+.day-sel button.today:not([aria-pressed="true"]){border-color:var(--primary)}
+.day-sel button.today:not([aria-pressed="true"]) .dn{color:var(--primary)}
+.lessons{display:flex;flex-direction:column;gap:6px;margin-top:14px}
+.lrow{display:flex;align-items:center;gap:13px;padding:9px 12px;background:var(--surface-2);
+  border-radius:var(--r-sm);border-left:3px solid var(--primary)}
+.lrow .lp{font-family:var(--mono);color:var(--ink-3);font-size:12px;width:16px;text-align:center;flex:none}
+.lrow .lt{font-family:var(--mono);color:var(--ink-2);font-size:12px;width:98px;flex:none}
+.lrow .ls{flex:1;min-width:0}
+.lrow .ls b{font-weight:500;font-size:13px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lrow .ls span{font-size:11px;color:var(--ink-3);font-family:var(--mono)}
+.les.empty{background:none;border:0}
+.empty-day{padding:30px;text-align:center;color:var(--ink-3);font-size:13px}
+
+/* calendar */
+.events{display:flex;flex-direction:column;gap:10px}
+.event{display:flex;gap:14px;align-items:center;padding:13px 16px;background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--r);box-shadow:var(--shadow);border-left:4px solid var(--k,var(--primary))}
+.event .date{font-family:var(--mono);text-align:center;line-height:1.1;flex:none;width:46px}
+.event .date .d{font-size:20px;font-weight:600} .event .date .m{font-size:11px;color:var(--ink-3);text-transform:uppercase}
+.event .body b{font-weight:600;font-size:14px} .event .body span{display:block;font-size:12px;color:var(--ink-2)}
+.event .kind{margin-left:auto;font-family:var(--mono);font-size:11px;padding:3px 9px;border-radius:20px;
+  background:var(--surface-2);color:var(--ink-2);white-space:nowrap}
+
+/* assistant */
+.chat{display:flex;flex-direction:column;gap:14px;max-width:720px}
+.msg{padding:13px 16px;border-radius:14px;font-size:14px;line-height:1.55;max-width:82%}
+.msg.a{background:var(--surface);border:1px solid var(--line);border-bottom-left-radius:4px;box-shadow:var(--shadow)}
+.msg.u{background:var(--primary);color:#fff;align-self:flex-end;border-bottom-right-radius:4px}
+.msg .mono{font-family:var(--mono);font-size:13px;background:var(--surface-2);color:var(--ink);padding:1px 6px;border-radius:5px}
+.msg.a .mono{background:var(--surface-2)}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.chip{border:1px solid var(--line);background:var(--surface);border-radius:20px;padding:8px 14px;font-size:13px;
+  color:var(--ink-2)}
+.chip:hover{border-color:var(--primary);color:var(--primary)}
+.compose{display:flex;gap:10px;margin-top:18px;max-width:720px}
+.compose input{flex:1;padding:12px 15px;border:1px solid var(--line);border-radius:24px;background:var(--surface);
+  color:var(--ink);font-family:var(--sans);font-size:14px}
+.compose button{border:0;background:var(--primary);color:#fff;border-radius:24px;padding:0 20px;font-weight:600}
+
+.note{font-size:12px;color:var(--ink-3);font-family:var(--mono);display:inline-flex;align-items:center;gap:7px;
+  background:var(--surface-2);border:1px dashed var(--line-2);border-radius:8px;padding:6px 11px;margin-bottom:16px}
+.note b{color:var(--ink-2);font-weight:600}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+</style>
+
+<header>
+  <div class="wrap top">
+    <div class="brand">
+      <div class="mark">К</div>
+      <div>
+        <div class="name">Единый кабинет</div>
+        <div class="sub">НИШ · один вход вместо трёх</div>
+      </div>
+    </div>
+    <div class="who">
+      <button class="icon-btn" id="theme" title="Тема" aria-label="Переключить тему">◑</button>
+      <div class="stud"><b>Османов А.</b><span>12E · НИШ Петропавловск</span></div>
+      <div class="avatar">ОА</div>
+    </div>
+  </div>
+  <div class="wrap">
+    <div class="tabs" role="tablist">
+      <button class="tab" role="tab" aria-selected="true" data-tab="grades">Оценки</button>
+      <button class="tab" role="tab" aria-selected="false" data-tab="schedule">Расписание</button>
+      <button class="tab" role="tab" aria-selected="false" data-tab="calendar">Календарь <span class="badge" id="cal-badge"></span></button>
+      <button class="tab" role="tab" aria-selected="false" data-tab="ai">AI-ассистент</button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <!-- ОЦЕНКИ -->
+  <section class="panel" data-panel="grades" data-active>
+    <div class="bar">
+      <div class="year-sel" id="years" role="group" aria-label="Учебный год">
+        <button data-year="2026-2027" aria-pressed="false">2026-2027</button>
+        <button data-year="2025-2026" aria-pressed="true">2025-2026</button>
+        <button data-year="2024-2025" aria-pressed="false">2024-2025</button>
+      </div>
+      <div class="stats" id="stats"></div>
+    </div>
+
+    <div class="grades-grid">
+      <div class="card">
+        <div class="card-h"><h2>Табель</h2><span class="hint" id="rc-year">2025-2026 · СУШ</span></div>
+        <div style="overflow-x:auto">
+          <table class="rc">
+            <thead><tr>
+              <th class="subj">Предмет</th>
+              <th>I</th><th>II</th><th>III</th><th>IV</th>
+              <th>Тренд</th>
+              <th class="final">Год</th><th>Итог</th>
+            </tr></thead>
+            <tbody id="rc-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <aside class="side">
+        <div class="card" style="padding:18px" id="detail"></div>
+        <div class="card calc" style="padding:18px">
+          <div class="detail-sub">Калькулятор</div>
+          <div class="detail-name" style="margin-bottom:4px">Оценка за СОЧ</div>
+          <p style="font-size:12px;color:var(--ink-2);margin:0 0 4px">Сколько нужно набрать на СОЧ, чтобы выйти на нужную оценку за четверть.</p>
+          <label for="c-subj">Предмет</label>
+          <select id="c-subj"></select>
+          <label>Цель за четверть</label>
+          <div class="seg" id="c-target">
+            <button data-t="5" aria-pressed="true">5</button>
+            <button data-t="4" aria-pressed="false">4</button>
+            <button data-t="3" aria-pressed="false">3</button>
+          </div>
+          <label for="c-sor">Средний % за СОР сейчас</label>
+          <input type="number" id="c-sor" value="78" min="0" max="100">
+          <div class="calc-out" id="c-out"></div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- РАСПИСАНИЕ -->
+  <section class="panel" data-panel="schedule">
+    <div class="note">📎 <b>С профиля EduPage.</b> Личное расписание 12E, снимок на 8 сентября 2026 — не обновляется само.</div>
+    <div class="card">
+      <div class="card-h"><h2>Неделя · 12E</h2><span class="hint">EduPage</span></div>
+      <div style="padding:16px 18px">
+        <div class="day-sel" id="days" role="group" aria-label="День недели"></div>
+        <div class="lessons" id="day-lessons"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- КАЛЕНДАРЬ -->
+  <section class="panel" data-panel="calendar">
+    <div class="note">📎 <b>С профиля EduPage.</b> СОР, СОЧ и консультации 12E — снимок на 8 сентября 2026.</div>
+    <div class="events" id="events"></div>
+  </section>
+
+  <!-- АССИСТЕНТ -->
+  <section class="panel" data-panel="ai">
+    <div class="note">⚠ <b>Прототип.</b> Ответы-заготовки, но числа в них настоящие — те же табель, оценки и расписание, что и в других вкладках. В рабочей версии ассистент будет считать их сам через инструменты, а не по заготовленному тексту.</div>
+    <div class="chat" id="chat">
+      <div class="msg a">Привет! Я вижу твой табель, расписание и приближающиеся СОР. Спроси что-нибудь — например, из подсказок ниже.
+        <div class="chips" id="chips"></div>
+      </div>
+    </div>
+    <div class="compose">
+      <input id="ai-in" placeholder="Спроси про оценки, СОР или расписание…" aria-label="Сообщение ассистенту">
+      <button id="ai-send">Спросить</button>
+    </div>
+  </section>
+</main>
+
+<script>
+// ---- реальные данные, разобранные из СУШ (табель 2025-2026) ----
+const RC = {
+  "2025-2026": [
+    {n:"Английский язык",        q:[4,3,4,4], y:4, f:4},
+    {n:"Глобальные перспективы", q:[5,4,4,5], y:5, f:5},
+    {n:"Информатика (Углубл.)",  q:[4,4,4,4], y:4, f:4},
+    {n:"История Казахстана",     q:[4,4,5,5], y:5, f:5},
+    {n:"Казахский язык и лит.",  q:[3,4,3,3], y:3, f:3},
+    {n:"Математика(7)",          q:[3,4,4,3], y:4, f:4},
+    {n:"Начальная военная подг.",q:["з",null,"з","з"], y:"з", f:"з"},
+    {n:"Программирование",       q:[4,4,4,4], y:4, f:4},
+    {n:"Русский язык и лит.",    q:[5,4,4,4], y:4, f:4},
+    {n:"Физика (Углубл.)",       q:[3,4,4,3], y:4, f:4},
+    {n:"Физическая культура",    q:[5,5,5,5], y:5, f:5},
+    {n:"Экономика (Станд.)",     q:[4,4,5,4], y:4, f:4},
+  ],
+  "2024-2025":[
+    {n:"Английский язык",        q:[4,4,4,5], y:4, f:4},
+    {n:"Биология (Углубл.)",     q:[3,3,4,4], y:4, f:4},
+    {n:"География (Станд.)",     q:[4,5,4,4], y:4, f:4},
+    {n:"Информатика (Углубл.)",  q:[4,4,4,4], y:4, f:4},
+    {n:"История Казахстана",     q:[4,4,4,5], y:4, f:4},
+    {n:"Казахский язык и лит.",  q:[3,3,4,3], y:3, f:3},
+    {n:"Математика(10)",         q:[3,4,3,4], y:4, f:4},
+    {n:"Русский язык и лит.",    q:[4,5,4,4], y:4, f:4},
+    {n:"Физика (Углубл.)",       q:[4,4,4,4], y:4, f:4},
+    {n:"Физическая культура",    q:[5,5,5,5], y:5, f:5},
+  ],
+  "2026-2027": [],
+};
+// текущие оценки с весами СОР/СОЧ (GetSubjects, 4-я четверть 2025-2026)
+const CUR = {
+  "Английский язык":       {score:66.7, mark:4, sor:100, soch:0,  crit:[["Listening",3,6],["Reading",5,6],["Writing",4,6],["Speaking",4,6]]},
+  "Информатика (Углубл.)": {score:76.8, mark:4, sor:50,  soch:50, crit:[["СОР №1",8,10],["СОР №2",7,10],["СОР №3",9,10]]},
+  "История Казахстана":    {score:85.0, mark:5, sor:50,  soch:50, crit:[["СОР",8,10]]},
+  "Физика (Углубл.)":      {score:51.7, mark:3, sor:50,  soch:50, crit:[["СОР №1",5,10],["СОР №2",6,12]]},
+};
+const THRESHOLDS=[[85,5],[65,4],[40,3],[25,2]]; // % → оценка за четверть (НИШ)
+
+const $=(s,el=document)=>el.querySelector(s);
+const $$=(s,el=document)=>[...el.querySelectorAll(s)];
+const cls=v=>v==='з'?'pass':('g'+v);
+const gcell=v=>{
+  if(v===null||v===undefined) return '<span class="g empty">·</span>';
+  if(v==='з') return '<span class="pass">зачёт</span>';
+  return `<span class="g g${v}">${v}</span>`;
+};
+function spark(q){
+  const nums=q.filter(x=>typeof x==='number'); if(nums.length<2) return '';
+  const w=56,h=20,pad=3, xs=(i)=>pad+i*(w-2*pad)/(q.length-1);
+  const ys=(v)=>{const t=(v-2)/3; return h-pad-t*(h-2*pad)};
+  let d='',first=true;
+  q.forEach((v,i)=>{ if(typeof v!=='number')return; const x=xs(i),y=ys(v);
+    d+=(first?'M':'L')+x.toFixed(1)+' '+y.toFixed(1)+' '; first=false;});
+  const last=q.map((v,i)=>[v,i]).filter(a=>typeof a[0]==='number').pop();
+  const lx=xs(last[1]),ly=ys(last[0]);
+  return `<svg class="spark" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" aria-hidden="true">
+    <path d="${d}" fill="none" stroke="var(--primary)" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/>
+    <circle cx="${lx.toFixed(1)}" cy="${ly.toFixed(1)}" r="2.4" fill="var(--primary)"/></svg>`;
+}
+
+let year="2025-2026", selected=0;
+
+function renderRC(){
+  const rows=RC[year];
+  const body=$('#rc-body'); $('#rc-year').textContent=year+' · СУШ';
+  if(!rows.length){
+    body.innerHTML=`<tr><td colspan="7" style="padding:40px;text-align:center;color:var(--ink-3)">
+      Четверть только началась — оценок ещё нет.<br><span style="font-family:var(--mono);font-size:12px">СУШ: «нет утверждённой нагрузки»</span></td></tr>`;
+    renderStats([]); return;
+  }
+  body.innerHTML=rows.map((r,i)=>`<tr class="row ${i===selected?'sel':''}" data-i="${i}">
+    <td class="subj">${r.n}</td>
+    <td>${gcell(r.q[0])}</td><td>${gcell(r.q[1])}</td><td>${gcell(r.q[2])}</td><td>${gcell(r.q[3])}</td>
+    <td class="trend">${spark(r.q)}</td>
+    <td class="final">${gcell(r.y)}</td><td>${gcell(r.f)}</td></tr>`).join('');
+  $$('.rc tr.row',body).forEach(tr=>tr.onclick=()=>{selected=+tr.dataset.i;renderRC();renderDetail();});
+  renderStats(rows);
+  renderDetail();
+}
+function renderStats(rows){
+  const nums=rows.map(r=>r.f).filter(v=>typeof v==='number');
+  const avg=nums.length?(nums.reduce((a,b)=>a+b,0)/nums.length):0;
+  const c=v=>nums.filter(x=>x===v).length;
+  $('#stats').innerHTML=`
+    <div class="stat"><div class="v">${avg?avg.toFixed(2):'—'}</div><div class="l">Средний</div></div>
+    <div class="stat"><div class="v" style="color:var(--g5)">${c(5)}</div><div class="l">пятёрок</div></div>
+    <div class="stat"><div class="v" style="color:var(--g4)">${c(4)}</div><div class="l">четвёрок</div></div>
+    <div class="stat"><div class="v" style="color:var(--g3)">${c(3)}</div><div class="l">троек</div></div>
+    <div class="stat"><div class="v">${rows.length}</div><div class="l">предметов</div></div>`;
+}
+function renderDetail(){
+  const r=RC[year][selected]; const d=$('#detail');
+  if(!r){d.innerHTML='<div class="detail-sub">Предмет</div><div class="detail-name">—</div>';return;}
+  const cur=CUR[r.n];
+  let html=`<div class="detail-sub">Предмет · ${year}</div><div class="detail-name">${r.n}</div>`;
+  if(cur){
+    html+=`<div class="evrow"><div class="nm">За четверть (IV)<small>СОР ${cur.sor}% · СОЧ ${cur.soch}%</small></div>
+      <div style="text-align:right">${gcell(cur.mark)}<div style="font-family:var(--mono);font-size:12px;color:var(--ink-3)">${cur.score}%</div></div></div>`;
+    html+=`<div style="margin-top:12px" class="detail-sub">Баллы за СОР</div>`;
+    cur.crit.forEach(([nm,s,m])=>{
+      html+=`<div class="crit"><span>${nm}</span><b>${s}/${m}</b></div>
+        <div class="bar-track"><div class="bar-fill" style="width:${(s/m*100).toFixed(0)}%"></div></div>`;
+    });
+    const tot=cur.crit.reduce((a,c)=>a+c[1],0), max=cur.crit.reduce((a,c)=>a+c[2],0);
+    html+=`<div class="crit" style="margin-top:8px;border-top:1px solid var(--line);padding-top:8px">
+      <span style="color:var(--ink)">Итого СОР</span><b>${tot}/${max} = ${(tot/max*100).toFixed(1)}%</b></div>`;
+  } else {
+    html+=`<div class="crit"><span>Оценки по четвертям</span><b>${r.q.map(v=>v??'·').join(' · ')}</b></div>
+      <div class="crit"><span>За год</span><b>${r.y}</b></div><div class="crit"><span>Итоговая</span><b>${r.f}</b></div>
+      <p style="font-size:12px;color:var(--ink-3);margin-top:12px">Детальные баллы по СОР появятся при подключении к живой сессии СУШ.</p>`;
+  }
+  d.innerHTML=html;
+}
+
+// калькулятор
+function markFor(p){for(const[t,m]of THRESHOLDS)if(p>=t)return m;return 1;}
+function threshFor(m){for(const[t,mm]of THRESHOLDS)if(mm===m)return t;return 0;}
+let cTarget=5;
+function renderCalc(){
+  const subj=$('#c-subj').value, cur=CUR[subj];
+  const sor=Math.max(0,Math.min(100,+$('#c-sor').value||0));
+  const out=$('#c-out');
+  const wS=cur?cur.sor/100:0.5, wC=cur?cur.soch/100:0.5;
+  if(wC===0){
+    out.innerHTML=`У предмета <b>${subj}</b> оценка за четверть считается только по СОР (СОЧ не влияет).
+      Текущий результат даёт <b>${markFor(sor)}</b>.`; return;
+  }
+  const need=(threshFor(cTarget)-sor*wS)/wC;
+  if(need<=0){
+    out.innerHTML=`<div class="big">уже хватает</div>Даже с нулём за СОЧ выходит <b>${cTarget}</b> за четверть. 🎉`;
+  } else if(need>100){
+    const best=markFor(sor*wS+100*wC);
+    out.innerHTML=`<div class="big">недостижимо</div>Даже на 100% за СОЧ выйдет максимум <b>${best}</b>. Цель <b>${cTarget}</b> в этой четверти уже не набрать.`;
+  } else {
+    out.innerHTML=`<div class="big">${need.toFixed(0)}%</div>нужно набрать за СОЧ, чтобы выйти на <b>${cTarget}</b> за четверть<br>
+      <span style="font-size:12px;color:var(--ink-2);font-family:var(--mono)">при СОР ${sor}% · веса ${cur?cur.sor:50}/${cur?cur.soch:50}</span>`;
+  }
+}
+
+// ---- расписание: реальная неделя с профиля EduPage (12E, 7-11 сентября 2026) ----
+const WEEK=[
+  {date:"2026-09-07",weekday_name:"Понедельник",is_today:false,lessons:[
+    {period:1,start:"08:30",end:"09:10",subject:"Informatics",teachers:["V.N inf Mel'nikov"],classrooms:["221"]},
+    {period:2,start:"09:15",end:"09:55",subject:"Informatics",teachers:["V.N inf Mel'nikov"],classrooms:["221"]},
+    {period:3,start:"10:20",end:"11:00",subject:"Physics",teachers:["BZh phys Eslyamgazieva"],classrooms:["FM 106 (27)"]},
+    {period:4,start:"11:20",end:"12:00",subject:"Physics",teachers:["BZh phys Eslyamgazieva"],classrooms:["FM 106 (27)"]},
+    {period:5,start:"12:20",end:"13:00",subject:"Mathematics",teachers:["A.S math Kovalev"],classrooms:["FM 304 (14)"]},
+    {period:6,start:"13:05",end:"13:45",subject:"Economics",teachers:["G.K geo Abdulova"],classrooms:["T 103 (14)"]},
+    {period:7,start:"13:50",end:"14:30",subject:"Economics",teachers:["G.K geo Abdulova"],classrooms:["T 103 (14)"]},
+    {period:8,start:"14:45",end:"15:25",subject:"Russian - Language, Literature, Literacy",teachers:["E.N rus Mashinec"],classrooms:["115 (27)"]},
+    {period:9,start:"15:40",end:"16:20",subject:"Russian - Language, Literature, Literacy",teachers:["E.N rus Mashinec"],classrooms:["115 (27)"]},
+  ]},
+  {date:"2026-09-08",weekday_name:"Вторник",is_today:true,lessons:[
+    {period:1,start:"08:30",end:"09:10",subject:"Physics",teachers:["BZh phys Eslyamgazieva"],classrooms:["FM 106 (27)"]},
+    {period:2,start:"09:15",end:"09:55",subject:"Physics",teachers:["BZh phys Eslyamgazieva"],classrooms:["FM 106 (27)"]},
+    {period:3,start:"10:05",end:"10:45",subject:"Informatics",teachers:["V.N inf Mel'nikov"],classrooms:["221"]},
+    {period:4,start:"10:50",end:"11:30",subject:"Informatics",teachers:["V.N inf Mel'nikov"],classrooms:["221"]},
+    {period:5,start:"11:50",end:"12:30",subject:"Mathematics",teachers:["A.S math Kovalev"],classrooms:["FM 304 (14)"]},
+    {period:6,start:"12:50",end:"13:30",subject:"Mathematics",teachers:["A.S math Kovalev"],classrooms:["FM 304 (14)"]},
+    {period:7,start:"13:35",end:"14:15",subject:"Programming",teachers:["D.A inf Nurmukanova"],classrooms:["210 (13)"]},
+    {period:8,start:"14:30",end:"15:10",subject:"Programming",teachers:["D.A inf Nurmukanova"],classrooms:["210 (13)"]},
+  ]},
+  {date:"2026-09-09",weekday_name:"Среда",is_today:false,lessons:[
+    {period:1,start:"08:30",end:"09:10",subject:"Mathematics",teachers:["A.S math Kovalev"],classrooms:["FM 304 (14)"]},
+    {period:2,start:"09:15",end:"09:55",subject:"Mathematics",teachers:["A.S math Kovalev"],classrooms:["FM 304 (14)"]},
+    {period:3,start:"10:05",end:"10:45",subject:"Physics",teachers:["BZh phys Eslyamgazieva"],classrooms:["FM 106 (27)"]},
+    {period:4,start:"10:50",end:"11:30",subject:"Physics",teachers:["BZh phys Eslyamgazieva"],classrooms:["FM 106 (27)"]},
+    {period:5,start:"11:50",end:"12:30",subject:"Informatics",teachers:["V.N inf Mel'nikov"],classrooms:["221"]},
+    {period:6,start:"12:50",end:"13:30",subject:"Informatics",teachers:["V.N inf Mel'nikov"],classrooms:["221"]},
+    {period:7,start:"13:35",end:"14:15",subject:"Russian - Language, Literature, Literacy",teachers:["E.N rus Mashinec"],classrooms:["115 (27)"]},
+    {period:8,start:"14:30",end:"15:10",subject:"Russian - Language, Literature, Literacy",teachers:["E.N rus Mashinec"],classrooms:["115 (27)"]},
+    {period:9,start:"15:25",end:"16:05",subject:"Economics",teachers:["G.K geo Abdulova"],classrooms:["T 103 (14)"]},
+  ]},
+  {date:"2026-09-10",weekday_name:"Четверг",is_today:false,lessons:[
+    {period:1,start:"08:30",end:"09:10",subject:"Informatics",teachers:["V.N inf Mel'nikov"],classrooms:["221"]},
+    {period:2,start:"09:15",end:"09:55",subject:"Informatics",teachers:["V.N inf Mel'nikov"],classrooms:["221"]},
+    {period:3,start:"10:05",end:"10:45",subject:"Mathematics",teachers:["A.S math Kovalev"],classrooms:["FM 304 (14)"]},
+    {period:4,start:"10:50",end:"11:30",subject:"Mathematics",teachers:["A.S math Kovalev"],classrooms:["FM 304 (14)"]},
+    {period:5,start:"11:50",end:"12:30",subject:"Kazakhstan History",teachers:["A.K hist Ahmanov"],classrooms:["XB 104 (27)"]},
+    {period:6,start:"12:50",end:"13:30",subject:"Kazakhstan History",teachers:["A.K hist Ahmanov"],classrooms:["XB 104 (27)"]},
+  ]},
+  {date:"2026-09-11",weekday_name:"Пятница",is_today:false,lessons:[
+    {period:1,start:"08:30",end:"09:10",subject:"Mathematics",teachers:["A.S math Kovalev"],classrooms:["FM 304 (14)"]},
+    {period:2,start:"09:15",end:"09:55",subject:"Mathematics",teachers:["A.S math Kovalev"],classrooms:["FM 304 (14)"]},
+    {period:3,start:"10:05",end:"10:45",subject:"Physics",teachers:["BZh phys Eslyamgazieva"],classrooms:["FM 106 (27)"]},
+    {period:4,start:"10:50",end:"11:30",subject:"Physics",teachers:["BZh phys Eslyamgazieva"],classrooms:["FM 106 (27)"]},
+    {period:5,start:"11:50",end:"12:30",subject:"Military Training",teachers:["T.A PE Al'zhanov"],classrooms:["201 (27)"]},
+    {period:6,start:"12:50",end:"13:30",subject:"Physical Education",teachers:["Aydar PE Valiyev"],classrooms:["Large Sports Hall"]},
+    {period:7,start:"13:35",end:"14:15",subject:"Physical Education",teachers:["Aydar PE Valiyev"],classrooms:["Large Sports Hall"]},
+  ]},
+];
+let dayIdx=WEEK.findIndex(d=>d.is_today); if(dayIdx<0)dayIdx=0;
+function renderDays(){
+  $('#days').innerHTML=WEEK.map((d,i)=>{
+    const dd=d.date.slice(8,10)+'.'+d.date.slice(5,7);
+    return `<button data-i="${i}" aria-pressed="${i===dayIdx}" class="${d.is_today?'today':''}">
+      <span class="dn">${d.weekday_name.slice(0,2)}</span><span class="dd">${dd}</span></button>`;
+  }).join('');
+  $$('#days button').forEach(b=>b.onclick=()=>{dayIdx=+b.dataset.i;renderDays();renderLessons();});
+}
+function renderLessons(){
+  const day=WEEK[dayIdx];
+  if(!day.lessons.length){$('#day-lessons').innerHTML='<div class="empty-day">Уроков нет</div>';return;}
+  $('#day-lessons').innerHTML=day.lessons.map(l=>`<div class="lrow">
+    <div class="lp">${l.period}</div>
+    <div class="lt">${l.start}–${l.end}</div>
+    <div class="ls"><b>${l.subject}</b><span>${l.teachers.join(', ')} · ${l.classrooms.join(', ')}</span></div>
+    </div>`).join('');
+}
+
+// ---- календарь: реальные события с профиля EduPage (12E) ----
+// СОР/СОЧ/БЖБ идут отдельной записью на каждую группу — схлопываем по
+// дате+предмету, вариативные написания названия («СОР1»/«СОР 1») не разводим.
+const RAW_EVENTS=[
+  {date:"2026-09-16",kind:"assessment",title:"SAU1",subject:"Economics"},
+  {date:"2026-09-17",kind:"assessment",title:"1 БЖБ",subject:"Kazakhstan History"},
+  {date:"2026-09-17",kind:"assessment",title:"1 БЖБ",subject:"Kazakhstan History"},
+  {date:"2026-09-30",kind:"assessment",title:"СОР1",subject:"Mathematics"},
+  {date:"2026-09-30",kind:"assessment",title:"СОР 1",subject:"Mathematics"},
+  {date:"2026-10-06",kind:"assessment",title:"Programming Unit Test",subject:"Programming"},
+  {date:"2026-10-08",kind:"assessment",title:"2 БЖБ",subject:"Kazakhstan History"},
+  {date:"2026-10-08",kind:"assessment",title:"2 БЖБ",subject:"Kazakhstan History"},
+  {date:"2026-10-13",kind:"assessment",title:"СОР2",subject:"Mathematics"},
+  {date:"2026-10-13",kind:"assessment",title:"СОР 2",subject:"Mathematics"},
+];
+// две реальные, РАЗНЫЕ консультации 10 сентября — разные учителя, кабинеты
+// и уроки (7-й и 9-й), не дубли
+const CHANGES=[
+  {date:"2026-09-10",kind:"consultation",subject:"Chemistry",period:7,room:"XB 303 (14)",note:"с выбранными учащимися"},
+  {date:"2026-09-10",kind:"consultation",subject:"Chemistry",period:9,room:"217 (14)",note:"семинар 7"},
+];
+function dedupeEvents(raw){
+  const seen=new Map();
+  for(const e of raw){
+    const key=e.date+'|'+e.kind+'|'+e.subject;
+    if(!seen.has(key)) seen.set(key,{...e,count:1}); else seen.get(key).count++;
+  }
+  return [...seen.values()];
+}
+const MONTHS=['янв','фев','мар','апр','мая','июн','июл','авг','сен','окт','ноя','дек'];
+function fmtDM(iso){const[y,m,d]=iso.split('-');return {d,m:MONTHS[+m-1]};}
+const KIND_LABEL={assessment:'Оценивание',consultation:'Консультация'};
+const KIND_COLOR={assessment:'var(--g2)',consultation:'var(--g4)'};
+function renderEV(){
+  const items=[...dedupeEvents(RAW_EVENTS),...CHANGES].sort((a,b)=>a.date.localeCompare(b.date));
+  $('#cal-badge').textContent=items.length;
+  $('#events').innerHTML=items.map(e=>{
+    const {d,m}=fmtDM(e.date);
+    const title = e.kind==='assessment' ? e.title : `Химия${e.note?' · '+e.note:''}`;
+    const sub = e.kind==='assessment'
+      ? e.subject + (e.count>1?` · ${e.count} группы`:'')
+      : `${e.period} урок · Каб. ${e.room}`;
+    return `<div class="event" style="--k:${KIND_COLOR[e.kind]}">
+      <div class="date"><div class="d">${d}</div><div class="m">${m}</div></div>
+      <div class="body"><b>${title}</b><span>${sub}</span></div>
+      <div class="kind">${KIND_LABEL[e.kind]}</div></div>`;
+  }).join('');
+}
+
+// ассистент (заготовки)
+const Q=[
+  "Какая оценка нужна за СОЧ по информатике на 5?",
+  "Какие предметы сейчас требуют внимания?",
+  "Что у меня на этой неделе?",
+  "Когда консультация по химии?",
+];
+const ANS={
+  "Какая оценка нужна за СОЧ по информатике на 5?":`По информатике сейчас средний СОР <span class="mono">76.8%</span>, веса СОР/СОЧ — <span class="mono">50/50</span>. Чтобы выйти на <b>5</b> за четверть (порог 85%), за СОЧ нужно набрать <span class="mono">≈93%</span>. На <b>4</b> хватит уже <span class="mono">53%</span>.`,
+  "Какие предметы сейчас требуют внимания?":`Ниже всего идут <b>Физика</b> (<span class="mono">51.7%</span>, оценка 3) и <b>Казахский</b> (итог 3). По физике до четвёрки не хватает ~13% — реально закрыть на ближайшем СОР.`,
+  "Что у меня на этой неделе?":`Обычные уроки по расписанию (Physics, Informatics, Mathematics, Programming — по дням разное). Из особого: в <b>четверг 10 сентября</b> — две консультации по химии, 7 и 9 уроком. Ближайшее оценивание — «СОР1» по математике только <b>30 сентября</b>, до этого спокойно.`,
+  "Когда консультация по химии?":`Две — обе в <b>четверг, 10 сентября</b>: 7-м уроком (каб. XB 303, с выбранными учащимися) и 9-м уроком (каб. 217, семинар 7). Отдельного СОР по химии в ближайшие полтора месяца пока не назначено.`,
+};
+function ask(q){
+  const chat=$('#chat');
+  const u=document.createElement('div');u.className='msg u';u.textContent=q;chat.appendChild(u);
+  const a=document.createElement('div');a.className='msg a';
+  a.innerHTML=ANS[q]||`Это прототип — на такой вопрос ассистент ответит в рабочей версии, опираясь на твои данные из СУШ и EduPage.`;
+  chat.appendChild(a); a.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+// init
+function initCalc(){
+  const sel=$('#c-subj');
+  sel.innerHTML=Object.keys(CUR).map(n=>`<option${n==='Информатика (Углубл.)'?' selected':''}>${n}</option>`).join('');
+  sel.onchange=renderCalc; $('#c-sor').oninput=renderCalc;
+  $$('#c-target button').forEach(b=>b.onclick=()=>{cTarget=+b.dataset.t;
+    $$('#c-target button').forEach(x=>x.setAttribute('aria-pressed',x===b));renderCalc();});
+  renderCalc();
+}
+$('#years').onclick=e=>{const b=e.target.closest('button');if(!b)return;
+  year=b.dataset.year;selected=0;
+  $$('#years button').forEach(x=>x.setAttribute('aria-pressed',x===b));renderRC();};
+$$('.tab').forEach(t=>t.onclick=()=>{
+  $$('.tab').forEach(x=>x.setAttribute('aria-selected',x===t));
+  $$('.panel').forEach(p=>p.toggleAttribute('data-active',p.dataset.panel===t.dataset.tab));});
+$('#chips').innerHTML=Q.map(q=>`<button class="chip">${q}</button>`).join('');
+$$('#chips .chip').forEach(c=>c.onclick=()=>ask(c.textContent));
+$('#ai-send').onclick=()=>{const v=$('#ai-in').value.trim();if(v){ask(v);$('#ai-in').value='';}};
+$('#ai-in').onkeydown=e=>{if(e.key==='Enter')$('#ai-send').click();};
+$('#theme').onclick=()=>{const r=document.documentElement;
+  const cur=r.getAttribute('data-theme')||(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');
+  r.setAttribute('data-theme',cur==='dark'?'light':'dark');};
+
+renderRC();initCalc();renderDays();renderLessons();renderEV();
+</script>

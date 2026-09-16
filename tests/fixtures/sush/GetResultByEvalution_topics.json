@@ -1,0 +1,44 @@
+{
+ "success": true,
+ "state": 0,
+ "data": [
+  {
+   "Name": "11.4А Programming system",
+   "Description": "11.4А Programming system",
+   "Score": 16.0,
+   "MaxScore": 20,
+   "Disabled": false,
+   "Comment": null,
+   "RubricId": "d0ecd542-1e10-4849-b551-78bc590893ea",
+   "Id": "abc401cf-df54-43f0-a0c7-e7b5896870da"
+  },
+  {
+   "Name": "11.4 В Information security",
+   "Description": "11.4 В Information security",
+   "Score": 20.0,
+   "MaxScore": 25,
+   "Disabled": false,
+   "Comment": null,
+   "RubricId": "001aed66-7038-4cc8-968a-41c280e57a29",
+   "Id": "22e94ba8-ae48-453d-9093-9d9c6df6e864"
+  },
+  {
+   "Name": "11.4C Communication and networks",
+   "Description": "11.4C Communication and networks",
+   "Score": 19.0,
+   "MaxScore": 25,
+   "Disabled": false,
+   "Comment": null,
+   "RubricId": "7e29126c-2ddd-4131-9d04-6f87aff18a7f",
+   "Id": "d7cd556e-d916-4f3b-9422-e6a4d65c8be3"
+  }
+ ],
+ "message": "",
+ "details": null,
+ "code": null,
+ "closable": null,
+ "refreshPage": null,
+ "title": null,
+ "duration": null,
+ "total": null
+}

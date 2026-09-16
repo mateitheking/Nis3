@@ -1,0 +1,68 @@
+/* Полная лента уведомлений (экран "Уведомления") — превью той же карточки
+ * на Главной живёт в home.css (переиспользует .home-event-* классы), тут —
+ * полный список без обрезки, сгруппированный по дате публикации, как в
+ * самом приложении EduPage. */
+
+.notif-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.notif-group-date {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 10px;
+}
+.notif-group-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.notif-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 13px 14px;
+  background: var(--bg-card-alt);
+  border-radius: 12px;
+  border: 1px solid var(--border-subtle);
+}
+.notif-badge {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--text-primary);
+  background: #262626;
+  border-radius: 8px;
+  padding: 6px 10px;
+  flex: none;
+  white-space: nowrap;
+  margin-top: 1px;
+}
+.notif-badge-message {
+  background: rgba(212, 175, 90, 0.18);
+  color: var(--accent);
+}
+.notif-body {
+  flex: 1;
+  min-width: 0;
+}
+.notif-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.35;
+}
+.notif-sub {
+  font-size: 12.5px;
+  color: var(--text-secondary);
+  margin-top: 3px;
+}
+.notif-time {
+  font-size: 11.5px;
+  color: var(--text-tertiary);
+  flex: none;
+  margin-top: 2px;
+}

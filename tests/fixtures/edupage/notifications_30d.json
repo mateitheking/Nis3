@@ -1,0 +1,859 @@
+[
+ {
+  "event_id": 347011,
+  "timestamp": "2026-09-08T15:59:27",
+  "text": "<REDACTED chat text>",
+  "event_type": null,
+  "additional_data": {
+   "chatNazov": "{#1263} 12E",
+   "2026-09-08 15:59:27": {
+    "text": "<redacted>",
+    "userid": "Student-196",
+    "meno": "<REDACTED NAME>",
+    "att": ""
+   },
+   "2026-09-08 15:58:58": {
+    "text": "<redacted>",
+    "userid": "Student-227",
+    "meno": "<REDACTED NAME>",
+    "att": "image"
+   }
+  }
+ },
+ {
+  "event_id": 341337,
+  "timestamp": "2026-09-03T14:16:00",
+  "text": "Udalosť: 2 БЖБ -  08.10.2026",
+  "event_type": "EVENT",
+  "additional_data": {
+   "subId": "358429B9F8EDF636",
+   "datefrom": "2026-09-03",
+   "dateto": "2026-10-08",
+   "subjectid": "-13",
+   "classids": [
+    -10
+   ],
+   "name": "2 БЖБ",
+   "details": "",
+   "changed": "2026-09-03 14:15:59",
+   "changedby": "Ucitel-87",
+   "owner": "Ucitel-87",
+   "typ": "bexam",
+   "teacherids": [
+    -87
+   ],
+   "groupnames": [
+    ""
+   ],
+   "pocet_like": 0,
+   "pocet_done": 0,
+   "period": "6",
+   "studentStavPocty": null,
+   "znamkyUdalostid": null,
+   "agendaGroupids": [
+    "Trieda-10"
+   ],
+   "durationperiods": 1,
+   "planid": "",
+   "studentids": "<25 ids redacted>",
+   "classroomids": [],
+   "allday": false,
+   "privacy": "",
+   "skip_cestovne": false,
+   "asDbi": true,
+   "forStudentids": [],
+   "date": "2026-10-08",
+   "cas_udalosti": "2026-10-08"
+  }
+ },
+ {
+  "event_id": 341297,
+  "timestamp": "2026-09-03T14:14:38",
+  "text": "Udalosť: 1 БЖБ -  17.09.2026",
+  "event_type": "EVENT",
+  "additional_data": {
+   "subId": "9395A7266657111E",
+   "datefrom": "2026-09-03",
+   "dateto": "2026-09-17",
+   "subjectid": "-13",
+   "classids": [
+    -10
+   ],
+   "name": "1 БЖБ",
+   "details": "",
+   "changed": "2026-09-03 14:14:38",
+   "changedby": "Ucitel-87",
+   "owner": "Ucitel-87",
+   "typ": "bexam",
+   "teacherids": [
+    -87
+   ],
+   "groupnames": [
+    ""
+   ],
+   "pocet_like": 0,
+   "pocet_done": 0,
+   "period": "6",
+   "studentStavPocty": null,
+   "znamkyUdalostid": null,
+   "agendaGroupids": [
+    "Trieda-10"
+   ],
+   "durationperiods": 1,
+   "planid": "",
+   "studentids": "<25 ids redacted>",
+   "classroomids": [],
+   "allday": false,
+   "privacy": "",
+   "skip_cestovne": false,
+   "asDbi": true,
+   "forStudentids": [],
+   "date": "2026-09-17",
+   "cas_udalosti": "2026-09-17"
+  }
+ },
+ {
+  "event_id": 340652,
+  "timestamp": "2026-09-03T13:44:35",
+  "text": "Udalosť: СОР2 -  13.10.2026",
+  "event_type": "EVENT",
+  "additional_data": {
+   "subId": "4B4D2F2119A3DD4E",
+   "datefrom": "2026-09-03",
+   "dateto": "2026-10-13",
+   "subjectid": "-4",
+   "classids": [
+    -10
+   ],
+   "name": "СОР2",
+   "details": "",
+   "changed": "2026-09-03 13:44:35",
+   "changedby": "Ucitel-213",
+   "owner": "Ucitel-213",
+   "typ": "bexam",
+   "teacherids": [
+    "-213"
+   ],
+   "groupnames": [
+    ""
+   ],
+   "pocet_like": 0,
+   "pocet_done": 0,
+   "period": "5",
+   "studentStavPocty": null,
+   "znamkyUdalostid": null,
+   "agendaGroupids": [
+    "Trieda-10"
+   ],
+   "durationperiods": 1,
+   "planid": "",
+   "studentids": "<25 ids redacted>",
+   "classroomids": [
+    "-29"
+   ],
+   "allday": false,
+   "privacy": "",
+   "skip_cestovne": false,
+   "asDbi": true,
+   "forStudentids": [],
+   "date": "2026-10-13",
+   "cas_udalosti": "2026-10-13"
+  }
+ },
+ {
+  "event_id": 340584,
+  "timestamp": "2026-09-03T13:42:16",
+  "text": "Udalosť: СОР1 -  30.09.2026",
+  "event_type": "EVENT",
+  "additional_data": {
+   "subId": "D4A7A7FBCDD1123F",
+   "datefrom": "2026-09-03",
+   "dateto": "2026-09-30",
+   "subjectid": "-4",
+   "classids": [
+    -10
+   ],
+   "name": "СОР1",
+   "details": "",
+   "changed": "2026-09-03 13:42:16",
+   "changedby": "Ucitel-213",
+   "owner": "Ucitel-213",
+   "typ": "bexam",
+   "teacherids": [
+    "-213"
+   ],
+   "groupnames": [
+    ""
+   ],
+   "pocet_like": 0,
+   "pocet_done": 0,
+   "period": "2",
+   "studentStavPocty": null,
+   "znamkyUdalostid": null,
+   "agendaGroupids": [
+    "Trieda-10"
+   ],
+   "durationperiods": 1,
+   "planid": "",
+   "studentids": "<25 ids redacted>",
+   "classroomids": [
+    "-29"
+   ],
+   "allday": false,
+   "privacy": "",
+   "skip_cestovne": false,
+   "asDbi": true,
+   "forStudentids": [],
+   "date": "2026-09-30",
+   "cas_udalosti": "2026-09-30"
+  }
+ },
+ {
+  "event_id": 340561,
+  "timestamp": "2026-09-03T13:41:38",
+  "text": "Udalosť: СОР 2 -  13.10.2026",
+  "event_type": "EVENT",
+  "additional_data": {
+   "subId": "21672DF61B4ED060",
+   "datefrom": "2026-09-03",
+   "dateto": "2026-10-13",
+   "subjectid": "-4",
+   "classids": [
+    -10
+   ],
+   "name": "СОР 2",
+   "details": "",
+   "changed": "2026-09-03 13:41:37",
+   "changedby": "Ucitel-36",
+   "owner": "Ucitel-36",
+   "typ": "bexam",
+   "teacherids": [
+    "-36"
+   ],
+   "pocet_like": 0,
+   "pocet_done": 0,
+   "period": "6",
+   "studentStavPocty": null,
+   "znamkyUdalostid": null,
+   "agendaGroupids": [
+    "Trieda-10"
+   ],
+   "durationperiods": 1,
+   "studentids": "<25 ids redacted>",
+   "planid": "",
+   "classroomids": [
+    "-31"
+   ],
+   "allday": false,
+   "privacy": "",
+   "skip_cestovne": false,
+   "asDbi": true,
+   "forStudentids": [
+    "-1107",
+    "-214",
+    "-216",
+    "-196",
+    "-197",
+    "-218",
+    "-219",
+    "-198",
+    "-223",
+    "-225",
+    "-227",
+    "-1917",
+    "-1916",
+    "-1156",
+    "-232"
+   ],
+   "date": "2026-10-13",
+   "cas_udalosti": "2026-10-13"
+  }
+ },
+ {
+  "event_id": 340530,
+  "timestamp": "2026-09-03T13:39:43",
+  "text": "Udalosť: СОР 1 -  30.09.2026",
+  "event_type": "EVENT",
+  "additional_data": {
+   "subId": "77DE5DFB83BC27C7",
+   "datefrom": "2026-09-03",
+   "dateto": "2026-09-30",
+   "subjectid": "-4",
+   "classids": [
+    -10
+   ],
+   "name": "СОР 1",
+   "details": "",
+   "changed": "2026-09-03 13:39:43",
+   "changedby": "Ucitel-36",
+   "owner": "Ucitel-36",
+   "typ": "bexam",
+   "teacherids": [
+    "-36"
+   ],
+   "pocet_like": 0,
+   "pocet_done": 0,
+   "period": "2",
+   "studentStavPocty": null,
+   "znamkyUdalostid": null,
+   "agendaGroupids": [
+    "Trieda-10"
+   ],
+   "durationperiods": 1,
+   "studentids": "<25 ids redacted>",
+   "planid": "",
+   "classroomids": [
+    "-31"
+   ],
+   "allday": false,
+   "privacy": "",
+   "skip_cestovne": false,
+   "asDbi": true,
+   "forStudentids": [
+    "-1107",
+    "-214",
+    "-216",
+    "-196",
+    "-197",
+    "-218",
+    "-219",
+    "-198",
+    "-223",
+    "-225",
+    "-1917",
+    "-1156",
+    "-1916",
+    "-232",
+    "-227"
+   ],
+   "date": "2026-09-30",
+   "cas_udalosti": "2026-09-30"
+  }
+ },
+ {
+  "event_id": 340290,
+  "timestamp": "2026-09-03T13:25:15",
+  "text": "Udalosť: 2 БЖБ -  08.10.2026",
+  "event_type": "EVENT",
+  "additional_data": {
+   "subId": "671EE650D7787FEB",
+   "datefrom": "2026-09-03",
+   "dateto": "2026-10-08",
+   "subjectid": "-13",
+   "classids": [
+    -10
+   ],
+   "name": "2 БЖБ",
+   "details": "",
+   "changed": "2026-09-03 13:25:15",
+   "changedby": "Ucitel-89",
+   "owner": "Ucitel-89",
+   "typ": "bexam",
+   "teacherids": [
+    -89
+   ],
+   "groupnames": [
+    ""
+   ],
+   "pocet_like": 0,
+   "pocet_done": 0,
+   "period": "6",
+   "studentStavPocty": null,
+   "znamkyUdalostid": null,
+   "agendaGroupids": [
+    "Trieda-10"
+   ],
+   "durationperiods": 1,
+   "planid": "",
+   "studentids": "<25 ids redacted>",
+   "classroomids": [],
+   "allday": false,
+   "dates": {
+    "2026-10-08": true
+   },
+   "privacy": "",
+   "skip_cestovne": false,
+   "asDbi": true,
+   "forStudentids": [],
+   "date": "2026-10-08",
+   "cas_udalosti": "2026-10-08"
+  }
+ },
+ {
+  "event_id": 340236,
+  "timestamp": "2026-09-03T13:23:29",
+  "text": "Udalosť: 1 БЖБ -  17.09.2026",
+  "event_type": "EVENT",
+  "additional_data": {
+   "subId": "017B6F0D9A9640DF",
+   "datefrom": "2026-09-03",
+   "dateto": "2026-09-17",
+   "subjectid": "-13",
+   "classids": [
+    -10
+   ],
+   "name": "1 БЖБ",
+   "details": "",
+   "changed": "2026-09-03 13:23:29",
+   "changedby": "Ucitel-89",
+   "owner": "Ucitel-89",
+   "typ": "bexam",
+   "teacherids": [
+    -89
+   ],
+   "groupnames": [
+    ""
+   ],
+   "pocet_like": 0,
+   "pocet_done": 0,
+   "period": "6",
+   "studentStavPocty": null,
+   "znamkyUdalostid": null,
+   "agendaGroupids": [
+    "Trieda-10"
+   ],
+   "durationperiods": 1,
+   "planid": "",
+   "studentids": "<25 ids redacted>",
+   "classroomids": [],
+   "allday": false,
+   "dates": {
+    "2026-09-17": true
+   },
+   "privacy": "",
+   "skip_cestovne": false,
+   "asDbi": true,
+   "forStudentids": [],
+   "date": "2026-09-17",
+   "cas_udalosti": "2026-09-17"
+  }
+ },
+ {
+  "event_id": 338615,
+  "timestamp": "2026-09-02T13:46:57",
+  "text": "Udalosť: SAU1 -  16.09.2026",
+  "event_type": "EVENT",
+  "additional_data": {
+   "subId": "D4ACF7E908FA1BB6",
+   "datefrom": "2026-09-02",
+   "dateto": "2026-09-16",
+   "subjectid": "-9",
+   "classids": [
+    -10
+   ],
+   "name": "SAU1",
+   "details": "",
+   "changed": "2026-09-02 13:46:57",
+   "changedby": "Ucitel-78",
+   "owner": "Ucitel-78",
+   "typ": "bexam",
+   "teacherids": [
+    "-78"
+   ],
+   "pocet_like": 0,
+   "pocet_done": 0,
+   "period": "9",
+   "studentStavPocty": null,
+   "znamkyUdalostid": null,
+   "agendaGroupids": [
+    "Trieda-10"
+   ],
+   "durationperiods": 1,
+   "studentids": "<25 ids redacted>",
+   "planid": "",
+   "classroomids": [
+    "-3"
+   ],
+   "allday": false,
+   "privacy": "",
+   "skip_cestovne": false,
+   "asDbi": true,
+   "forStudentids": [
+    "-1107",
+    "-218",
+    "-198",
+    "-1915",
+    "-1917",
+    "-227",
+    "-1916",
+    "-1156",
+    "-226"
+   ],
+   "date": "2026-09-16",
+   "cas_udalosti": "2026-09-16"
+  }
+ },
+ {
+  "event_id": 337185,
+  "timestamp": "2026-09-02T09:51:46",
+  "text": "Udalosť: Programming Unit Test -  06.10.2026",
+  "event_type": "EVENT",
+  "additional_data": {
+   "subId": "18A0799D865C47AD",
+   "datefrom": "2026-09-02",
+   "dateto": "2026-10-06",
+   "subjectid": "-19",
+   "classids": [
+    -10
+   ],
+   "name": "Programming Unit Test",
+   "details": "",
+   "changed": "2026-09-02 09:51:46",
+   "changedby": "Ucitel-284",
+   "owner": "Ucitel-284",
+   "typ": "bexam",
+   "teacherids": [
+    "-284"
+   ],
+   "groupnames": [
+    "Group 1"
+   ],
+   "pocet_like": 0,
+   "pocet_done": 0,
+   "period": null,
+   "studentStavPocty": null,
+   "znamkyUdalostid": null,
+   "agendaGroupids": [
+    "Trieda-10"
+   ],
+   "planid": "",
+   "studentids": "<25 ids redacted>",
+   "classroomids": [
+    "-53"
+   ],
+   "allday": false,
+   "starttime": "13:35",
+   "endtime": "14:15",
+   "privacy": "",
+   "skip_cestovne": false,
+   "asDbi": true,
+   "forStudentids": [],
+   "date": "2026-10-06",
+   "cas_udalosti": "2026-10-06"
+  }
+ },
+ {
+  "event_id": 336393,
+  "timestamp": "2026-09-02T06:52:12",
+  "text": "Udalosť: Career Counselor Meeting -  04.09.2026",
+  "event_type": "EVENT",
+  "additional_data": {
+   "name": "Career Counselor Meeting",
+   "typ": "representation",
+   "planid": "",
+   "subjectid": "-110",
+   "classids": [
+    "-6",
+    "-7",
+    "-8",
+    "-9",
+    "-10",
+    "-90"
+   ],
+   "studentids": "<0 ids redacted>",
+   "teacherids": [
+    "-254"
+   ],
+   "classroomids": [
+    "-74"
+   ],
+   "allday": false,
+   "period": "8",
+   "durationperiods": 1,
+   "privacy": "",
+   "groupnames": [
+    ""
+   ],
+   "ttcancel": true,
+   "skip_cestovne": false,
+   "owner": "Ucitel-254",
+   "changed": "2026-09-02 06:52:12",
+   "changedby": "Ucitel-254",
+   "subId": "C7BA636047A074D2",
+   "date": "2026-09-04",
+   "cancelled": false,
+   "cas_udalosti": "2026-09-04",
+   "origTyp": "ct_DFFECF5D"
+  }
+ },
+ {
+  "event_id": 336027,
+  "timestamp": "2026-09-01T06:14:41",
+  "text": "Udalosť: Классный час -  01.09.2026",
+  "event_type": "EVENT",
+  "additional_data": {
+   "name": "Классный час",
+   "typ": "schoolevent",
+   "planid": "",
+   "subjectid": "",
+   "classids": [
+    "-80",
+    "-81",
+    "-82",
+    "-83",
+    "-84",
+    "-85",
+    "-86",
+    "-87",
+    "-88",
+    "-89",
+    "-63",
+    "-64",
+    "-65",
+    "-66",
+    "-67",
+    "-68",
+    "-69",
+    "-70",
+    "-71",
+    "-72",
+    "-39",
+    "-40",
+    "-41",
+    "-42",
+    "-43",
+    "-1",
+    "-2",
+    "-3",
+    "-4",
+    "-5",
+    "-92",
+    "-6",
+    "-7",
+    "-8",
+    "-9",
+    "-10",
+    "-90",
+    "-95",
+    "-94",
+    "-96",
+    "-102",
+    "-97",
+    "-99",
+    "-98",
+    "-100",
+    "-101"
+   ],
+   "studentids": "<0 ids redacted>",
+   "teacherids": [
+    "-17",
+    "-164",
+    "-8",
+    "-178",
+    "-170",
+    "-222",
+    "-242",
+    "-281",
+    "-93",
+    "-277",
+    "-228",
+    "-84",
+    "-155",
+    "-310",
+    "-46",
+    "-267",
+    "-49",
+    "-50",
+    "-53",
+    "-52",
+    "-291",
+    "-54",
+    "-55",
+    "-56",
+    "-57",
+    "-58",
+    "-290",
+    "-59",
+    "-60",
+    "-61",
+    "-184",
+    "-102",
+    "-183",
+    "-185",
+    "-199",
+    "-182",
+    "-186",
+    "-286",
+    "-187",
+    "-220",
+    "-253",
+    "-251",
+    "-197",
+    "-292",
+    "-293",
+    "-294",
+    "-252",
+    "-2",
+    "-20",
+    "-21",
+    "-295",
+    "-149",
+    "-283",
+    "-254",
+    "-28",
+    "-271",
+    "-78",
+    "-80",
+    "-256",
+    "-236",
+    "-289",
+    "-255",
+    "-87",
+    "-88",
+    "-89",
+    "-257",
+    "-296",
+    "-297",
+    "-92",
+    "-266",
+    "-63",
+    "-64",
+    "-65",
+    "-284",
+    "-66",
+    "-278",
+    "-68",
+    "-158",
+    "-160",
+    "-157",
+    "-204",
+    "-282",
+    "-260",
+    "-1",
+    "-3",
+    "-6",
+    "-7",
+    "-302",
+    "-112",
+    "-288",
+    "-217",
+    "-238",
+    "-167",
+    "-274",
+    "-239",
+    "-166",
+    "-285",
+    "-162",
+    "-263",
+    "-31",
+    "-32",
+    "-146",
+    "-211",
+    "-33",
+    "-36",
+    "-37",
+    "-212",
+    "-39",
+    "-40",
+    "-41",
+    "-303",
+    "-45",
+    "-304",
+    "-213",
+    "-227",
+    "-233",
+    "-98",
+    "-94",
+    "-305",
+    "-280",
+    "-95",
+    "-109",
+    "-97",
+    "-70",
+    "-306",
+    "-247",
+    "-72",
+    "-73",
+    "-74",
+    "-246",
+    "-75",
+    "-269",
+    "-287",
+    "-312",
+    "-264",
+    "-174",
+    "-114",
+    "-115",
+    "-10",
+    "-147",
+    "-307",
+    "-279",
+    "-13",
+    "-14",
+    "-15",
+    "-16",
+    "-218",
+    "-219",
+    "-226",
+    "-83",
+    "-225",
+    "-201",
+    "-231",
+    "-116",
+    "-273",
+    "-224",
+    "-175",
+    "-171",
+    "-172",
+    "-118",
+    "-117",
+    "-223",
+    "-309",
+    "-308",
+    "-235",
+    "-142"
+   ],
+   "classroomids": [],
+   "allday": false,
+   "period": "3",
+   "durationperiods": 1,
+   "privacy": "",
+   "groupnames": [
+    ""
+   ],
+   "ttcancel": false,
+   "ctevent": false,
+   "skip_cestovne": false,
+   "owner": "Ucitel-170",
+   "changed": "2026-09-01 06:14:41",
+   "changedby": "Ucitel-170",
+   "subId": "DEE9C2D60DBABD48",
+   "date": "2026-09-01",
+   "cancelled": false,
+   "cas_udalosti": "2026-09-01"
+  }
+ },
+ {
+  "event_id": 335127,
+  "timestamp": "2026-08-31T12:32:25",
+  "text": "Udalosť: Линейка -  01.09.2026",
+  "event_type": "EVENT",
+  "additional_data": {
+   "name": "Линейка",
+   "typ": "ttcancel",
+   "classids": [],
+   "allday": false,
+   "period": "1",
+   "durationperiods": 2,
+   "privacy": "",
+   "skip_cestovne": false,
+   "owner": "Ucitel-170",
+   "changed": "2026-08-31 12:32:25",
+   "changedby": "Ucitel-170",
+   "teacherids": [],
+   "classroomids": [],
+   "subId": "6FEC2F80AE3C9BEB",
+   "date": "2026-09-01",
+   "cancelled": false,
+   "cas_udalosti": "2026-09-01",
+   "origTyp": "ct_761EC10D"
+  }
+ },
+ {
+  "event_id": 335090,
+  "timestamp": "2026-08-30T15:39:57",
+  "text": "Zverejnený nový rozvrh",
+  "event_type": "TIMETABLE",
+  "additional_data": null
+ }
+]

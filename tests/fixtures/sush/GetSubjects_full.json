@@ -1,0 +1,605 @@
+{
+ "success": true,
+ "state": 0,
+ "data": [
+  {
+   "Name": "Английский язык",
+   "JournalId": "e96dd78c-118f-4140-bffd-5f6452223463",
+   "Score": 66.67,
+   "Mark": 4,
+   "MarkComment": null,
+   "Evaluations": [
+    {
+     "Type": 2,
+     "EvalType": 0,
+     "Formula": 0,
+     "Name": "Суммативное оценивание за раздел",
+     "ShortName": "СОР",
+     "Percent": 100.0,
+     "IsCanDontConsider": false,
+     "MaxScores": {
+      "7e2df3a4-6d2f-47a9-b487-bde7d7d99df5": 6.0,
+      "f8d35822-304e-4bce-ba04-0f9e8c3c32fd": 6.0,
+      "3198cf30-ecb3-4ead-9c76-588467ae1322": 6.0,
+      "807afaaa-2b48-4dfb-85f8-24fd6de9a915": 6.0
+     },
+     "Id": "89af4c77-0706-4696-bf7e-86be6c12b5db"
+    },
+    {
+     "Type": 3,
+     "EvalType": 0,
+     "Formula": 0,
+     "Name": "Суммативное оценивание за четверть",
+     "ShortName": "СОЧ",
+     "Percent": 0.0,
+     "IsCanDontConsider": false,
+     "MaxScores": {},
+     "Id": "74951fbb-ab34-43d5-a1b8-485777d9e146"
+    }
+   ],
+   "Id": "685d3a26-1bd8-424a-95a6-197cc13de84a"
+  },
+  {
+   "Name": "Биология (Углубленная)",
+   "JournalId": "fba1f948-75b4-415c-806c-3a861bffd604",
+   "Score": 0.0,
+   "Mark": 0,
+   "MarkComment": null,
+   "Evaluations": [
+    {
+     "Type": 2,
+     "EvalType": 0,
+     "Formula": 0,
+     "Name": "Суммативное оценивание за раздел",
+     "ShortName": "СОР",
+     "Percent": 50.0,
+     "IsCanDontConsider": false,
+     "MaxScores": {},
+     "Id": "b89c9902-2e77-469a-8e02-522eff51fb16"
+    },
+    {
+     "Type": 3,
+     "EvalType": 0,
+     "Formula": 0,
+     "Name": "Суммативное оценивание за четверть",
+     "ShortName": "СОЧ",
+     "Percent": 50.0,
+     "IsCanDontConsider": false,
+     "MaxScores": {
+      "2627914d-c6be-46d5-957f-1d9a26a63bc8": 15.0,
+      "bf6799f7-3682-4a5a-ab85-dd372ce08843": 15.0,
+      "0e47029a-898a-46f6-a643-c7eb5e8bcc58": 10.0,
+      "5185d772-001b-4bc2-ad47-c24d6903fd12": 20.0
+     },
+     "Id": "15ce994e-77b8-429d-a6fc-b55c3f055785"
+    }
+   ],
+   "Id": "8a2b29df-ba83-4e08-925e-6573e91070bd"
+  },
+  {
+   "Name": "География (Стандартная)",
+   "JournalId": "c8c43743-ea4f-45e4-8d20-98ba1d7e73ee",
+   "Score": 0.0,
+   "Mark": 0,
+   "MarkComment": null,
+   "Evaluations": [
+    {
+     "Type": 2,
+     "EvalType": 0,
+     "Formula": 0,
+     "Name": "Суммативное оценивание за раздел",
+     "ShortName": "СОР",
+     "Percent": 50.0,
+     "IsCanDontConsider": false,
+     "MaxScores": {},
+     "Id": "5e1467b3-3953-4a85-9f0b-933b6a1cb454"
+    },
+    {
+     "Type": 3,
+     "EvalType": 0,
+     "Formula": 0,
+     "Name": "Суммативное оценивание за четверть",
+     "ShortName": "СОЧ",
+     "Percent": 50.0,
+     "IsCanDontConsider": false,
+     "MaxScores": {
+      "b78cb2c7-15d3-4c41-8fb3-906f3d89ec4f": 10.0,
+      "91680142-0a9a-460a-99b7-7d836d35f6d6": 30.0
+     },
+     "Id": "ea14f0ad-8cb6-4ac1-a31e-55514dad3edc"
+    }
+   ],
+   "Id": "eca5d96e-26b1-451a-9158-f75822fae856"
+  },
+  {
+   "Name": "Глобальные перспективы и проектная работа",
+   "JournalId": "6d01739a-1cca-4d61-87a6-fe290184e0cd",
+   "Score": 86.46,
+   "Mark": 5,
+   "MarkComment": "",
+   "Evaluations": [
+    {
+     "Type": 2,
+     "EvalType": 0,
+     "Formula": 0,
+     "Name": "Суммативное оценивание за раздел",
+     "ShortName": "СОР",
+     "Percent": 50.0,
+     "IsCanDontConsider": false,
+     "MaxScores": {
+      "ad019ab3-70a3-4222-99cd-410b2efcf1f5": 8.0,
+      "80f18172-fdab-4ca2-802d-94a0de2a8a2f": 8.0
+     },
+     "Id": "2675afea-c0d7-4643-b1b1-e629a9ea1413"
+    },
+    {
+     "Type": 3,
+     "EvalType": 0,
+     "Formula": 0,
+     "Name": "Суммативное оценивание за четверть",
+     "ShortName": "СОЧ",
+     "Percent": 50.0,
+     "IsCanDontConsider": false,
+     "MaxScores": {
+      "ad019ab3-70a3-4222-99cd-410b2efcf1f5": 12.0,
+      "80f18172-fdab-4ca2-802d-94a0de2a8a2f": 12.0
+     },
+     "Id": "cf6e9d14-ffda-4050-b345-bc3f8d244344"
+    }
+   ],
+   "Id": "be13ede8-f0e5-4405-aa47-e9c1a81409e7"
+  },
+  {
+   "Name": "Графика и проектирование (Стандартная)",
+   "JournalId": "5d39fa63-09d4-496a-879c-0fa0291a69dd",
+   "Score": 0.0,
+   "Mark": 0,
+   "MarkComment": null,
+   "Evaluations": [
+    {
+     "Type": 2,
+     "EvalType": 0,
+     "Formula": 0,
+     "Name": "Суммативное оценивание за раздел",
+     "ShortName": "СОР",
+     "Percent": 50.0,
+     "IsCanDontConsider": false,
+     "MaxScores": {},
+     "Id": "77375faf-53f7-4136-921f-cc59f2cb3e88"
+    },
+    {
+     "Type": 3,
+     "EvalType": 0,
+     "Formula": 0,
+     "Name": "Суммативное оценивание за четверть",
+     "ShortName": "СОЧ",
+     "Percent": 50.0,
+     "IsCanDontConsider": false,
+     "MaxScores": {
+      "201cfb48-5b83-4b28-b15e-68f19bbbfccf": 15.0
+     },
+     "Id": "c0105b8b-1e69-4221-a185-15e91859a389"
+    }
+   ],
+   "Id": "bda0c1a4-c538-4607-8bb4-ce04c80cd0fd"
+  },
+  {
+   "Name": "Информатика (Углубленная)",
+   "JournalId": "745da8c0-d936-43af-991a-8267233b4277",
+   "Score": 76.79,
+   "Mark": 4,
+   "MarkComment": "",
+   "Evaluations": [
+    {
+     "Type": 2,
+     "EvalType": 0,
+     "Formula": 0,
+     "Name": "Суммативное оценивание за раздел",
+     "ShortName": "СОР",
+     "Percent": 50.0,
+     "IsCanDontConsider": false,
+     "MaxScores": {
+      "abc401cf-df54-43f0-a0c7-e7b5896870da": 20.0,
+      "22e94ba8-ae48-453d-9093-9d9c6df6e864": 25.0,
+      "d7cd556e-d916-4f3b-9422-e6a4d65c8be3": 25.0
+     },
+     "Id": "26539b56-f03a-4ae9-a42b-4b7617402bae"
+    },
+    {
+     "Type": 3,
+     "EvalType": 0,
+     "Formula": 0,
+     "Name": "Суммативное оценивание за четверть",
+     "ShortName": "СОЧ",
+     "Percent": 50.0,
+     "IsCanDontConsider": false,
+     "MaxScores": {
+      "abc401cf-df54-43f0-a0c7-e7b5896870da": 10.0,
+      "22e94ba8-ae48-453d-9093-9d9c6df6e864": 17.0,
+      "d7cd556e-d916-4f3b-9422-e6a4d65c8be3": 13.0
+     },
+     "Id": "187c5740-5096-4934-8174-f62b755b0c0a"
+    }
+   ],
+   "Id": "3122bd1b-86c4-4b3d-9af3-096f05e29bd3"
+  },
+  {
+   "Name": "История Казахстана",
+   "JournalId": "dfe92c75-fd87-4abb-8ccb-23b26955c664",
+   "Score": 85.0,
+   "Mark": 5,
+   "MarkComment": null,
+   "Evaluations": [
+    {
+     "Type": 2,
+     "EvalType": 0,
+     "Formula": 0,
+     "Name": "Суммативное оценивание за раздел",
+     "ShortName": "СОР",
+     "Percent": 50.0,
+     "IsCanDontConsider": false,
+     "MaxScores": {
+      "300fd144-db67-45be-8062-9bb0df118eb0": 20.0
+     },
+     "Id": "80e9c20c-7742-434a-8cbc-f566e40f8268"
+    },
+    {
+     "Type": 3,
+     "EvalType": 0,
+     "Formula": 0,
+     "Name": "Суммативное оценивание за четверть",
+     "ShortName": "СОЧ",
+     "Percent": 50.0,
+     "IsCanDontConsider": false,
+     "MaxScores": {
+      "300fd144-db67-45be-8062-9bb0df118eb0": 30.0
+     },
+     "Id": "2b2e06e7-9d1b-4888-b565-923ded64e03f"
+    }
+   ],
+   "Id": "f0334aa7-20d7-4e13-b19c-17060a8b228d"
+  },
+  {
+   "Name": "Казахский язык и литература",
+   "JournalId": "a971995e-5eb6-4d78-a284-ac632b46f4dc",
+   "Score": 58.62,
+   "Mark": 3,
+   "MarkComment": "",
+   "Evaluations": [
+    {
+     "Type": 2,
+     "EvalType": 0,
+     "Formula": 0,
+     "Name": "Суммативное оценивание за раздел",
+     "ShortName": "СОР",
+     "Percent": 100.0,
+     "IsCanDontConsider": false,
+     "MaxScores": {
+      "6261f787-b7ad-4f29-b8de-b5ef04e49084": 7.0,
+      "518ebf7e-5a47-4f70-b47c-a0f22a64989c": 7.0,
+      "bb12183c-d672-4d98-a46d-53445bbd6efb": 6.0,
+      "e1cc07d3-09e2-4ba2-acb6-f2ac590933ba": 9.0
+     },
+     "Id": "3e32e9c8-73df-4ada-a2b4-967b7c8a0da0"
+    },
+    {
+     "Type": 3,
+     "EvalType": 0,
+     "Formula": 0,
+     "Name": "Суммативное оценивание за четверть",
+     "ShortName": "СОЧ",
+     "Percent": 0.0,
+     "IsCanDontConsider": false,
+     "MaxScores": {},
+     "Id": "f88a8fed-28fd-4a5e-9e57-e11cbe3fbbf5"
+    }
+   ],
+   "Id": "df739c55-afd4-4735-8793-273f96d95248"
+  },
+  {
+   "Name": "Математика(10)",
+   "JournalId": "d932c52f-d840-4600-9a1c-7ed8cf7bbef6",
+   "Score": 0.0,
+   "Mark": 0,
+   "MarkComment": null,
+   "Evaluations": [
+    {
+     "Type": 2,
+     "EvalType": 0,
+     "Formula": 0,
+     "Name": "Суммативное оценивание за раздел",
+     "ShortName": "СОР",
+     "Percent": 50.0,
+     "IsCanDontConsider": false,
+     "MaxScores": {},
+     "Id": "0a63255d-646c-4a02-9895-8ae48fbac93a"
+    },
+    {
+     "Type": 3,
+     "EvalType": 0,
+     "Formula": 0,
+     "Name": "Суммативное оценивание за четверть",
+     "ShortName": "СОЧ",
+     "Percent": 50.0,
+     "IsCanDontConsider": false,
+     "MaxScores": {
+      "d94ad13a-c84a-41f7-a4b6-803714d64fc2": 26.0,
+      "7014141f-fb47-4982-b470-dc8996ef6c31": 14.0
+     },
+     "Id": "79c21ccc-f23c-4677-931c-8793316364c5"
+    }
+   ],
+   "Id": "82407e5b-620b-4a15-9aba-58e4ff5c28d8"
+  },
+  {
+   "Name": "Математика(7)",
+   "JournalId": "6ef9f338-4ed4-423c-90d2-e35b38ab66d6",
+   "Score": 41.25,
+   "Mark": 3,
+   "MarkComment": null,
+   "Evaluations": [
+    {
+     "Type": 2,
+     "EvalType": 0,
+     "Formula": 0,
+     "Name": "Суммативное оценивание за раздел",
+     "ShortName": "СОР",
+     "Percent": 50.0,
+     "IsCanDontConsider": false,
+     "MaxScores": {
+      "0bdbdc03-3898-4b52-aa7f-63d84482bfa4": 24.0,
+      "24b1687a-a023-44a2-beaf-5fae87e0d914": 16.0
+     },
+     "Id": "e7168ab1-5037-4e11-8fb0-22a0efd07d28"
+    },
+    {
+     "Type": 3,
+     "EvalType": 0,
+     "Formula": 0,
+     "Name": "Суммативное оценивание за четверть",
+     "ShortName": "СОЧ",
+     "Percent": 50.0,
+     "IsCanDontConsider": false,
+     "MaxScores": {
+      "0bdbdc03-3898-4b52-aa7f-63d84482bfa4": 19.0,
+      "24b1687a-a023-44a2-beaf-5fae87e0d914": 21.0
+     },
+     "Id": "21818445-9177-40e6-9e26-5ebe2d161495"
+    }
+   ],
+   "Id": "9cb066ef-4c1f-4544-af28-beea2dcb8e73"
+  },
+  {
+   "Name": "Программирование",
+   "JournalId": "e9842ee6-cc5d-4e37-9baa-d31190b0808f",
+   "Score": 80.83,
+   "Mark": 4,
+   "MarkComment": null,
+   "Evaluations": [
+    {
+     "Type": 2,
+     "EvalType": 0,
+     "Formula": 0,
+     "Name": "Суммативное оценивание за раздел",
+     "ShortName": "СОР",
+     "Percent": 50.0,
+     "IsCanDontConsider": false,
+     "MaxScores": {
+      "4eff3b92-6b09-49ef-806d-56b50d9b85b8": 20.0
+     },
+     "Id": "399843ac-ff18-4c2e-aba7-400a3453ee01"
+    },
+    {
+     "Type": 3,
+     "EvalType": 0,
+     "Formula": 0,
+     "Name": "Суммативное оценивание за четверть",
+     "ShortName": "СОЧ",
+     "Percent": 50.0,
+     "IsCanDontConsider": false,
+     "MaxScores": {
+      "4eff3b92-6b09-49ef-806d-56b50d9b85b8": 30.0
+     },
+     "Id": "26217369-ab92-42f9-863c-cb8b644cd566"
+    }
+   ],
+   "Id": "90c655b8-c870-40f9-ae44-19efbd992962"
+  },
+  {
+   "Name": "Русский язык и литература",
+   "JournalId": "b274752e-1c8a-453e-9c8a-4f2a878e21b8",
+   "Score": 82.5,
+   "Mark": 4,
+   "MarkComment": "",
+   "Evaluations": [
+    {
+     "Type": 2,
+     "EvalType": 0,
+     "Formula": 0,
+     "Name": "Суммативное оценивание за раздел",
+     "ShortName": "СОР",
+     "Percent": 50.0,
+     "IsCanDontConsider": false,
+     "MaxScores": {
+      "c05a6348-733a-429b-83cf-d1f8c6bcd9f3": 15.0,
+      "ecf2a7cc-a388-4955-bb07-9f1765c9e587": 10.0,
+      "5c2637af-f2d5-4f3c-a93a-08c41af5116b": 15.0
+     },
+     "Id": "5d16557b-3339-442a-8711-0bba4f4ee62b"
+    },
+    {
+     "Type": 3,
+     "EvalType": 0,
+     "Formula": 0,
+     "Name": "Суммативное оценивание за четверть",
+     "ShortName": "СОЧ",
+     "Percent": 50.0,
+     "IsCanDontConsider": false,
+     "MaxScores": {
+      "c05a6348-733a-429b-83cf-d1f8c6bcd9f3": 10.0,
+      "ecf2a7cc-a388-4955-bb07-9f1765c9e587": 15.0,
+      "5c2637af-f2d5-4f3c-a93a-08c41af5116b": 15.0
+     },
+     "Id": "56ab382c-97e9-43fa-8f80-1a8accef33f0"
+    }
+   ],
+   "Id": "9089d6b7-3138-45a5-95ea-69c0493c75d9"
+  },
+  {
+   "Name": "Физика (Углубленная)",
+   "JournalId": "9bc906c2-4f0e-44e0-ab6e-ed5bdb0eb4cf",
+   "Score": 51.67,
+   "Mark": 3,
+   "MarkComment": null,
+   "Evaluations": [
+    {
+     "Type": 2,
+     "EvalType": 0,
+     "Formula": 0,
+     "Name": "Суммативное оценивание за раздел",
+     "ShortName": "СОР",
+     "Percent": 50.0,
+     "IsCanDontConsider": false,
+     "MaxScores": {
+      "76611038-f059-4edb-86b5-eeef1fdf7caa": 25.0,
+      "6c89f4af-18bf-48b5-9804-ba1689315cb6": 20.0
+     },
+     "Id": "ca17935e-b461-4bb3-93b2-ea4a02e4c475"
+    },
+    {
+     "Type": 3,
+     "EvalType": 0,
+     "Formula": 0,
+     "Name": "Суммативное оценивание за четверть",
+     "ShortName": "СОЧ",
+     "Percent": 50.0,
+     "IsCanDontConsider": false,
+     "MaxScores": {
+      "76611038-f059-4edb-86b5-eeef1fdf7caa": 25.0,
+      "6c89f4af-18bf-48b5-9804-ba1689315cb6": 35.0
+     },
+     "Id": "f7aa7ed0-0565-4749-afed-7f4093a09298"
+    }
+   ],
+   "Id": "e8159c40-9686-4ef8-9825-11df9110ed90"
+  },
+  {
+   "Name": "Физическая культура",
+   "JournalId": "ac0785b9-3011-43ac-879f-e7f4d4b24655",
+   "Score": 100.0,
+   "Mark": 5,
+   "MarkComment": null,
+   "Evaluations": [
+    {
+     "Type": 2,
+     "EvalType": 0,
+     "Formula": 0,
+     "Name": "Суммативное оценивание за раздел",
+     "ShortName": "СОР",
+     "Percent": 100.0,
+     "IsCanDontConsider": false,
+     "MaxScores": {
+      "639c0e45-b97c-4855-b2c3-ab1db8f57fba": 10.0,
+      "f8248988-ecb4-40f1-a0f4-28e5380cd8d8": 10.0
+     },
+     "Id": "21524445-1e9a-4924-b37a-70f763f9ca0b"
+    },
+    {
+     "Type": 3,
+     "EvalType": 0,
+     "Formula": 0,
+     "Name": "Суммативное оценивание за четверть",
+     "ShortName": "СОЧ",
+     "Percent": 0.0,
+     "IsCanDontConsider": false,
+     "MaxScores": {},
+     "Id": "dcf419a1-1730-492f-83ce-33bb3bd4fbe0"
+    }
+   ],
+   "Id": "2fd889b1-bb1d-48db-bebc-ddc7a3ab2f4c"
+  },
+  {
+   "Name": "Химия (Углубленная)",
+   "JournalId": "9dde5bae-8b25-4f66-ab6f-484b32cb8156",
+   "Score": 0.0,
+   "Mark": 0,
+   "MarkComment": null,
+   "Evaluations": [
+    {
+     "Type": 2,
+     "EvalType": 0,
+     "Formula": 0,
+     "Name": "Суммативное оценивание за раздел",
+     "ShortName": "СОР",
+     "Percent": 50.0,
+     "IsCanDontConsider": false,
+     "MaxScores": {},
+     "Id": "0925f253-75a8-47d5-87a8-b2c8005190c7"
+    },
+    {
+     "Type": 3,
+     "EvalType": 0,
+     "Formula": 0,
+     "Name": "Суммативное оценивание за четверть",
+     "ShortName": "СОЧ",
+     "Percent": 50.0,
+     "IsCanDontConsider": false,
+     "MaxScores": {
+      "1e51d8be-c59b-49ff-bcc0-e54fe5b8c344": 26.0,
+      "6d7e664d-72af-4435-9d85-998ba77ce89f": 13.0,
+      "318d4863-a95e-4295-9fde-462d2eb7c501": 8.0,
+      "60eff096-80f7-40b9-aaa0-b76cf9d91a12": 13.0
+     },
+     "Id": "f605e141-b415-46e0-bec1-2cae407a1472"
+    }
+   ],
+   "Id": "2b9a799a-d091-4868-9478-0ef0fead3674"
+  },
+  {
+   "Name": "Экономика (Стандартная)",
+   "JournalId": "7886eaf3-7673-4eb6-b152-d1c1eb6d416c",
+   "Score": 80.0,
+   "Mark": 4,
+   "MarkComment": null,
+   "Evaluations": [
+    {
+     "Type": 2,
+     "EvalType": 0,
+     "Formula": 0,
+     "Name": "Суммативное оценивание за раздел",
+     "ShortName": "СОР",
+     "Percent": 50.0,
+     "IsCanDontConsider": false,
+     "MaxScores": {
+      "14ebc709-8acd-4d14-af30-a24c02cc0db3": 20.0,
+      "900d8f7c-7589-408b-8692-d73e61487e5d": 20.0
+     },
+     "Id": "83a12f17-506d-4f69-9d11-88fa25bf483b"
+    },
+    {
+     "Type": 3,
+     "EvalType": 0,
+     "Formula": 0,
+     "Name": "Суммативное оценивание за четверть",
+     "ShortName": "СОЧ",
+     "Percent": 50.0,
+     "IsCanDontConsider": false,
+     "MaxScores": {
+      "14ebc709-8acd-4d14-af30-a24c02cc0db3": 24.0,
+      "900d8f7c-7589-408b-8692-d73e61487e5d": 36.0
+     },
+     "Id": "98f58eca-4d56-40c7-87e0-4ce991723c8c"
+    }
+   ],
+   "Id": "8705e80d-e5c0-4d4d-a134-552f85598e65"
+  }
+ ],
+ "message": "",
+ "details": null,
+ "code": null,
+ "closable": null,
+ "refreshPage": null,
+ "title": null,
+ "duration": null,
+ "total": null
+}

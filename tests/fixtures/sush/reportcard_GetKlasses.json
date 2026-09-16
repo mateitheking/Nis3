@@ -1,0 +1,19 @@
+{
+ "success": true,
+ "state": 0,
+ "data": [
+  {
+   "Name": "12E",
+   "Data": null,
+   "Id": "46fc6a5c-ecdc-4270-85a2-7586eb67713b"
+  }
+ ],
+ "message": "",
+ "details": null,
+ "code": null,
+ "closable": null,
+ "refreshPage": null,
+ "title": null,
+ "duration": null,
+ "total": null
+}

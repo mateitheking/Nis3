@@ -1,0 +1,196 @@
+/* Токены — один в один из design_handoff_navigation/README.md ("Design
+   Tokens"), не придуманы заново. Меняются в одном месте для всего приложения
+   по мере добавления следующих экранов. */
+:root {
+  --bg-page: #0a0a0a;
+  --bg-card: #141414;
+  --bg-card-alt: #181818;
+  --bg-input: #0e0e0e;
+  --bg-input-mobile: #141414;
+  --bg-sidebar: #0d0d0d;
+
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-input: rgba(255, 255, 255, 0.12);
+  --border-input-focus: #d4af5a;
+
+  --accent: #d4af5a;
+  --accent-hover: #e6c583;
+
+  --text-primary: #f5f5f5;
+  --text-secondary: #8a8a8a;
+  --text-tertiary: #5c5c5c;
+
+  --success-dot: #4caf6a;
+  --success-text: #7fd88f;
+  --error: #d97757;
+
+  --radius-card: 20px;
+  --radius-input: 12px;
+
+  --font-sans: 'Inter', system-ui, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+  background: var(--bg-page);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+}
+a:hover {
+  color: var(--accent-hover);
+}
+
+input::placeholder {
+  color: var(--text-tertiary);
+}
+
+@keyframes nis-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ---- анимации на весь сайт ----
+   Общие keyframes + базовые переходы для интерактивных элементов, плюс
+   вход контента при каждой смене экрана (App.tsx держит по одному активному
+   экрану через && — компонент страницы целиком монтируется заново на
+   каждый переход, так что анимация входа проигрывается сама по себе). */
+
+@keyframes nis-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes nis-fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+@keyframes nis-scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+}
+@keyframes nis-slide-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+}
+
+/* Переходы на самих кнопках/ссылках/полях — а не на всех элементах
+   подряд: `.files-card` и `.sch-modal`/`.home-*-settings-panel` двигаются
+   через left/top/transform в реальном времени (drag, resize, центрирование
+   с translate(-50%,-50%)) — если добавить transition сюда же глобально,
+   перетаскивание фото и модалки начнут "доезжать" с задержкой вместо того,
+   чтобы честно следовать за курсором. */
+a,
+button,
+input,
+select,
+textarea {
+  transition:
+    background-color 0.16s ease,
+    border-color 0.16s ease,
+    color 0.16s ease,
+    box-shadow 0.18s ease,
+    transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1),
+    opacity 0.16s ease;
+}
+button:not(:disabled):not(.home-settings-overlay):not(.sch-modal-overlay):not(.home-card):active {
+  transform: scale(0.96);
+}
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Контент экрана — плавно въезжает при каждом монтировании страницы.
+   .home-main-inner — общий десктопный контейнер (Главная/Расписание/
+   Оценки/Файлы/Уведомления), [class$="-scroll"] — их мобильные аналоги
+   (home-mobile-scroll, sch-mobile-scroll, gr-mobile-scroll и т.д., см.
+   соглашение по именованию в каждой *Mobile.tsx). Сайдбар и шапка вне
+   этого узла не анимируются — они не должны "мигать" при каждом клике
+   по навигации. */
+.home-main-inner,
+[class$="-scroll"] {
+  animation: nis-fade-in-up 0.32s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Списки-карточки: вместе с содержимым страницы каждая карточка ещё и
+   выезжает по очереди, а не разом — задержка растёт с позицией в списке.
+   Затронутые классы — прямые дети своих списков (см. gr-mobile-grid,
+   notif-group-list, sch-list, home-events-list, files-masonry) во всех
+   разделах сайта. */
+.home-card,
+.home-event-row,
+.notif-row,
+.gr-card,
+.sch-list-row,
+.files-masonry-tile {
+  animation: nis-fade-in-up 0.36s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.home-card:nth-child(2),
+.home-event-row:nth-child(2),
+.notif-row:nth-child(2),
+.gr-card:nth-child(2),
+.sch-list-row:nth-child(2),
+.files-masonry-tile:nth-child(2) {
+  animation-delay: 45ms;
+}
+.home-card:nth-child(3),
+.home-event-row:nth-child(3),
+.notif-row:nth-child(3),
+.gr-card:nth-child(3),
+.sch-list-row:nth-child(3),
+.files-masonry-tile:nth-child(3) {
+  animation-delay: 90ms;
+}
+.home-card:nth-child(4),
+.home-event-row:nth-child(4),
+.notif-row:nth-child(4),
+.gr-card:nth-child(4),
+.sch-list-row:nth-child(4),
+.files-masonry-tile:nth-child(4) {
+  animation-delay: 135ms;
+}
+.home-card:nth-child(5),
+.home-event-row:nth-child(5),
+.notif-row:nth-child(5),
+.gr-card:nth-child(5),
+.sch-list-row:nth-child(5),
+.files-masonry-tile:nth-child(5) {
+  animation-delay: 180ms;
+}
+.home-card:nth-child(n + 6),
+.home-event-row:nth-child(n + 6),
+.notif-row:nth-child(n + 6),
+.gr-card:nth-child(n + 6),
+.sch-list-row:nth-child(n + 6),
+.files-masonry-tile:nth-child(n + 6) {
+  animation-delay: 220ms;
+}
+
+/* Уважаем настройку ОС — тем, кому анимации мешают или вызывают
+   дискомфорт, выключаем всё до почти мгновенного. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-delay: 0ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}

@@ -1,0 +1,21 @@
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.env
+
+# HAR-файлы содержат живые куки сессии — никогда не коммитим
+*.har
+secrets/
+
+# перехваченный трафик телефона — только локально
+captures/
+*.mitm
+
+# БД разработки и ключ шифрования — никогда не коммитим
+nis.db
+.env
+.dev-vault-key
+
+/uploads/

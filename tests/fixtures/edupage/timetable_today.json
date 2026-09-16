@@ -1,0 +1,484 @@
+{
+ "lessons": [
+  {
+   "period": 1,
+   "start_time": "08:30:00",
+   "end_time": "09:10:00",
+   "duration": 1,
+   "subject": {
+    "subject_id": -8,
+    "name": "Physics",
+    "short": "Phys"
+   },
+   "classes": [
+    {
+     "class_id": -9,
+     "name": "12D",
+     "short": "12D",
+     "homeroom_teachers": [
+      {
+       "person_id": -259,
+       "name": "ZhD k Keldigulova",
+       "gender": "F",
+       "in_school_since": null,
+       "account_type": "Teacher"
+      }
+     ],
+     "homeroom": null,
+     "grade": 12
+    },
+    {
+     "class_id": -10,
+     "name": "12E",
+     "short": "12E",
+     "homeroom_teachers": [
+      {
+       "person_id": -110,
+       "name": "A.R k Kobegen",
+       "gender": "F",
+       "in_school_since": null,
+       "account_type": "Teacher"
+      }
+     ],
+     "homeroom": null,
+     "grade": 12
+    }
+   ],
+   "groups": [
+    "seminargroup:10"
+   ],
+   "teachers": [
+    {
+     "person_id": -247,
+     "name": "BZh phys Eslyamgazieva",
+     "gender": null,
+     "in_school_since": null,
+     "account_type": "Teacher"
+    }
+   ],
+   "classrooms": [
+    {
+     "classroom_id": -22,
+     "name": "FM 106 (27)",
+     "short": "FM 106 (27)"
+    }
+   ],
+   "curriculum": null,
+   "online_lesson_link": null,
+   "is_cancelled": false,
+   "is_event": false
+  },
+  {
+   "period": 2,
+   "start_time": "09:15:00",
+   "end_time": "09:55:00",
+   "duration": 1,
+   "subject": {
+    "subject_id": -8,
+    "name": "Physics",
+    "short": "Phys"
+   },
+   "classes": [
+    {
+     "class_id": -9,
+     "name": "12D",
+     "short": "12D",
+     "homeroom_teachers": [
+      {
+       "person_id": -259,
+       "name": "ZhD k Keldigulova",
+       "gender": "F",
+       "in_school_since": null,
+       "account_type": "Teacher"
+      }
+     ],
+     "homeroom": null,
+     "grade": 12
+    },
+    {
+     "class_id": -10,
+     "name": "12E",
+     "short": "12E",
+     "homeroom_teachers": [
+      {
+       "person_id": -110,
+       "name": "A.R k Kobegen",
+       "gender": "F",
+       "in_school_since": null,
+       "account_type": "Teacher"
+      }
+     ],
+     "homeroom": null,
+     "grade": 12
+    }
+   ],
+   "groups": [
+    "seminargroup:10"
+   ],
+   "teachers": [
+    {
+     "person_id": -247,
+     "name": "BZh phys Eslyamgazieva",
+     "gender": null,
+     "in_school_since": null,
+     "account_type": "Teacher"
+    }
+   ],
+   "classrooms": [
+    {
+     "classroom_id": -22,
+     "name": "FM 106 (27)",
+     "short": "FM 106 (27)"
+    }
+   ],
+   "curriculum": null,
+   "online_lesson_link": null,
+   "is_cancelled": false,
+   "is_event": false
+  },
+  {
+   "period": 3,
+   "start_time": "10:05:00",
+   "end_time": "10:45:00",
+   "duration": 1,
+   "subject": {
+    "subject_id": -7,
+    "name": "Informatics",
+    "short": "Inf"
+   },
+   "classes": [
+    {
+     "class_id": -9,
+     "name": "12D",
+     "short": "12D",
+     "homeroom_teachers": [
+      {
+       "person_id": -259,
+       "name": "ZhD k Keldigulova",
+       "gender": "F",
+       "in_school_since": null,
+       "account_type": "Teacher"
+      }
+     ],
+     "homeroom": null,
+     "grade": 12
+    },
+    {
+     "class_id": -10,
+     "name": "12E",
+     "short": "12E",
+     "homeroom_teachers": [
+      {
+       "person_id": -110,
+       "name": "A.R k Kobegen",
+       "gender": "F",
+       "in_school_since": null,
+       "account_type": "Teacher"
+      }
+     ],
+     "homeroom": null,
+     "grade": 12
+    }
+   ],
+   "groups": [
+    "seminargroup:5"
+   ],
+   "teachers": [
+    {
+     "person_id": -64,
+     "name": "V.N inf Mel'nikov",
+     "gender": "F",
+     "in_school_since": null,
+     "account_type": "Teacher"
+    }
+   ],
+   "classrooms": [
+    {
+     "classroom_id": -60,
+     "name": "221",
+     "short": "221"
+    }
+   ],
+   "curriculum": null,
+   "online_lesson_link": null,
+   "is_cancelled": false,
+   "is_event": false
+  },
+  {
+   "period": 4,
+   "start_time": "10:50:00",
+   "end_time": "11:30:00",
+   "duration": 1,
+   "subject": {
+    "subject_id": -7,
+    "name": "Informatics",
+    "short": "Inf"
+   },
+   "classes": [
+    {
+     "class_id": -9,
+     "name": "12D",
+     "short": "12D",
+     "homeroom_teachers": [
+      {
+       "person_id": -259,
+       "name": "ZhD k Keldigulova",
+       "gender": "F",
+       "in_school_since": null,
+       "account_type": "Teacher"
+      }
+     ],
+     "homeroom": null,
+     "grade": 12
+    },
+    {
+     "class_id": -10,
+     "name": "12E",
+     "short": "12E",
+     "homeroom_teachers": [
+      {
+       "person_id": -110,
+       "name": "A.R k Kobegen",
+       "gender": "F",
+       "in_school_since": null,
+       "account_type": "Teacher"
+      }
+     ],
+     "homeroom": null,
+     "grade": 12
+    }
+   ],
+   "groups": [
+    "seminargroup:5"
+   ],
+   "teachers": [
+    {
+     "person_id": -64,
+     "name": "V.N inf Mel'nikov",
+     "gender": "F",
+     "in_school_since": null,
+     "account_type": "Teacher"
+    }
+   ],
+   "classrooms": [
+    {
+     "classroom_id": -60,
+     "name": "221",
+     "short": "221"
+    }
+   ],
+   "curriculum": null,
+   "online_lesson_link": null,
+   "is_cancelled": false,
+   "is_event": false
+  },
+  {
+   "period": 5,
+   "start_time": "11:50:00",
+   "end_time": "12:30:00",
+   "duration": 1,
+   "subject": {
+    "subject_id": -4,
+    "name": "Mathematics",
+    "short": "Maths"
+   },
+   "classes": [
+    {
+     "class_id": -10,
+     "name": "12E",
+     "short": "12E",
+     "homeroom_teachers": [
+      {
+       "person_id": -110,
+       "name": "A.R k Kobegen",
+       "gender": "F",
+       "in_school_since": null,
+       "account_type": "Teacher"
+      }
+     ],
+     "homeroom": null,
+     "grade": 12
+    }
+   ],
+   "groups": [
+    "seminargroup:15"
+   ],
+   "teachers": [
+    {
+     "person_id": -36,
+     "name": "A.S math Kovalev",
+     "gender": "F",
+     "in_school_since": null,
+     "account_type": "Teacher"
+    }
+   ],
+   "classrooms": [
+    {
+     "classroom_id": -31,
+     "name": "FM 304 (14)",
+     "short": "FM 304 (14)"
+    }
+   ],
+   "curriculum": null,
+   "online_lesson_link": null,
+   "is_cancelled": false,
+   "is_event": false
+  },
+  {
+   "period": 6,
+   "start_time": "12:50:00",
+   "end_time": "13:30:00",
+   "duration": 1,
+   "subject": {
+    "subject_id": -4,
+    "name": "Mathematics",
+    "short": "Maths"
+   },
+   "classes": [
+    {
+     "class_id": -10,
+     "name": "12E",
+     "short": "12E",
+     "homeroom_teachers": [
+      {
+       "person_id": -110,
+       "name": "A.R k Kobegen",
+       "gender": "F",
+       "in_school_since": null,
+       "account_type": "Teacher"
+      }
+     ],
+     "homeroom": null,
+     "grade": 12
+    }
+   ],
+   "groups": [
+    "seminargroup:15"
+   ],
+   "teachers": [
+    {
+     "person_id": -36,
+     "name": "A.S math Kovalev",
+     "gender": "F",
+     "in_school_since": null,
+     "account_type": "Teacher"
+    }
+   ],
+   "classrooms": [
+    {
+     "classroom_id": -31,
+     "name": "FM 304 (14)",
+     "short": "FM 304 (14)"
+    }
+   ],
+   "curriculum": null,
+   "online_lesson_link": null,
+   "is_cancelled": false,
+   "is_event": false
+  },
+  {
+   "period": 7,
+   "start_time": "13:35:00",
+   "end_time": "14:15:00",
+   "duration": 1,
+   "subject": {
+    "subject_id": -19,
+    "name": "Programming",
+    "short": "Prog"
+   },
+   "classes": [
+    {
+     "class_id": -10,
+     "name": "12E",
+     "short": "12E",
+     "homeroom_teachers": [
+      {
+       "person_id": -110,
+       "name": "A.R k Kobegen",
+       "gender": "F",
+       "in_school_since": null,
+       "account_type": "Teacher"
+      }
+     ],
+     "homeroom": null,
+     "grade": 12
+    }
+   ],
+   "groups": [
+    "Group 1"
+   ],
+   "teachers": [
+    {
+     "person_id": -284,
+     "name": "D.A inf Nurmukanova",
+     "gender": "F",
+     "in_school_since": null,
+     "account_type": "Teacher"
+    }
+   ],
+   "classrooms": [
+    {
+     "classroom_id": -53,
+     "name": "210 (13)",
+     "short": "210 (13)"
+    }
+   ],
+   "curriculum": null,
+   "online_lesson_link": null,
+   "is_cancelled": false,
+   "is_event": false
+  },
+  {
+   "period": 8,
+   "start_time": "14:30:00",
+   "end_time": "15:10:00",
+   "duration": 1,
+   "subject": {
+    "subject_id": -19,
+    "name": "Programming",
+    "short": "Prog"
+   },
+   "classes": [
+    {
+     "class_id": -10,
+     "name": "12E",
+     "short": "12E",
+     "homeroom_teachers": [
+      {
+       "person_id": -110,
+       "name": "A.R k Kobegen",
+       "gender": "F",
+       "in_school_since": null,
+       "account_type": "Teacher"
+      }
+     ],
+     "homeroom": null,
+     "grade": 12
+    }
+   ],
+   "groups": [
+    "Group 1"
+   ],
+   "teachers": [
+    {
+     "person_id": -284,
+     "name": "D.A inf Nurmukanova",
+     "gender": "F",
+     "in_school_since": null,
+     "account_type": "Teacher"
+    }
+   ],
+   "classrooms": [
+    {
+     "classroom_id": -53,
+     "name": "210 (13)",
+     "short": "210 (13)"
+    }
+   ],
+   "curriculum": null,
+   "online_lesson_link": null,
+   "is_cancelled": false,
+   "is_event": false
+  }
+ ]
+}

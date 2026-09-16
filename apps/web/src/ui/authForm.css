@@ -1,0 +1,344 @@
+/* Общий "кит" форм авторизации — Регистрация и Вход используют один и тот
+   же визуальный язык (см. design_handoff_navigation/README.md, оба .dc.html
+   делались как один набор токенов). Копия структуры дизайна, не самого
+   файла — .dc.html не продакшн-код, но цвета/отступы/типографика —
+   финальные, взяты как есть. Префикс "af-" = auth form. */
+
+.af-header {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.af-logo {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  object-fit: cover;
+  flex: none;
+}
+
+.af-brand {
+  font-weight: 800;
+  font-size: 16px;
+}
+.af-logo--mobile {
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+}
+.af-brand--mobile {
+  font-size: 15px;
+}
+
+.af-title {
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0;
+  line-height: 1.25;
+  color: var(--text-primary);
+}
+
+.af-subtitle {
+  font-size: 14.5px;
+  color: var(--text-secondary);
+  margin: 0;
+  line-height: 1.55;
+}
+.af-title--mobile {
+  font-size: 26px;
+}
+
+.af-field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.af-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.af-input {
+  padding: 13px 14px;
+  border-radius: var(--radius-input);
+  border: 1px solid var(--border-input);
+  font-size: 15px;
+  background: var(--bg-input);
+  outline: none;
+  width: 100%;
+  font-family: inherit;
+  color: var(--text-primary);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.af-input:focus {
+  border-color: var(--border-input-focus);
+  box-shadow: 0 0 0 3px rgba(212, 175, 90, 0.15);
+}
+.af-input.is-invalid {
+  border-color: var(--error);
+}
+
+.af-input--mobile {
+  padding: 14px 15px;
+  font-size: 16px; /* не 15 — iOS увеличивает страницу при фокусе на инпуте с font-size<16px */
+  background: var(--bg-input-mobile);
+}
+
+.af-hint {
+  font-size: 12px;
+  color: var(--error);
+}
+
+.af-checkbox-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+  text-align: left;
+  font-family: inherit;
+  color: inherit;
+}
+
+.af-checkbox-box {
+  width: 17px;
+  height: 17px;
+  border-radius: 5px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--bg-page);
+  flex: none;
+  margin-top: 1px;
+}
+.af-checkbox-box.is-checked {
+  border: none;
+  background: var(--text-primary);
+}
+
+.af-checkbox-label {
+  font-size: 13px;
+  color: #c2c2c2;
+  line-height: 1.4;
+}
+.af-checkbox-box--mobile {
+  width: 18px;
+  height: 18px;
+}
+.af-checkbox-label--mobile {
+  font-size: 13.5px;
+}
+
+.af-btn {
+  font-size: 14.5px;
+  font-weight: 600;
+  border-radius: var(--radius-input);
+  border: none;
+  padding: 13px 16px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: inherit;
+  cursor: pointer;
+}
+.af-btn-primary {
+  background: var(--accent);
+  color: var(--bg-page);
+}
+.af-btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.af-btn-secondary {
+  background: transparent;
+  color: var(--text-primary);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+}
+.af-btn--mobile {
+  font-size: 15px;
+  padding: 15px 16px;
+}
+
+.af-spinner {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+  animation: nis-spin 0.7s linear infinite;
+  border: 2px solid rgba(10, 10, 10, 0.3);
+  border-top-color: var(--bg-page);
+  flex: none;
+}
+
+.af-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.af-divider-line {
+  flex: 1;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.1);
+}
+.af-divider-text {
+  font-size: 12.5px;
+  color: var(--text-tertiary);
+}
+
+.af-help-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding-top: 2px;
+}
+.af-help-text {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+.af-help-link {
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.af-help-text--mobile,
+.af-help-link--mobile {
+  font-size: 13.5px;
+}
+.af-help-icon {
+  width: 15px;
+  height: 15px;
+}
+
+.af-error-banner {
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(217, 119, 87, 0.12);
+  border: 1px solid rgba(217, 119, 87, 0.35);
+  color: #f0b8a4;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.af-success-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 2px 0;
+}
+.af-success-dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--success-dot);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+}
+.af-success-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--success-text);
+}
+
+/* ---- десктоп: центрированная карточка ---- */
+
+.af-desktop-page {
+  min-height: 100vh;
+  background: var(--bg-page);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 36px 20px;
+}
+.af-desktop-header {
+  width: 100%;
+  max-width: 440px;
+  margin-bottom: 28px;
+}
+.af-desktop-card {
+  width: 100%;
+  max-width: 440px;
+  background: var(--bg-card);
+  border-radius: var(--radius-card);
+  border: 1px solid var(--border-subtle);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+  padding: 28px 26px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.af-desktop-title-block {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.af-desktop-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ---- мобильный: во весь экран, кнопка отправки прилипает снизу ---- */
+
+.af-mobile-page {
+  height: 100vh;
+  overflow: hidden;
+  background: var(--bg-page);
+  display: flex;
+  flex-direction: column;
+  max-width: 460px;
+  margin: 0 auto;
+  position: relative;
+}
+.af-mobile-header {
+  padding: 18px 18px 8px;
+  flex: none;
+}
+.af-mobile-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  scrollbar-width: none;
+}
+.af-mobile-scroll::-webkit-scrollbar {
+  display: none;
+}
+.af-mobile-title-block {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.af-mobile-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.af-mobile-footer {
+  flex: none;
+  padding: 12px 20px 22px;
+  background: rgba(10, 10, 10, 0.92);
+  backdrop-filter: blur(8px);
+  border-top: 1px solid var(--border-subtle);
+}

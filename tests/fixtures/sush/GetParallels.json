@@ -1,0 +1,19 @@
+{
+ "success": true,
+ "state": 0,
+ "data": [
+  {
+   "Name": "12",
+   "Data": null,
+   "Id": "f7452bbd-0b63-49a0-adee-4dd6f2c8f29b"
+  }
+ ],
+ "message": "",
+ "details": null,
+ "code": null,
+ "closable": null,
+ "refreshPage": null,
+ "title": null,
+ "duration": null,
+ "total": null
+}

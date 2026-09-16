@@ -1,0 +1,389 @@
+{
+ "2026-09-08": [
+  {
+   "change_class": "7A",
+   "lesson_n": [
+    1530,
+    1600
+   ],
+   "title": "Консультация , Chemistry - Учитель: chem Makhmetova G.M., Кабинет: XB-305-lab",
+   "action": null
+  },
+  {
+   "change_class": "7B",
+   "lesson_n": [
+    1600,
+    1630
+   ],
+   "title": "Консультация , Chemistry - Учитель: chem Makhmetova G.M., Кабинет: XB-305-lab",
+   "action": null
+  },
+  {
+   "change_class": "7C",
+   "lesson_n": 8,
+   "title": "Art - art Kadyrbai A Zh, Отменено",
+   "action": "remove"
+  },
+  {
+   "change_class": "8A",
+   "lesson_n": [
+    1525,
+    1555
+   ],
+   "title": "Кнсультация, Выбранные учащиеся: Biology - Учитель: bio Sabit M.E., Кабинет: XB 203 (14)",
+   "action": null
+  },
+  {
+   "change_class": "8A",
+   "lesson_n": [
+    7,
+    8
+   ],
+   "title": "Kazakh Language and Literature - Замены: (kaz Baikenova S.Zh) ➔ kaz Amanzholova Nazgul",
+   "action": "change"
+  },
+  {
+   "change_class": "8F",
+   "lesson_n": 9,
+   "title": "Консультация по отработке навыка письма (изложение), Выбранные учащиеся: Russian - Language,  Literature, Literacy - Учитель: rus Satanova G.A, Кабинет: T 305 (14)",
+   "action": null
+  },
+  {
+   "change_class": "9A",
+   "lesson_n": [
+    1,
+    2
+   ],
+   "title": "English - Language,  Literature, Literacy, IELTS - Перемещено из Пятница 11. 09., Учитель: eng Akhmetova Z, Кабинет: 207 (27)",
+   "action": "add"
+  },
+  {
+   "change_class": "9A",
+   "lesson_n": [
+    1,
+    2
+   ],
+   "title": "Russian - Language,  Literature, Literacy - rus Drozdova  O A, Перемещено в Пятница 11. 09.",
+   "action": "remove"
+  },
+  {
+   "change_class": "9J",
+   "lesson_n": [
+    5,
+    6
+   ],
+   "title": "Russian - Language,  Literature, Literacy - Замены: (rus Drozdova  O A) ➔ rus Zhuldaspaeva A.A",
+   "action": "change"
+  }
+ ],
+ "2026-09-09": [
+  {
+   "change_class": "Календарь",
+   "lesson_n": [
+    1525,
+    1610
+   ],
+   "title": "Служения общества - Учителя: k Shayahmetova ZHanar, k Koshanova YB, k Keldigulova ZhD, k Syzdykova A.S, k Kurmanbaeva K.A., k Isakhova A.S., Кабинет: Актовый зал, Классы: 8E, 8F, 8G, 8H, 8I",
+   "action": null
+  },
+  {
+   "change_class": "7A",
+   "lesson_n": 8,
+   "title": "Art - Замены: (art Kadyrbai A Zh) ➔ z Qydyrbai Iliyas",
+   "action": "change"
+  },
+  {
+   "change_class": "7D",
+   "lesson_n": 4,
+   "title": "Art - Замены: (art Kadyrbai A Zh) ➔ z Qydyrbai Iliyas",
+   "action": "change"
+  },
+  {
+   "change_class": "7H",
+   "lesson_n": [
+    1530,
+    1600
+   ],
+   "title": "Консультация , Chemistry - Учитель: chem Makhmetova G.M., Кабинет: XB-305-lab",
+   "action": null
+  },
+  {
+   "change_class": "7I",
+   "lesson_n": [
+    1600,
+    1630
+   ],
+   "title": "Консультация , Chemistry - Учитель: chem Makhmetova G.M., Кабинет: XB-305-lab",
+   "action": null
+  },
+  {
+   "change_class": "7I",
+   "lesson_n": 1,
+   "title": "Art - Замены: (art Kadyrbai A Zh) ➔ z Qydyrbai Iliyas",
+   "action": "change"
+  },
+  {
+   "change_class": "8A",
+   "lesson_n": [
+    1430,
+    1515
+   ],
+   "title": "Қоғамға қызмет - Учителя: k Isakhova A.S., k Koshanova YB, k Kurmanbaeva K.A., k Keldigulova ZhD, k Syzdykova A.S, Кабинет: Актовый зал, Классы: 8C, 8A, 8B, 8D",
+   "action": null
+  },
+  {
+   "change_class": "8B",
+   "lesson_n": [
+    1430,
+    1515
+   ],
+   "title": "Қоғамға қызмет - Учителя: k Isakhova A.S., k Koshanova YB, k Kurmanbaeva K.A., k Keldigulova ZhD, k Syzdykova A.S, Кабинет: Актовый зал, Классы: 8C, 8A, 8B, 8D",
+   "action": null
+  },
+  {
+   "change_class": "8C",
+   "lesson_n": [
+    1430,
+    1515
+   ],
+   "title": "Қоғамға қызмет - Учителя: k Isakhova A.S., k Koshanova YB, k Kurmanbaeva K.A., k Keldigulova ZhD, k Syzdykova A.S, Кабинет: Актовый зал, Классы: 8C, 8A, 8B, 8D",
+   "action": null
+  },
+  {
+   "change_class": "8C",
+   "lesson_n": [
+    1,
+    2
+   ],
+   "title": "Kazakh Language and Literature - Замены: (kaz Baikenova S.Zh) ➔ kaz Abdikarimova N. S.",
+   "action": "change"
+  },
+  {
+   "change_class": "8D",
+   "lesson_n": [
+    1430,
+    1515
+   ],
+   "title": "Қоғамға қызмет - Учителя: k Isakhova A.S., k Koshanova YB, k Kurmanbaeva K.A., k Keldigulova ZhD, k Syzdykova A.S, Кабинет: Актовый зал, Классы: 8C, 8A, 8B, 8D",
+   "action": null
+  },
+  {
+   "change_class": "8F",
+   "lesson_n": [
+    7,
+    8
+   ],
+   "title": "Kazakh Language and Literature - Замены: (kaz Baikenova S.Zh) ➔ kaz Amanzholova Nazgul",
+   "action": "change"
+  },
+  {
+   "change_class": "9A",
+   "lesson_n": 3,
+   "title": "Russian - Language,  Literature, Literacy - Замены: (rus Drozdova  O A) ➔ rus Kusainova K.K",
+   "action": "change"
+  },
+  {
+   "change_class": "10A",
+   "lesson_n": 9,
+   "title": "подготовка к МЭСК 10 кл, Выбранные учащиеся: Chemistry",
+   "action": null
+  },
+  {
+   "change_class": "10A",
+   "lesson_n": 10,
+   "title": "Биологиядан консультация, Выбранные учащиеся: Biology - Учителя: bio Zhumabekova S.D, k Kobegen A.R, Кабинет: 218 (14)",
+   "action": null
+  },
+  {
+   "change_class": "10B",
+   "lesson_n": [
+    5,
+    6
+   ],
+   "title": "Mathematics - Перемещено из Четверг 10. 09., Учитель: math Atamanova B.Zh, Кабинет: FM 305 (14)",
+   "action": "add"
+  },
+  {
+   "change_class": "10B",
+   "lesson_n": [
+    5,
+    6
+   ],
+   "title": "Russian - Language,  Literature, Literacy - rus Drozdova  O A, Перемещено в Четверг 10. 09.",
+   "action": "remove"
+  },
+  {
+   "change_class": "10C",
+   "lesson_n": [
+    9,
+    10
+   ],
+   "title": "Подготовка к внешнему экзамену, Выбранные учащиеся: Chemistry - Учитель: chem Shejko T.A, Кабинет: XB 303 (14), Классы: 10D, 10C",
+   "action": null
+  },
+  {
+   "change_class": "10D",
+   "lesson_n": [
+    9,
+    10
+   ],
+   "title": "Подготовка к внешнему экзамену, Выбранные учащиеся: Chemistry - Учитель: chem Shejko T.A, Кабинет: XB 303 (14), Классы: 10D, 10C",
+   "action": null
+  },
+  {
+   "change_class": "11F",
+   "lesson_n": 9,
+   "title": "Биологиядан консультация, Выбранные учащиеся: Biology - Учителя: bio Zhumabekova S.D, k Mukova Moldir, Кабинет: 218 (14)",
+   "action": null
+  },
+  {
+   "change_class": "12C",
+   "lesson_n": 10,
+   "title": "Консультация 12C,D, Выбранные учащиеся: Mathematics - Учитель: math Kajrat Zh.K, Кабинет: FM 203 (14), Классы: 12D, 12C",
+   "action": null
+  },
+  {
+   "change_class": "12D",
+   "lesson_n": 10,
+   "title": "Консультация 12C,D, Выбранные учащиеся: Mathematics - Учитель: math Kajrat Zh.K, Кабинет: FM 203 (14), Классы: 12D, 12C",
+   "action": null
+  }
+ ],
+ "2026-09-10": [
+  {
+   "change_class": "Календарь",
+   "lesson_n": [
+    1525,
+    1610
+   ],
+   "title": "Тәлімгерлік - Учителя: k Bazarbekova S. Zh., k Koshanova YB, k Mukova Moldir, k Syzdykova A.S, k Zhazitova S.T., Кабинет: Актовый зал, Классы: 11A, 11B, 11C, 11D, 11E, 11F",
+   "action": null
+  },
+  {
+   "change_class": "8A",
+   "lesson_n": [
+    7,
+    8
+   ],
+   "title": "Kazakh Language and Literature - Замены: (kaz Baikenova S.Zh) ➔ kaz Abdikarimova N. S.",
+   "action": "change"
+  },
+  {
+   "change_class": "8C",
+   "lesson_n": 5,
+   "title": "Kazakh Language and Literature - Замены: (kaz Baikenova S.Zh) ➔ kaz Abdikarimova N. S.",
+   "action": "change"
+  },
+  {
+   "change_class": "8E",
+   "lesson_n": [
+    1530,
+    1600
+   ],
+   "title": "Консультация , Chemistry - Учитель: chem Makhmetova G.M., Кабинет: XB-305-lab",
+   "action": null
+  },
+  {
+   "change_class": "8G",
+   "lesson_n": [
+    1600,
+    1630
+   ],
+   "title": "Консультация , Chemistry - Учитель: chem Makhmetova G.M., Кабинет: XB-305-lab",
+   "action": null
+  },
+  {
+   "change_class": "8I",
+   "lesson_n": [
+    1630,
+    1700
+   ],
+   "title": "Консультация , Chemistry - Учитель: chem Makhmetova G.M., Кабинет: XB-305-lab",
+   "action": null
+  },
+  {
+   "change_class": "10B",
+   "lesson_n": [
+    5,
+    6
+   ],
+   "title": "Russian - Language,  Literature, Literacy - Перемещено из Среда 09. 09., Учитель: rus Drozdova  O A, Кабинет: 208 (27)",
+   "action": "add"
+  },
+  {
+   "change_class": "10B",
+   "lesson_n": [
+    5,
+    6
+   ],
+   "title": "Mathematics - math Atamanova B.Zh, Перемещено в Среда 09. 09.",
+   "action": "remove"
+  },
+  {
+   "change_class": "11B",
+   "lesson_n": [
+    3,
+    4
+   ],
+   "title": "Kazakh Language and Literature - Замены: (kaz Baikenova S.Zh) ➔ kaz Abdikarimova N. S.",
+   "action": "change"
+  },
+  {
+   "change_class": "12A",
+   "lesson_n": 7,
+   "title": "Консультация 12А, Mathematics - Учитель: math Kajrat Zh.K, Кабинет: FM 203 (14)",
+   "action": null
+  },
+  {
+   "change_class": "12C",
+   "lesson_n": 7,
+   "title": "Консультация, Семинар 5: Chemistry - Учитель: chem Lukmanova A.M, Кабинет: XB 204 (14)",
+   "action": null
+  },
+  {
+   "change_class": "12C",
+   "lesson_n": [
+    7,
+    8
+   ],
+   "title": "Консультация , Выбранные учащиеся: Chemistry - Учителя: chem Shejko T.A, int Opot Silvanus, Кабинет: XB 303 (14), Классы: 12E, 12C, 12D",
+   "action": null
+  },
+  {
+   "change_class": "12D",
+   "lesson_n": [
+    7,
+    8
+   ],
+   "title": "Консультация , Выбранные учащиеся: Chemistry - Учителя: chem Shejko T.A, int Opot Silvanus, Кабинет: XB 303 (14), Классы: 12E, 12C, 12D",
+   "action": null
+  },
+  {
+   "change_class": "12D",
+   "lesson_n": [
+    9,
+    10
+   ],
+   "title": "консультация, Семинар 7: Chemistry - Учитель: chem Meshanova A., Кабинет: 217 (14), Классы: 12E, 12D",
+   "action": null
+  },
+  {
+   "change_class": "12E",
+   "lesson_n": [
+    7,
+    8
+   ],
+   "title": "Консультация , Выбранные учащиеся: Chemistry - Учителя: chem Shejko T.A, int Opot Silvanus, Кабинет: XB 303 (14), Классы: 12E, 12C, 12D",
+   "action": null
+  },
+  {
+   "change_class": "12E",
+   "lesson_n": [
+    9,
+    10
+   ],
+   "title": "консультация, Семинар 7: Chemistry - Учитель: chem Meshanova A., Кабинет: 217 (14), Классы: 12E, 12D",
+   "action": null
+  }
+ ]
+}

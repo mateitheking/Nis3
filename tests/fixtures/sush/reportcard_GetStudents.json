@@ -1,0 +1,21 @@
+{
+ "success": true,
+ "state": 0,
+ "data": [
+  {
+   "Id": "97ee2e5d-5fc7-4862-9463-c7cf492c33a6",
+   "Name": "Тестовый Ученик",
+   "Comment": "",
+   "IsEditable": true,
+   "klass": "12E"
+  }
+ ],
+ "message": "",
+ "details": null,
+ "code": null,
+ "closable": null,
+ "refreshPage": null,
+ "title": null,
+ "duration": null,
+ "total": null
+}

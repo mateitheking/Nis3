@@ -1,0 +1,54 @@
+{
+ "success": true,
+ "state": 0,
+ "data": [
+  {
+   "Name": "Listening",
+   "Description": "Listening",
+   "Score": 3.0,
+   "MaxScore": 6,
+   "Disabled": false,
+   "Comment": null,
+   "RubricId": "3dd9ca61-3bb9-4610-91d1-12b41170ebd9",
+   "Id": "f8d35822-304e-4bce-ba04-0f9e8c3c32fd"
+  },
+  {
+   "Name": "Reading",
+   "Description": "Reading",
+   "Score": 5.0,
+   "MaxScore": 6,
+   "Disabled": false,
+   "Comment": null,
+   "RubricId": "0bc18005-de62-4e16-b582-1bff72b336fb",
+   "Id": "7e2df3a4-6d2f-47a9-b487-bde7d7d99df5"
+  },
+  {
+   "Name": "Writing",
+   "Description": "Writing",
+   "Score": 4.0,
+   "MaxScore": 6,
+   "Disabled": false,
+   "Comment": null,
+   "RubricId": "1bcf42a0-5217-4ea4-9f0e-f3b29939b0b6",
+   "Id": "807afaaa-2b48-4dfb-85f8-24fd6de9a915"
+  },
+  {
+   "Name": "Speaking",
+   "Description": "Speaking",
+   "Score": 4.0,
+   "MaxScore": 6,
+   "Disabled": false,
+   "Comment": null,
+   "RubricId": "e274503a-91e8-4af9-a602-cd9372710bfa",
+   "Id": "3198cf30-ecb3-4ead-9c76-588467ae1322"
+  }
+ ],
+ "message": "",
+ "details": null,
+ "code": null,
+ "closable": null,
+ "refreshPage": null,
+ "title": null,
+ "duration": null,
+ "total": null
+}

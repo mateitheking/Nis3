@@ -1,0 +1,43 @@
+{
+ "success": true,
+ "state": 0,
+ "data": [
+  {
+   "Name": "12E",
+   "SchoolYearId": "e78684f6-1f37-4aa1-94d3-7c57faad1286",
+   "SchoolYearMultiString": {
+    "kk-kz": "2026-2027",
+    "ru-ru": "2026-2027",
+    "en-us": "2026-2027"
+   },
+   "SchoolYearName": "2026-2027",
+   "OrganizationId": "e23850ae-3fb3-4eff-a506-0426ee6f1e09",
+   "OrganizationMultiString": {
+    "kk-kz": "НЗМ Петропавл",
+    "ru-ru": "НИШ Петропавловск",
+    "en-us": "NIS Petropavl"
+   },
+   "OrganizationName": "НИШ Петропавловск",
+   "ParallelId": "f7452bbd-0b63-49a0-adee-4dd6f2c8f29b",
+   "ParallelMultiString": {
+    "kk-kz": "12",
+    "ru-ru": "12",
+    "en-us": "12"
+   },
+   "ParallelName": "12",
+   "LetterName": "E",
+   "Language": 1,
+   "LanguageName": "Русский язык",
+   "IsBlocked": false,
+   "Id": "46fc6a5c-ecdc-4270-85a2-7586eb67713b"
+  }
+ ],
+ "message": "",
+ "details": null,
+ "code": null,
+ "closable": null,
+ "refreshPage": null,
+ "title": null,
+ "duration": null,
+ "total": null
+}

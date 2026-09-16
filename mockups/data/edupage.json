@@ -1,0 +1,629 @@
+{
+ "own_class": "12E",
+ "school": "nispetropavlovsk",
+ "generated_for_date": "2026-09-08",
+ "week": [
+  {
+   "date": "2026-09-07",
+   "weekday_name": "Понедельник",
+   "is_today": false,
+   "lessons": [
+    {
+     "period": 1,
+     "start": "08:30",
+     "end": "09:10",
+     "subject": "Informatics",
+     "teachers": [
+      "V.N inf Mel'nikov"
+     ],
+     "classrooms": [
+      "221"
+     ],
+     "is_cancelled": false
+    },
+    {
+     "period": 2,
+     "start": "09:15",
+     "end": "09:55",
+     "subject": "Informatics",
+     "teachers": [
+      "V.N inf Mel'nikov"
+     ],
+     "classrooms": [
+      "221"
+     ],
+     "is_cancelled": false
+    },
+    {
+     "period": 3,
+     "start": "10:20",
+     "end": "11:00",
+     "subject": "Physics",
+     "teachers": [
+      "BZh phys Eslyamgazieva"
+     ],
+     "classrooms": [
+      "FM 106 (27)"
+     ],
+     "is_cancelled": false
+    },
+    {
+     "period": 4,
+     "start": "11:20",
+     "end": "12:00",
+     "subject": "Physics",
+     "teachers": [
+      "BZh phys Eslyamgazieva"
+     ],
+     "classrooms": [
+      "FM 106 (27)"
+     ],
+     "is_cancelled": false
+    },
+    {
+     "period": 5,
+     "start": "12:20",
+     "end": "13:00",
+     "subject": "Mathematics",
+     "teachers": [
+      "A.S math Kovalev"
+     ],
+     "classrooms": [
+      "FM 304 (14)"
+     ],
+     "is_cancelled": false
+    },
+    {
+     "period": 6,
+     "start": "13:05",
+     "end": "13:45",
+     "subject": "Economics",
+     "teachers": [
+      "G.K geo Abdulova"
+     ],
+     "classrooms": [
+      "T 103 (14)"
+     ],
+     "is_cancelled": false
+    },
+    {
+     "period": 7,
+     "start": "13:50",
+     "end": "14:30",
+     "subject": "Economics",
+     "teachers": [
+      "G.K geo Abdulova"
+     ],
+     "classrooms": [
+      "T 103 (14)"
+     ],
+     "is_cancelled": false
+    },
+    {
+     "period": 8,
+     "start": "14:45",
+     "end": "15:25",
+     "subject": "Russian - Language,  Literature, Literacy",
+     "teachers": [
+      "E.N rus Mashinec"
+     ],
+     "classrooms": [
+      "115 (27)"
+     ],
+     "is_cancelled": false
+    },
+    {
+     "period": 9,
+     "start": "15:40",
+     "end": "16:20",
+     "subject": "Russian - Language,  Literature, Literacy",
+     "teachers": [
+      "E.N rus Mashinec"
+     ],
+     "classrooms": [
+      "115 (27)"
+     ],
+     "is_cancelled": false
+    }
+   ]
+  },
+  {
+   "date": "2026-09-08",
+   "weekday_name": "Вторник",
+   "is_today": true,
+   "lessons": [
+    {
+     "period": 1,
+     "start": "08:30",
+     "end": "09:10",
+     "subject": "Physics",
+     "teachers": [
+      "BZh phys Eslyamgazieva"
+     ],
+     "classrooms": [
+      "FM 106 (27)"
+     ],
+     "is_cancelled": false
+    },
+    {
+     "period": 2,
+     "start": "09:15",
+     "end": "09:55",
+     "subject": "Physics",
+     "teachers": [
+      "BZh phys Eslyamgazieva"
+     ],
+     "classrooms": [
+      "FM 106 (27)"
+     ],
+     "is_cancelled": false
+    },
+    {
+     "period": 3,
+     "start": "10:05",
+     "end": "10:45",
+     "subject": "Informatics",
+     "teachers": [
+      "V.N inf Mel'nikov"
+     ],
+     "classrooms": [
+      "221"
+     ],
+     "is_cancelled": false
+    },
+    {
+     "period": 4,
+     "start": "10:50",
+     "end": "11:30",
+     "subject": "Informatics",
+     "teachers": [
+      "V.N inf Mel'nikov"
+     ],
+     "classrooms": [
+      "221"
+     ],
+     "is_cancelled": false
+    },
+    {
+     "period": 5,
+     "start": "11:50",
+     "end": "12:30",
+     "subject": "Mathematics",
+     "teachers": [
+      "A.S math Kovalev"
+     ],
+     "classrooms": [
+      "FM 304 (14)"
+     ],
+     "is_cancelled": false
+    },
+    {
+     "period": 6,
+     "start": "12:50",
+     "end": "13:30",
+     "subject": "Mathematics",
+     "teachers": [
+      "A.S math Kovalev"
+     ],
+     "classrooms": [
+      "FM 304 (14)"
+     ],
+     "is_cancelled": false
+    },
+    {
+     "period": 7,
+     "start": "13:35",
+     "end": "14:15",
+     "subject": "Programming",
+     "teachers": [
+      "D.A inf Nurmukanova"
+     ],
+     "classrooms": [
+      "210 (13)"
+     ],
+     "is_cancelled": false
+    },
+    {
+     "period": 8,
+     "start": "14:30",
+     "end": "15:10",
+     "subject": "Programming",
+     "teachers": [
+      "D.A inf Nurmukanova"
+     ],
+     "classrooms": [
+      "210 (13)"
+     ],
+     "is_cancelled": false
+    }
+   ]
+  },
+  {
+   "date": "2026-09-09",
+   "weekday_name": "Среда",
+   "is_today": false,
+   "lessons": [
+    {
+     "period": 1,
+     "start": "08:30",
+     "end": "09:10",
+     "subject": "Mathematics",
+     "teachers": [
+      "A.S math Kovalev"
+     ],
+     "classrooms": [
+      "FM 304 (14)"
+     ],
+     "is_cancelled": false
+    },
+    {
+     "period": 2,
+     "start": "09:15",
+     "end": "09:55",
+     "subject": "Mathematics",
+     "teachers": [
+      "A.S math Kovalev"
+     ],
+     "classrooms": [
+      "FM 304 (14)"
+     ],
+     "is_cancelled": false
+    },
+    {
+     "period": 3,
+     "start": "10:05",
+     "end": "10:45",
+     "subject": "Physics",
+     "teachers": [
+      "BZh phys Eslyamgazieva"
+     ],
+     "classrooms": [
+      "FM 106 (27)"
+     ],
+     "is_cancelled": false
+    },
+    {
+     "period": 4,
+     "start": "10:50",
+     "end": "11:30",
+     "subject": "Physics",
+     "teachers": [
+      "BZh phys Eslyamgazieva"
+     ],
+     "classrooms": [
+      "FM 106 (27)"
+     ],
+     "is_cancelled": false
+    },
+    {
+     "period": 5,
+     "start": "11:50",
+     "end": "12:30",
+     "subject": "Informatics",
+     "teachers": [
+      "V.N inf Mel'nikov"
+     ],
+     "classrooms": [
+      "221"
+     ],
+     "is_cancelled": false
+    },
+    {
+     "period": 6,
+     "start": "12:50",
+     "end": "13:30",
+     "subject": "Informatics",
+     "teachers": [
+      "V.N inf Mel'nikov"
+     ],
+     "classrooms": [
+      "221"
+     ],
+     "is_cancelled": false
+    },
+    {
+     "period": 7,
+     "start": "13:35",
+     "end": "14:15",
+     "subject": "Russian - Language,  Literature, Literacy",
+     "teachers": [
+      "E.N rus Mashinec"
+     ],
+     "classrooms": [
+      "115 (27)"
+     ],
+     "is_cancelled": false
+    },
+    {
+     "period": 8,
+     "start": "14:30",
+     "end": "15:10",
+     "subject": "Russian - Language,  Literature, Literacy",
+     "teachers": [
+      "E.N rus Mashinec"
+     ],
+     "classrooms": [
+      "115 (27)"
+     ],
+     "is_cancelled": false
+    },
+    {
+     "period": 9,
+     "start": "15:25",
+     "end": "16:05",
+     "subject": "Economics",
+     "teachers": [
+      "G.K geo Abdulova"
+     ],
+     "classrooms": [
+      "T 103 (14)"
+     ],
+     "is_cancelled": false
+    }
+   ]
+  },
+  {
+   "date": "2026-09-10",
+   "weekday_name": "Четверг",
+   "is_today": false,
+   "lessons": [
+    {
+     "period": 1,
+     "start": "08:30",
+     "end": "09:10",
+     "subject": "Informatics",
+     "teachers": [
+      "V.N inf Mel'nikov"
+     ],
+     "classrooms": [
+      "221"
+     ],
+     "is_cancelled": false
+    },
+    {
+     "period": 2,
+     "start": "09:15",
+     "end": "09:55",
+     "subject": "Informatics",
+     "teachers": [
+      "V.N inf Mel'nikov"
+     ],
+     "classrooms": [
+      "221"
+     ],
+     "is_cancelled": false
+    },
+    {
+     "period": 3,
+     "start": "10:05",
+     "end": "10:45",
+     "subject": "Mathematics",
+     "teachers": [
+      "A.S math Kovalev"
+     ],
+     "classrooms": [
+      "FM 304 (14)"
+     ],
+     "is_cancelled": false
+    },
+    {
+     "period": 4,
+     "start": "10:50",
+     "end": "11:30",
+     "subject": "Mathematics",
+     "teachers": [
+      "A.S math Kovalev"
+     ],
+     "classrooms": [
+      "FM 304 (14)"
+     ],
+     "is_cancelled": false
+    },
+    {
+     "period": 5,
+     "start": "11:50",
+     "end": "12:30",
+     "subject": "Kazakhstan History",
+     "teachers": [
+      "A.K hist Ahmanov"
+     ],
+     "classrooms": [
+      "XB 104 (27)"
+     ],
+     "is_cancelled": false
+    },
+    {
+     "period": 6,
+     "start": "12:50",
+     "end": "13:30",
+     "subject": "Kazakhstan History",
+     "teachers": [
+      "A.K hist Ahmanov"
+     ],
+     "classrooms": [
+      "XB 104 (27)"
+     ],
+     "is_cancelled": false
+    }
+   ]
+  },
+  {
+   "date": "2026-09-11",
+   "weekday_name": "Пятница",
+   "is_today": false,
+   "lessons": [
+    {
+     "period": 1,
+     "start": "08:30",
+     "end": "09:10",
+     "subject": "Mathematics",
+     "teachers": [
+      "A.S math Kovalev"
+     ],
+     "classrooms": [
+      "FM 304 (14)"
+     ],
+     "is_cancelled": false
+    },
+    {
+     "period": 2,
+     "start": "09:15",
+     "end": "09:55",
+     "subject": "Mathematics",
+     "teachers": [
+      "A.S math Kovalev"
+     ],
+     "classrooms": [
+      "FM 304 (14)"
+     ],
+     "is_cancelled": false
+    },
+    {
+     "period": 3,
+     "start": "10:05",
+     "end": "10:45",
+     "subject": "Physics",
+     "teachers": [
+      "BZh phys Eslyamgazieva"
+     ],
+     "classrooms": [
+      "FM 106 (27)"
+     ],
+     "is_cancelled": false
+    },
+    {
+     "period": 4,
+     "start": "10:50",
+     "end": "11:30",
+     "subject": "Physics",
+     "teachers": [
+      "BZh phys Eslyamgazieva"
+     ],
+     "classrooms": [
+      "FM 106 (27)"
+     ],
+     "is_cancelled": false
+    },
+    {
+     "period": 5,
+     "start": "11:50",
+     "end": "12:30",
+     "subject": "Military Training",
+     "teachers": [
+      "T.A PE Al'zhanov"
+     ],
+     "classrooms": [
+      "201 (27)"
+     ],
+     "is_cancelled": false
+    },
+    {
+     "period": 6,
+     "start": "12:50",
+     "end": "13:30",
+     "subject": "Physical Education",
+     "teachers": [
+      "Aydar PE Valiyev"
+     ],
+     "classrooms": [
+      "Large Sports Hall"
+     ],
+     "is_cancelled": false
+    },
+    {
+     "period": 7,
+     "start": "13:35",
+     "end": "14:15",
+     "subject": "Physical Education",
+     "teachers": [
+      "Aydar PE Valiyev"
+     ],
+     "classrooms": [
+      "Large Sports Hall"
+     ],
+     "is_cancelled": false
+    }
+   ]
+  }
+ ],
+ "events": [
+  {
+   "date": "2026-09-16",
+   "kind": "assessment",
+   "title": "SAU1",
+   "subject": "Economics"
+  },
+  {
+   "date": "2026-09-17",
+   "kind": "assessment",
+   "title": "1 БЖБ",
+   "subject": "Kazakhstan History"
+  },
+  {
+   "date": "2026-09-17",
+   "kind": "assessment",
+   "title": "1 БЖБ",
+   "subject": "Kazakhstan History"
+  },
+  {
+   "date": "2026-09-30",
+   "kind": "assessment",
+   "title": "СОР1",
+   "subject": "Mathematics"
+  },
+  {
+   "date": "2026-09-30",
+   "kind": "assessment",
+   "title": "СОР 1",
+   "subject": "Mathematics"
+  },
+  {
+   "date": "2026-10-06",
+   "kind": "assessment",
+   "title": "Programming Unit Test",
+   "subject": "Programming"
+  },
+  {
+   "date": "2026-10-08",
+   "kind": "assessment",
+   "title": "2 БЖБ",
+   "subject": "Kazakhstan History"
+  },
+  {
+   "date": "2026-10-08",
+   "kind": "assessment",
+   "title": "2 БЖБ",
+   "subject": "Kazakhstan History"
+  },
+  {
+   "date": "2026-10-13",
+   "kind": "assessment",
+   "title": "СОР2",
+   "subject": "Mathematics"
+  },
+  {
+   "date": "2026-10-13",
+   "kind": "assessment",
+   "title": "СОР 2",
+   "subject": "Mathematics"
+  }
+ ],
+ "changes": [
+  {
+   "date": "2026-09-10",
+   "kind": "consultation",
+   "title": "Консультация , Выбранные учащиеся: Chemistry - Учителя: chem Shejko T.A, int Opot Silvanus, Кабинет: XB 303 (14), Классы: 12E, 12C, 12D",
+   "time_from": null,
+   "time_to": null,
+   "period_from": 7
+  },
+  {
+   "date": "2026-09-10",
+   "kind": "consultation",
+   "title": "консультация, Семинар 7: Chemistry - Учитель: chem Meshanova A., Кабинет: 217 (14), Классы: 12E, 12D",
+   "time_from": null,
+   "time_to": null,
+   "period_from": 9
+  }
+ ]
+}

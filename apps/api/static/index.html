@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>НИШ — демо сессии (без дизайна)</title>
+<style>
+  body{font-family:system-ui,sans-serif;max-width:640px;margin:30px auto;padding:0 16px;line-height:1.5}
+  fieldset{margin:16px 0;padding:12px}
+  label{display:block;margin:8px 0 2px;font-size:13px}
+  input{width:100%;padding:6px;box-sizing:border-box}
+  button{margin-top:10px;padding:6px 14px;cursor:pointer}
+  pre{background:#f0f0f0;padding:10px;overflow:auto;white-space:pre-wrap;font-size:12px}
+  .row{display:flex;gap:8px;align-items:center}
+  #status{font-weight:bold}
+</style>
+</head>
+<body>
+<h1>НИШ — костыльная демонстрация сессии</h1>
+<p>Без дизайна намеренно — только проверить, что кука браузера, БД и
+переиспользование входа в СУШ/EduPage реально работают.</p>
+
+<p class="row">Статус: <span id="status">проверяю…</span>
+  <button id="btn-logout" style="display:none">Выйти</button></p>
+
+<fieldset id="fs-register">
+  <legend>1а. Завести аккаунт на нашем сайте</legend>
+  <label>Имя</label>
+  <input id="reg-name" value="Тестовый Ученик">
+  <label>Почта</label>
+  <input id="reg-email" type="email" value="test@nis.edu.kz">
+  <label>Пароль (минимум 8 символов)</label>
+  <input id="reg-pass" type="password" value="testpass123">
+  <button id="btn-register">Зарегистрироваться</button>
+</fieldset>
+
+<fieldset id="fs-login">
+  <legend>1б. …или войти в уже существующий аккаунт</legend>
+  <label>Почта</label>
+  <input id="login-email" type="email">
+  <label>Пароль</label>
+  <input id="login-pass" type="password">
+  <button id="btn-login">Войти</button>
+</fieldset>
+
+<fieldset id="fs-sush">
+  <legend>2. Привязать СУШ</legend>
+  <label>Школа (код, например ptr)</label>
+  <input id="sush-school" value="ptr">
+  <label>ИИН</label>
+  <input id="sush-iin">
+  <label>Пароль</label>
+  <input id="sush-pass" type="password">
+  <button id="btn-sush">Привязать и войти</button>
+</fieldset>
+
+<fieldset id="fs-edupage">
+  <legend>3. Привязать EduPage</legend>
+  <label>Поддомен школы (например nispetropavlovsk)</label>
+  <input id="edu-sub" value="nispetropavlovsk">
+  <label>Логин</label>
+  <input id="edu-user">
+  <label>Пароль</label>
+  <input id="edu-pass" type="password">
+  <button id="btn-edupage">Привязать и войти</button>
+</fieldset>
+
+<fieldset>
+  <legend>4. Проверить, что сессия реально переиспользуется</legend>
+  <p>Каждая кнопка — отдельный запрос. Открой консоль сети: второй и
+     последующий клики не должны заново логиниться в источник (проверяется
+     по времени ответа и логам сервера — первый логин ощутимо медленнее).</p>
+  <button id="btn-grades">Получить оценки (СУШ)</button>
+  <button id="btn-schedule">Получить расписание (EduPage)</button>
+  <button id="btn-reload">Перезагрузить страницу (проверить, что кука пережила)</button>
+</fieldset>
+
+<h3>Ответ сервера</h3>
+<pre id="out">—</pre>
+
+<script>
+const out = document.getElementById('out');
+const status = document.getElementById('status');
+function show(x){ out.textContent = typeof x === 'string' ? x : JSON.stringify(x, null, 1); }
+
+async function api(path, opts={}) {
+  const t0 = performance.now();
+  const res = await fetch(path, { credentials: 'same-origin', headers: {'Content-Type':'application/json'}, ...opts });
+  const ms = (performance.now() - t0).toFixed(0);
+  let body;
+  try { body = await res.json(); } catch { body = await res.text(); }
+  show({_status: res.status, _ms: ms, ...(typeof body === 'object' ? body : {body})});
+  return { ok: res.ok, status: res.status, body };
+}
+
+async function refreshStatus() {
+  const r = await api('/api/me');
+  if (r.ok) {
+    status.textContent = `вошёл как ${r.body.display_name} (id ${r.body.student_id.slice(0,8)}…)`;
+    document.getElementById('btn-logout').style.display = '';
+  } else {
+    status.textContent = 'не авторизован';
+    document.getElementById('btn-logout').style.display = 'none';
+  }
+}
+
+document.getElementById('btn-register').onclick = async () => {
+  await api('/auth/register', { method:'POST', body: JSON.stringify({
+    display_name: document.getElementById('reg-name').value,
+    email: document.getElementById('reg-email').value,
+    password: document.getElementById('reg-pass').value,
+  })});
+  refreshStatus();
+};
+document.getElementById('btn-login').onclick = async () => {
+  await api('/auth/login', { method:'POST', body: JSON.stringify({
+    email: document.getElementById('login-email').value,
+    password: document.getElementById('login-pass').value,
+  })});
+  refreshStatus();
+};
+document.getElementById('btn-sush').onclick = async () => {
+  await api('/auth/link/sush', { method:'POST', body: JSON.stringify({
+    school: document.getElementById('sush-school').value,
+    iin: document.getElementById('sush-iin').value,
+    password: document.getElementById('sush-pass').value,
+  })});
+};
+document.getElementById('btn-edupage').onclick = async () => {
+  await api('/auth/link/edupage', { method:'POST', body: JSON.stringify({
+    subdomain: document.getElementById('edu-sub').value,
+    username: document.getElementById('edu-user').value,
+    password: document.getElementById('edu-pass').value,
+  })});
+};
+document.getElementById('btn-grades').onclick = () => api('/api/grades');
+document.getElementById('btn-schedule').onclick = () => api('/api/schedule/today');
+document.getElementById('btn-logout').onclick = async () => { await api('/auth/logout', {method:'POST'}); refreshStatus(); };
+document.getElementById('btn-reload').onclick = () => location.reload();
+
+refreshStatus();
+</script>
+</body>
+</html>
