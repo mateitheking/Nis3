@@ -19,6 +19,7 @@ from apps.api.auth import AppSessionExpired, AuthService, CircuitOpen, EmailTake
 from apps.api.db import Source, init_db, make_engine, make_session_factory
 from apps.api.sources.edupage import AuthError as EdupageAuthError
 from apps.api.sources.edupage import CaptchaRequired as EdupageCaptchaRequired
+from apps.api.sources.edupage import SourceError as EdupageSourceError
 from apps.api.sources.sush import AuthError as SushAuthError
 from apps.api.sources.sush import CaptchaRequired as SushCaptchaRequired
 from apps.api.vault import Vault, generate_key
@@ -101,8 +102,9 @@ class FakeEdupageClient:
     behavior = "ok"
     session_alive_after_restore = True
     notifications_data: list = []  # settable per-test, см. test_main.py::test_notifications_*
+    auto_subdomain = "autodetected"  # см. link_edupage_auto — что "узнаёт" автовход
 
-    def __init__(self, subdomain: str, own_class=None):
+    def __init__(self, subdomain: str | None = None, own_class=None):
         self.subdomain = subdomain
         self._session: dict | None = None
 
@@ -113,6 +115,18 @@ class FakeEdupageClient:
         if FakeEdupageClient.behavior == "auth_error":
             raise EdupageAuthError("неверный пароль")
         self._session = {"cookies": {"x": f"fake-{self.subdomain}-{username}"}}
+
+    def login_auto(self, username: str, password: str) -> str:
+        FakeEdupageClient.login_calls += 1
+        if FakeEdupageClient.behavior == "captcha":
+            raise EdupageCaptchaRequired("captcha")
+        if FakeEdupageClient.behavior == "auth_error":
+            raise EdupageAuthError("неверный пароль")
+        if FakeEdupageClient.behavior == "no_subdomain":
+            raise EdupageSourceError("автовход: не удалось определить школу по редиректу")
+        self.subdomain = FakeEdupageClient.auto_subdomain
+        self._session = {"cookies": {"x": f"fake-{self.subdomain}-{username}"}}
+        return self.subdomain
 
     def export_session(self) -> dict:
         return self._session or {}

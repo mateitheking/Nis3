@@ -559,8 +559,13 @@ def _retry_transient(fn: Callable[[], _T]) -> _T:
 class EdupageClient:
     """Тонкая обёртка над ``edupage_api.Edupage`` — вход и резолвинг ссылок."""
 
-    def __init__(self, subdomain: str, own_class: str | None = None):
-        """``own_class`` — задать класс ученика явно и не полагаться на
+    def __init__(self, subdomain: str | None = None, own_class: str | None = None):
+        """``subdomain`` — необязателен: ``None`` — для самой первой
+        привязки, когда поддомен школы ещё не известен, см. ``login_auto``.
+        Для уже привязанного ученика (``AuthService.get_edupage_client``) он
+        всегда передаётся — сохранён в БД после первого успешного входа.
+
+        ``own_class`` — задать класс ученика явно и не полагаться на
         автоопределение (``own_class_name``). У него на практике встречен
         баг в самой библиотеке: ``EduStudent.class_id`` иногда теряет знак
         минуса (все id классов в источнике отрицательные), и авто-угадывание
@@ -586,6 +591,35 @@ class EdupageClient:
             raise SourceError(
                 f"{self.subdomain}: требуется 2FA — не поддержано в фоновом входе"
             )
+
+    def login_auto(self, username: str, password: str) -> str:
+        """Вход БЕЗ известного поддомена школы — через общий шлюз
+        библиотеки (``login1``/``portal.edupage.org``), тот же способ,
+        которым логинится настоящее приложение EduPage (просьба пользователя
+        16 сентября 2026: там при входе не спрашивают ни школу, ни её
+        поддомен — только логин/пароль). Библиотека сама узнаёт школу
+        ученика по редиректу и заполняет ``self._edupage.subdomain`` —
+        возвращаем его, чтобы вызывающий код сохранил как ``school`` в БД
+        для всех последующих (уже обычных, с известным поддоменом) входов.
+
+        Официально не гарантирован библиотекой («If this doesn't work,
+        please use Edupage.login» — см. её docstring): вызывающий код должен
+        уметь откатиться на обычный ``login()`` с поддоменом, введённым
+        руками, если это упадёт."""
+        try:
+            second_factor = self._edupage.login_auto(username, password)
+        except BadCredentialsException as exc:
+            raise AuthError(f"автовход: {exc}") from exc
+        except CaptchaException as exc:
+            raise CaptchaRequired(f"автовход: {exc}") from exc
+        except _EdupageRequestError as exc:
+            raise SourceError(f"автовход: {exc}") from exc
+        if second_factor is not None:
+            raise SourceError("автовход: требуется 2FA — не поддержано в фоновом входе")
+        if not self._edupage.subdomain or self._edupage.subdomain == "login1":
+            raise SourceError("автовход: не удалось определить школу по редиректу")
+        self.subdomain = self._edupage.subdomain
+        return self.subdomain
 
     def export_session(self) -> dict:
         """Всё, что нужно, чтобы продолжить без повторного логина.

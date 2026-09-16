@@ -51,7 +51,16 @@ export function StatusDot({ label, status }: { label: string; status: SourceStat
 
 const LINK_LABELS: Record<'sush' | 'edupage', { school: string; username: string; schoolHint: string }> = {
   sush: { school: 'Школа (код)', username: 'ИИН', schoolHint: 'например ptr' },
-  edupage: { school: 'Поддомен школы', username: 'Логин', schoolHint: 'например nispetropavlovsk' },
+  // Необязателен — просьба пользователя 16 сентября 2026: настоящее
+  // приложение EduPage поддомен отдельно не спрашивает, только логин и
+  // пароль (см. AuthService.link_edupage_auto). Поле оставлено на случай,
+  // если автовход не сработает для конкретной школы — библиотека сама
+  // предупреждает, что он не гарантирован.
+  edupage: {
+    school: 'Поддомен школы (необязательно)',
+    username: 'Логин',
+    schoolHint: 'оставь пустым — определим автоматически',
+  },
 }
 
 function LinkForm({
@@ -68,9 +77,13 @@ function LinkForm({
   const [busy, setBusy] = useState(false)
   const [message, setMessage] = useState<{ text: string; kind: 'error' | 'warning' } | null>(null)
   const labels = LINK_LABELS[source]
+  // Только у СУШ школа обязательна — у каждой школы буквально свой хост
+  // (sms.{school}.nis.edu.kz), угадать его неоткуда. У EduPage поддомен
+  // необязателен (см. LINK_LABELS.edupage выше).
+  const schoolRequired = source === 'sush'
 
   async function submit() {
-    if (!school.trim() || !username.trim() || !password || !consent || busy) return
+    if ((schoolRequired && !school.trim()) || !username.trim() || !password || !consent || busy) return
     setBusy(true)
     setMessage(null)
     const result = await onLink(source, { school: school.trim(), username: username.trim(), password })
@@ -86,7 +99,7 @@ function LinkForm({
     // sessionOk === true: статус сам обновится на "Подключено", форма исчезнет
   }
 
-  const disabled = !school.trim() || !username.trim() || !password || !consent || busy
+  const disabled = (schoolRequired && !school.trim()) || !username.trim() || !password || !consent || busy
 
   return (
     <div className="home-settings-linkform">

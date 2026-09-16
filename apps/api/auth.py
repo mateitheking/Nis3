@@ -358,3 +358,20 @@ class AuthService:
 
         self._store_cookies(student, Source.EDUPAGE, client.export_session())
         return client
+
+    def link_edupage_auto(self, student: Student, username: str, password: str) -> EdupageClient:
+        """Первая привязка EduPage без известного поддомена школы — просьба
+        пользователя 16 сентября 2026 (настоящее приложение EduPage тоже не
+        спрашивает школу, только логин/пароль). Логинится через общий шлюз
+        библиотеки (``EdupageClient.login_auto``), сам узнаёт поддомен из
+        редиректа и сохраняет сразу и credential, и уже готовую сессию —
+        чтобы не логиниться второй раз следом же через
+        ``get_edupage_client`` (лишний вход — лишний шанс на капчу, тот же
+        принцип, что и везде в этом файле). Исключения (капча/неверный
+        пароль/не удалось определить школу) всплывают как есть — вызывающий
+        код в main.py переводит их в HTTP-ответ."""
+        client = EdupageClient()
+        client.login_auto(username, password)
+        self.save_credential(student, Source.EDUPAGE, client.subdomain, username, password)
+        self._store_cookies(student, Source.EDUPAGE, client.export_session())
+        return client

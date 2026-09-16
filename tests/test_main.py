@@ -584,6 +584,56 @@ def test_link_edupage_and_fetch_schedule(client):
     assert isinstance(r2.json(), list)
 
 
+def test_link_edupage_auto_without_subdomain_discovers_school(client):
+    """Просьба пользователя 16 сентября 2026: настоящее приложение EduPage
+    не спрашивает поддомен школы отдельно — только логин/пароль. Без
+    ``subdomain`` в теле сервер логинится через login_auto и сам узнаёт
+    школу (см. AuthService.link_edupage_auto)."""
+    client.post("/auth/register", json={"display_name": "X", "email": "auto@nis.edu.kz", "password": "password123"})
+    r = client.post("/auth/link/edupage", json={"username": "AmirOsmanov", "password": "pass"})
+    assert r.status_code == 200
+    body = r.json()
+    assert body["session_ok"] is True
+    assert body["subdomain"] == FakeEdupageClient.auto_subdomain
+
+    status = client.get("/api/sources/status").json()["edupage"]
+    assert status["linked"] is True
+    assert status["school"] == FakeEdupageClient.auto_subdomain
+
+    # Сессия уже сохранена самим автовходом — второй логин не нужен.
+    assert FakeEdupageClient.login_calls == 1
+    r2 = client.get("/api/schedule/today")
+    assert r2.status_code == 200
+    assert FakeEdupageClient.login_calls == 1
+
+
+def test_link_edupage_auto_captcha_returns_400_without_saving(client):
+    client.post("/auth/register", json={"display_name": "X", "email": "auto-captcha@nis.edu.kz", "password": "password123"})
+    FakeEdupageClient.behavior = "captcha"
+    r = client.post("/auth/link/edupage", json={"username": "AmirOsmanov", "password": "pass"})
+    assert r.status_code == 400
+    status = client.get("/api/sources/status").json()["edupage"]
+    assert status["linked"] is False
+
+
+def test_link_edupage_auto_wrong_password(client):
+    client.post("/auth/register", json={"display_name": "X", "email": "auto-wrong@nis.edu.kz", "password": "password123"})
+    FakeEdupageClient.behavior = "auth_error"
+    r = client.post("/auth/link/edupage", json={"username": "AmirOsmanov", "password": "wrong"})
+    assert r.status_code == 400
+
+
+def test_link_edupage_auto_falls_back_when_school_undetectable(client):
+    """Автовход официально не гарантирован библиотекой — если школу не
+    удалось определить по редиректу, честная ошибка с советом указать
+    поддомен вручную, а не тихая поломка."""
+    client.post("/auth/register", json={"display_name": "X", "email": "auto-nodomain@nis.edu.kz", "password": "password123"})
+    FakeEdupageClient.behavior = "no_subdomain"
+    r = client.post("/auth/link/edupage", json={"username": "AmirOsmanov", "password": "pass"})
+    assert r.status_code == 400
+    assert "вручную" in r.json()["detail"]
+
+
 def test_second_edupage_call_does_not_relogin(client):
     """Симметрично СУШ: второй запрос переиспользует сессию EduPage, не
     логинится заново — раньше логинился на КАЖДЫЙ вызов, это и был

@@ -60,6 +60,7 @@ from apps.api.db import (
     make_session_factory,
 )
 from apps.api.sources.edupage import AuthError as EdupageAuthError
+from apps.api.sources.edupage import CaptchaRequired as EdupageCaptchaRequired
 from apps.api.sources.edupage import SourceError as EdupageSourceError
 from apps.api.sources.sush import AuthError as SushAuthError
 from apps.api.sources.sush import ContractError as SushContractError
@@ -309,7 +310,12 @@ def link_sush(
 
 
 class LinkEdupageBody(BaseModel):
-    subdomain: str
+    # Необязателен — просьба пользователя 16 сентября 2026: настоящее
+    # приложение EduPage не спрашивает школу отдельно, только логин/пароль
+    # (см. AuthService.link_edupage_auto). Оставлен как явный ручной путь —
+    # официально не задокументированный автовход может не сработать для
+    # какой-то школы, тогда это резервный вариант.
+    subdomain: Optional[str] = None
     username: str
     password: str
 
@@ -320,6 +326,23 @@ def link_edupage(
     student: Student = Depends(get_current_student),
     auth: AuthService = Depends(get_auth),
 ):
+    if not body.subdomain:
+        try:
+            client = auth.link_edupage_auto(student, body.username, body.password)
+        except EdupageCaptchaRequired as exc:
+            raise HTTPException(
+                400, f"EduPage потребовал капчу при автовходе — укажи поддомен школы вручную: {exc}"
+            )
+        except EdupageAuthError as exc:
+            raise HTTPException(400, f"неверный логин/пароль: {exc}")
+        except EdupageSourceError as exc:
+            raise HTTPException(
+                400, f"не получилось определить школу автоматически — укажи поддомен вручную: {exc}"
+            )
+        except VaultError:
+            raise HTTPException(500, "не удалось прочитать только что сохранённые данные")
+        return {"linked": True, "session_ok": True, "subdomain": client.subdomain}
+
     auth.save_credential(student, Source.EDUPAGE, body.subdomain, body.username, body.password)
     try:
         auth.get_edupage_client(student)

@@ -32,4 +32,8 @@ COPY --from=frontend /web/dist ./apps/api/static
 # смонтированном томе (см. DATABASE_URL в README), секреты приходят
 # переменными окружения хоста, не файлом в образе.
 EXPOSE 8000
-CMD ["uvicorn", "apps.api.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Railway (и большинство PaaS) сами назначают порт через $PORT и ждут, что
+# контейнер слушает именно его — 8000 остаётся дефолтом только для локального
+# `docker run` без этой переменной. Shell-форма CMD (не JSON-массив) нужна
+# специально для подстановки $PORT — в exec-форме её никто не раскрывает.
+CMD uvicorn apps.api.main:app --host 0.0.0.0 --port ${PORT:-8000}
