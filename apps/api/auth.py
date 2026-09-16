@@ -222,7 +222,14 @@ class AuthService:
             )
         )
 
-    def _open_circuit(self, student: Student, source: Source, reason: str) -> None:
+    def _open_circuit(
+        self, student: Student, source: Source, reason: str, captcha_data: str | None = None
+    ) -> None:
+        # ВРЕМЕННО (16.09.2026): печатаем sitekey reCAPTCHA в stdout, чтобы
+        # проверить, разрешён ли он для нашего домена — captcha_data никуда
+        # не персистится в БД. Убрать после проверки (см. чат).
+        if captcha_data:
+            print(f"[captcha-probe] student={student.id} source={source.value} captcha_data={captcha_data!r}")
         row = self._get_source_session_row(student, source)
         if row is None:
             row = SourceSession(
@@ -297,7 +304,7 @@ class AuthService:
         try:
             client.login(cred.username, password)
         except SushCaptchaRequired as exc:
-            self._open_circuit(student, Source.SUSH, str(exc))
+            self._open_circuit(student, Source.SUSH, str(exc), captcha_data=exc.captcha_data)
             raise CircuitOpen(Source.SUSH, str(exc)) from exc
         except SushTwoFactorRequired as exc:
             self._open_circuit(student, Source.SUSH, str(exc))
