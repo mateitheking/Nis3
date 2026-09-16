@@ -336,9 +336,10 @@ def link_edupage(
         except EdupageAuthError as exc:
             raise HTTPException(400, f"неверный логин/пароль: {exc}")
         except EdupageSourceError as exc:
-            raise HTTPException(
-                400, f"не получилось определить школу автоматически — укажи поддомен вручную: {exc}"
-            )
+            # Общий случай: сеть недоступна, не удалось определить школу по
+            # редиректу, или нужна 2FA — сама причина уже в тексте exc,
+            # отдельно про поддомен добавляем только как подсказку к действию.
+            raise HTTPException(400, f"не получилось войти автоматически — попробуй указать поддомен вручную: {exc}")
         except VaultError:
             raise HTTPException(500, "не удалось прочитать только что сохранённые данные")
         return {"linked": True, "session_ok": True, "subdomain": client.subdomain}
@@ -353,6 +354,8 @@ def link_edupage(
         )
     except EdupageAuthError as exc:
         raise HTTPException(400, f"неверный логин/пароль: {exc}")
+    except EdupageSourceError as exc:
+        raise HTTPException(400, f"не получилось войти: {exc}")
     except VaultError:
         raise HTTPException(500, "не удалось прочитать только что сохранённые данные")
     return {"linked": True, "session_ok": True}

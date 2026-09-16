@@ -38,6 +38,8 @@ import time as time_module
 from datetime import date, datetime, time, timedelta
 from typing import Any, Callable, Optional, TypeVar
 
+import requests
+import urllib3.util.connection as _urllib3_connection
 from pydantic import BaseModel, ConfigDict, ValidationError
 
 from edupage_api import Edupage
@@ -50,6 +52,15 @@ from edupage_api.exceptions import (
 from edupage_api.exceptions import RequestError as _EdupageRequestError
 from edupage_api.people import People
 from edupage_api.subjects import Subjects
+
+# Живой случай 16 сентября 2026 на Railway: login1.edupage.org резолвится и
+# в A (167.235.33.19), и в AAAA (2a01:4f8:262:202d::1), а у контейнера
+# Railway нет исходящего IPv6 — urllib3 (на нём построен requests, на нём —
+# сама библиотека edupage_api) пробовал IPv6-адрес первым и падал
+# `OSError: [Errno 101] Network is unreachable`, необработанным долетая до
+# 500. Заставляем urllib3 резолвить только IPv4 — тот же трюк, что советуют
+# для любого хоста без исходящего IPv6 в контейнере.
+_urllib3_connection.HAS_IPV6 = False
 
 __all__ = [
     "EdupageClient",
@@ -587,6 +598,12 @@ class EdupageClient:
             raise CaptchaRequired(f"{self.subdomain}: {exc}") from exc
         except _EdupageRequestError as exc:
             raise SourceError(f"{self.subdomain}: {exc}") from exc
+        except requests.exceptions.RequestException as exc:
+            # Библиотека сама сетевые ошибки (DNS/таймаут/неверный доступ) не
+            # ловит и не заворачивает в RequestError — сырой urllib3/requests
+            # exception иначе долетает до FastAPI необработанным (500 вместо
+            # честной ошибки). Живой случай 16 сентября 2026 — см. HAS_IPV6.
+            raise SourceError(f"{self.subdomain}: сеть недоступна ({exc})") from exc
         if second_factor is not None:
             raise SourceError(
                 f"{self.subdomain}: требуется 2FA — не поддержано в фоновом входе"
@@ -614,6 +631,8 @@ class EdupageClient:
             raise CaptchaRequired(f"автовход: {exc}") from exc
         except _EdupageRequestError as exc:
             raise SourceError(f"автовход: {exc}") from exc
+        except requests.exceptions.RequestException as exc:
+            raise SourceError(f"автовход: сеть недоступна ({exc})") from exc
         if second_factor is not None:
             raise SourceError("автовход: требуется 2FA — не поддержано в фоновом входе")
         if not self._edupage.subdomain or self._edupage.subdomain == "login1":
