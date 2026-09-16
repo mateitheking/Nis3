@@ -1,0 +1,28 @@
+app = "nis3"
+primary_region = "fra"
+
+[build]
+  dockerfile = "Dockerfile"
+
+# DATABASE_URL не секрет (сам по себе бесполезен без VAULT_KEY и доступа к
+# тому) — держим в открытом конфиге. VAULT_KEY и OPENAI_API_KEY — через
+# `fly secrets set`, не сюда.
+[env]
+  DATABASE_URL = "sqlite:////data/nis3.db"
+
+# В отличие от Railway, Fly НЕ подставляет $PORT сам — порт фиксирован
+# здесь и должен совпадать с тем, что слушает контейнер. Наш Dockerfile
+# слушает ${PORT:-8000}, а Fly $PORT не задаёт — значит уйдёт в дефолт
+# 8000, вот его сюда и прописываем.
+[http_service]
+  internal_port = 8000
+  force_https = true
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 0
+
+# Volume создаётся отдельной командой (fly volumes create nis3_data
+# --size 1 --region fra) до первого деплоя — см. README/чат с шагами.
+[[mounts]]
+  source = "nis3_data"
+  destination = "/data"

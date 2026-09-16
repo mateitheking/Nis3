@@ -3,6 +3,7 @@ import type { LinkFields, LinkResult } from '../hooks/useAccountShell'
 import type { Me, SourceStatus, SourcesStatus } from '../types'
 import { Checkbox } from './authFormParts'
 import { formatRelativeTime } from './dateFormat'
+import { NIS_SCHOOLS } from '../data/nisSchools'
 
 export function initials(name: string): string {
   const parts = name.trim().split(/\s+/).filter(Boolean)
@@ -50,7 +51,7 @@ export function StatusDot({ label, status }: { label: string; status: SourceStat
 }
 
 const LINK_LABELS: Record<'sush' | 'edupage', { school: string; username: string; schoolHint: string }> = {
-  sush: { school: 'Школа (код)', username: 'ИИН', schoolHint: 'например ptr' },
+  sush: { school: 'Школа', username: 'ИИН', schoolHint: 'Выбери школу' },
   // Необязателен — просьба пользователя 16 сентября 2026: настоящее
   // приложение EduPage поддомен отдельно не спрашивает, только логин и
   // пароль (см. AuthService.link_edupage_auto). Поле оставлено на случай,
@@ -105,13 +106,30 @@ function LinkForm({
     <div className="home-settings-linkform">
       <div className="home-settings-field">
         <span className="home-settings-field-label">{labels.school}</span>
-        <input
-          type="text"
-          className="home-settings-input"
-          value={school}
-          onChange={(e) => setSchool(e.target.value)}
-          placeholder={labels.schoolHint}
-        />
+        {source === 'sush' ? (
+          <select
+            className="home-settings-input"
+            value={school}
+            onChange={(e) => setSchool(e.target.value)}
+          >
+            <option value="" disabled>
+              {labels.schoolHint}
+            </option>
+            {NIS_SCHOOLS.map((s) => (
+              <option key={s.value} value={s.value}>
+                {s.label}
+              </option>
+            ))}
+          </select>
+        ) : (
+          <input
+            type="text"
+            className="home-settings-input"
+            value={school}
+            onChange={(e) => setSchool(e.target.value)}
+            placeholder={labels.schoolHint}
+          />
+        )}
       </div>
       <div className="home-settings-field">
         <span className="home-settings-field-label">{labels.username}</span>
@@ -183,7 +201,11 @@ function SourceSettingsCard({
               <span className="home-settings-field-label">
                 {name === 'СУШ' ? 'Школа' : 'Логин'}
               </span>
-              <div className="home-settings-field-value">{status?.school || status?.username}</div>
+              <div className="home-settings-field-value">
+                {name === 'СУШ'
+                  ? NIS_SCHOOLS.find((s) => s.value === status?.school)?.label || status?.school
+                  : status?.username}
+              </div>
             </div>
             <div className="home-settings-field">
               <span className="home-settings-field-label">Сессия</span>
