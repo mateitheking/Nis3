@@ -158,46 +158,6 @@ def index():
     return FileResponse(STATIC_DIR / "index.html")
 
 
-# ---- ВРЕМЕННО: диагностика сетевой недоступности edupage.org с Railway ----
-# 16 сентября 2026 — убрать после диагностики, не оставлять в проде постоянно
-# (это, по сути, открытый сетевой пробник — незачем держать его дольше
-# самой проверки, даже за авторизацией). Смотрим, реально ли блокируется
-# именно edupage.org, или это исходящая сеть Railway в целом.
-
-
-@app.get("/api/debug/network-probe")
-def _debug_network_probe(student: Student = Depends(get_current_student)):
-    import socket
-    import time
-
-    targets = {
-        "google.com": "https://google.com",
-        "login1.edupage.org": "https://login1.edupage.org",
-        "nispetropavlovsk.edupage.org": "https://nispetropavlovsk.edupage.org",
-        "sms.ptr.nis.edu.kz": "https://sms.ptr.nis.edu.kz",
-        "openai.com": "https://api.openai.com",
-    }
-    out = {}
-    for name, url in targets.items():
-        host = url.split("://", 1)[1]
-        entry: dict = {}
-        try:
-            entry["dns"] = socket.gethostbyname(host)
-        except Exception as exc:
-            entry["dns_error"] = str(exc)
-        start = time.monotonic()
-        try:
-            import requests
-
-            r = requests.get(url, timeout=6, allow_redirects=False)
-            entry["status"] = r.status_code
-        except Exception as exc:
-            entry["error"] = f"{type(exc).__name__}: {exc}"
-        entry["elapsed_s"] = round(time.monotonic() - start, 2)
-        out[name] = entry
-    return out
-
-
 # ---- аккаунт на нашем сайте -------------------------------------------------
 
 
