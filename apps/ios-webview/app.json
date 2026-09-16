@@ -9,7 +9,7 @@
     "backgroundColor": "#0d0d0d",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.nis3.app",
+      "bundleIdentifier": "app.cauliflower3903.lemon2546",
       "config": {
         "usesNonExemptEncryption": false
       }
