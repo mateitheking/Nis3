@@ -401,22 +401,25 @@ class SushClient:
         self._client = client or curl_requests.Session(
             # impersonate= — не только заголовок, а настоящий TLS/HTTP2-отпечаток
             # Chrome (JA3), это и есть реальный фикс капчи, не сам факт прокси
-            # (см. комментарий у _BROWSER_UA). Заодно сам расставляет
-            # Sec-Ch-Ua/Sec-Fetch-*/User-Agent согласованным набором — свой
-            # User-Agent сюда больше не пишем, чтобы не расходиться с TLS.
+            # (см. _proxy ниже). Заодно сам расставляет Sec-Ch-Ua/Sec-Fetch-*/
+            # User-Agent согласованным набором — свой User-Agent сюда больше не
+            # пишем, чтобы не расходиться с TLS.
             impersonate="chrome150",
             timeout=_TIMEOUT,
             allow_redirects=False,  # 302 на логин детектим сами (SessionExpired)
-            # СУШ показывает reCAPTCHA на логине с адресов датацентров (Railway,
-            # Fly — подтверждено вживую 16.09.2026). SUSH_PROXY_URL — резидентный/
-            # ISP-прокси (http://user:pass@host:port), пусто = без прокси, как раньше.
-            proxy=os.environ.get("SUSH_PROXY_URL") or None,
             headers={
                 "Origin": self.base,
                 "Accept-Language": "ru-RU,ru;q=0.9,en;q=0.8",
             },
         )
         self._owns_client = client is None
+        # Прокси — ТОЛЬКО на сам логин (там капча), не на весь клиент: живой
+        # прогон 16.09.2026 показал, что через резидентный прокси на КАЖДЫЙ
+        # запрос (оценки, табель, дневник — десятки вызовов) загрузка
+        # становится очень медленной. Эти запросы идут уже по готовым кукам,
+        # капче не подвержены — гонять их через медленный резидентный IP смысла
+        # нет, только логин рискует словить капчу.
+        self._proxy = os.environ.get("SUSH_PROXY_URL") or None
 
     def close(self) -> None:
         if self._owns_client:
@@ -481,7 +484,7 @@ class SushClient:
         login_page = "/root/Account/Login"
         try:
             self._client.get(
-                f"{self.base}{login_page}", allow_redirects=True
+                f"{self.base}{login_page}", allow_redirects=True, proxy=self._proxy
             )
         except curl_requests.exceptions.RequestException as exc:
             raise SourceError(f"{self.school}: страница входа недоступна ({exc})") from exc
@@ -496,6 +499,7 @@ class SushClient:
                 "application2FACode": "",
             },
             referer=f"{self.base}{login_page}",
+            proxy=self._proxy,
         )
         try:
             body = resp.json()
@@ -540,13 +544,14 @@ class SushClient:
         path: str,
         data: dict[str, Any] | None = None,
         referer: str | None = None,
+        proxy: str | None = None,
     ) -> curl_requests.Response:
         url = f"{self.base}{path}"
         headers = {"X-Requested-With": "XMLHttpRequest"}
         if referer:
             headers["Referer"] = referer
         try:
-            resp = self._client.post(url, data=data or {}, headers=headers)
+            resp = self._client.post(url, data=data or {}, headers=headers, proxy=proxy)
         except curl_requests.exceptions.RequestException as exc:
             raise SourceError(f"{self.school}: сеть недоступна ({exc})") from exc
         # редирект на логин = сессия истекла / нет доступа
