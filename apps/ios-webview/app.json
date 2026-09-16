@@ -9,7 +9,10 @@
     "backgroundColor": "#0d0d0d",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.nis3.app"
+      "bundleIdentifier": "com.nis3.app",
+      "config": {
+        "usesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -22,6 +25,11 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "a4af0845-1995-4158-a7c1-121c3fc09cb2"
+      }
     }
   }
 }
