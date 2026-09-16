@@ -294,7 +294,7 @@ def link_sush(
 ):
     auth.save_credential(student, Source.SUSH, body.school, body.iin, body.password)
     try:
-        auth.get_sush_client(student)
+        auth.get_sush_client(student).close()
     except CircuitOpen as exc:
         return JSONResponse(
             {"linked": True, "session_ok": False, "reason": f"капча/2FA: {exc.reason}"},
@@ -427,23 +427,29 @@ def grades(
         # перепривязать источник заново
         raise HTTPException(409, "данные СУШ не читаются текущим ключом — привяжи заново")
 
-    school_year_id = _resolve_school_year_id(client, school_year)
-
-    fetch = client.subjects_detailed if detailed else client.subjects
+    # SushClient держит curl_cffi-сессию (нативный libcurl-хендл, тяжелее
+    # httpx) — не закрывать её значило копить их по одной на каждый запрос
+    # и получить OOM на машине с 256MB (живой случай 16.09.2026).
     try:
-        subjects = fetch(school_year_id=school_year_id, quarter=quarter)
-    except SushContractError:
-        raise  # источник изменил форму ответа — это баг, не глотаем молча
-    except SushSessionExpired as exc:
-        raise HTTPException(409, f"сессия СУШ истекла на середине запроса: {exc}")
-    except SushSourceError as exc:
-        # «Нет утвержденной нагрузки на данную четверть!» и подобные бизнес-
-        # ответы — честное «данных ещё нет», не ошибка сервера
-        return {"subjects": [], "note": str(exc)}
+        school_year_id = _resolve_school_year_id(client, school_year)
 
-    if subjects:
-        return {"subjects": [_subject_json(s) for s in subjects], "note": None}
-    return {"subjects": [_stub_subject_json(r) for r in _report_card_rows(client, school_year_id)], "note": None}
+        fetch = client.subjects_detailed if detailed else client.subjects
+        try:
+            subjects = fetch(school_year_id=school_year_id, quarter=quarter)
+        except SushContractError:
+            raise  # источник изменил форму ответа — это баг, не глотаем молча
+        except SushSessionExpired as exc:
+            raise HTTPException(409, f"сессия СУШ истекла на середине запроса: {exc}")
+        except SushSourceError as exc:
+            # «Нет утвержденной нагрузки на данную четверть!» и подобные бизнес-
+            # ответы — честное «данных ещё нет», не ошибка сервера
+            return {"subjects": [], "note": str(exc)}
+
+        if subjects:
+            return {"subjects": [_subject_json(s) for s in subjects], "note": None}
+        return {"subjects": [_stub_subject_json(r) for r in _report_card_rows(client, school_year_id)], "note": None}
+    finally:
+        client.close()
 
 
 def _report_card_rows(client: SushClient, school_year_id: Optional[str]) -> list:
@@ -546,33 +552,36 @@ def grades_subject(
     except VaultError:
         raise HTTPException(409, "данные СУШ не читаются текущим ключом — привяжи заново")
 
-    school_year_id = _resolve_school_year_id(client, school_year)
     try:
-        subjects = client.subjects(school_year_id=school_year_id, quarter=quarter)
-    except SushContractError:
-        raise
-    except SushSessionExpired as exc:
-        raise HTTPException(409, f"сессия СУШ истекла на середине запроса: {exc}")
-    except SushSourceError as exc:
-        raise HTTPException(404, str(exc))
+        school_year_id = _resolve_school_year_id(client, school_year)
+        try:
+            subjects = client.subjects(school_year_id=school_year_id, quarter=quarter)
+        except SushContractError:
+            raise
+        except SushSessionExpired as exc:
+            raise HTTPException(409, f"сессия СУШ истекла на середине запроса: {exc}")
+        except SushSourceError as exc:
+            raise HTTPException(404, str(exc))
 
-    subject = next((s for s in subjects if s.Name == name), None)
-    if subject is None:
-        # Тот же fallback, что и в /api/grades — предмет мог быть в списке
-        # именно потому, что дневник для него пуст (см. _report_card_rows).
-        stub = next((r for r in _report_card_rows(client, school_year_id) if r.SubjectName == name), None)
-        if stub is not None:
-            return _stub_subject_json(stub)
-        raise HTTPException(404, f"предмет с name={name!r} не найден в этой четверти")
+        subject = next((s for s in subjects if s.Name == name), None)
+        if subject is None:
+            # Тот же fallback, что и в /api/grades — предмет мог быть в списке
+            # именно потому, что дневник для него пуст (см. _report_card_rows).
+            stub = next((r for r in _report_card_rows(client, school_year_id) if r.SubjectName == name), None)
+            if stub is not None:
+                return _stub_subject_json(stub)
+            raise HTTPException(404, f"предмет с name={name!r} не найден в этой четверти")
 
-    for ev in subject.Evaluations:
-        if ev.MaxScores:
-            try:
-                ev.results = client.assessment_results(subject.JournalId, ev.Id)
-            except SushSourceError as exc:
-                raise HTTPException(502, f"не удалось получить баллы по темам: {exc}")
+        for ev in subject.Evaluations:
+            if ev.MaxScores:
+                try:
+                    ev.results = client.assessment_results(subject.JournalId, ev.Id)
+                except SushSourceError as exc:
+                    raise HTTPException(502, f"не удалось получить баллы по темам: {exc}")
 
-    return _subject_json(subject)
+        return _subject_json(subject)
+    finally:
+        client.close()
 
 
 @app.get("/api/schedule/today")

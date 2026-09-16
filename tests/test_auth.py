@@ -48,6 +48,9 @@ class FakeSushClient:
         self._cookies: list[dict] = []
         self._logged_in = False
 
+    def close(self) -> None:
+        pass
+
     @property
     def cookies(self):
         return self._cookies

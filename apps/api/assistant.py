@@ -260,33 +260,36 @@ def _subject_summary(s) -> dict:
 def _tool_get_grades(ctx: _ToolContext, args: dict) -> Any:
     quarter = int(args.get("quarter") or 1)
     client = ctx.auth.get_sush_client(ctx.student)
-    subjects = client.subjects_detailed(quarter=quarter)
-    subject_name = args.get("subject")
+    try:
+        subjects = client.subjects_detailed(quarter=quarter)
+        subject_name = args.get("subject")
 
-    if not subjects:
-        # Дневник пуст (обычно — самое начало четверти, ни одной оценки ни
-        # по одному предмету) — табель всё равно знает список предметов
-        # класса, см. main.py::_report_card_rows про ту же развилку.
-        try:
-            rows = client.report_card()
-        except SushSourceError:
-            rows = []
-        names = [r.SubjectName for r in rows]
+        if not subjects:
+            # Дневник пуст (обычно — самое начало четверти, ни одной оценки ни
+            # по одному предмету) — табель всё равно знает список предметов
+            # класса, см. main.py::_report_card_rows про ту же развилку.
+            try:
+                rows = client.report_card()
+            except SushSourceError:
+                rows = []
+            names = [r.SubjectName for r in rows]
+            if subject_name:
+                if subject_name not in names:
+                    raise CalculationError(f"предмет «{subject_name}» не найден; есть: {', '.join(names)}")
+                return {"name": subject_name, "score_percent": 0.0, "mark": None, "evaluations": [],
+                         "note": "оценок по этому предмету в этой четверти ещё нет"}
+            return {"subjects": [{"name": n, "score_percent": 0.0, "mark": None, "evaluations": []} for n in names],
+                    "note": "оценок в этой четверти ещё нет ни по одному предмету"}
+
         if subject_name:
-            if subject_name not in names:
-                raise CalculationError(f"предмет «{subject_name}» не найден; есть: {', '.join(names)}")
-            return {"name": subject_name, "score_percent": 0.0, "mark": None, "evaluations": [],
-                     "note": "оценок по этому предмету в этой четверти ещё нет"}
-        return {"subjects": [{"name": n, "score_percent": 0.0, "mark": None, "evaluations": []} for n in names],
-                "note": "оценок в этой четверти ещё нет ни по одному предмету"}
-
-    if subject_name:
-        match = next((s for s in subjects if s.Name == subject_name), None)
-        if match is None:
-            names = ", ".join(s.Name for s in subjects)
-            raise CalculationError(f"предмет «{subject_name}» не найден; есть: {names}")
-        return _subject_summary(match)
-    return {"subjects": [_subject_summary(s) for s in subjects]}
+            match = next((s for s in subjects if s.Name == subject_name), None)
+            if match is None:
+                names = ", ".join(s.Name for s in subjects)
+                raise CalculationError(f"предмет «{subject_name}» не найден; есть: {names}")
+            return _subject_summary(match)
+        return {"subjects": [_subject_summary(s) for s in subjects]}
+    finally:
+        client.close()
 
 
 def _tool_get_upcoming(ctx: _ToolContext, args: dict) -> Any:
@@ -313,36 +316,42 @@ def _tool_calculate_required_score(ctx: _ToolContext, args: dict) -> Any:
     quarter = int(args.get("quarter") or 1)
     subject_name = args["subject"]
     client = ctx.auth.get_sush_client(ctx.student)
-    subjects = client.subjects_detailed(quarter=quarter)
-    if not subjects:
-        raise CalculationError("оценок в этой четверти ещё нет ни по одному предмету — считать не от чего")
-    subject = next((s for s in subjects if s.Name == subject_name), None)
-    if subject is None:
-        names = ", ".join(s.Name for s in subjects)
-        raise CalculationError(f"предмет «{subject_name}» не найден; есть: {names}")
-    return required_score_for_target(subject, args["target_kind"], float(args["target_overall_percent"]))
+    try:
+        subjects = client.subjects_detailed(quarter=quarter)
+        if not subjects:
+            raise CalculationError("оценок в этой четверти ещё нет ни по одному предмету — считать не от чего")
+        subject = next((s for s in subjects if s.Name == subject_name), None)
+        if subject is None:
+            names = ", ".join(s.Name for s in subjects)
+            raise CalculationError(f"предмет «{subject_name}» не найден; есть: {names}")
+        return required_score_for_target(subject, args["target_kind"], float(args["target_overall_percent"]))
+    finally:
+        client.close()
 
 
 def _tool_get_grade_history(ctx: _ToolContext, args: dict) -> Any:
     subject_name = args["subject"]
     years_back = min(int(args.get("years_back") or 2), MAX_HISTORY_YEARS_BACK)
     client = ctx.auth.get_sush_client(ctx.student)
-    years = sorted(client.school_years(), key=lambda y: y.Name, reverse=True)[:years_back]
+    try:
+        years = sorted(client.school_years(), key=lambda y: y.Name, reverse=True)[:years_back]
 
-    history = []
-    for year in years:
-        for quarter in (1, 2, 3, 4):
-            try:
-                subjects = client.subjects(school_year_id=year.Id, quarter=quarter)
-            except SushSourceError:
-                continue  # честное "нет данных за эту четверть/год", не ошибка
-            match = next((s for s in subjects if s.Name == subject_name), None)
-            if match is not None and match.Mark:
-                history.append({
-                    "school_year": year.Name, "quarter": quarter,
-                    "score_percent": match.Score, "mark": match.Mark,
-                })
-    return {"subject": subject_name, "history": history}
+        history = []
+        for year in years:
+            for quarter in (1, 2, 3, 4):
+                try:
+                    subjects = client.subjects(school_year_id=year.Id, quarter=quarter)
+                except SushSourceError:
+                    continue  # честное "нет данных за эту четверть/год", не ошибка
+                match = next((s for s in subjects if s.Name == subject_name), None)
+                if match is not None and match.Mark:
+                    history.append({
+                        "school_year": year.Name, "quarter": quarter,
+                        "score_percent": match.Score, "mark": match.Mark,
+                    })
+        return {"subject": subject_name, "history": history}
+    finally:
+        client.close()
 
 
 _TOOL_FUNCS = {
