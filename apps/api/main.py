@@ -11,6 +11,7 @@
 from __future__ import annotations
 
 import sys
+import json
 
 # Windows-консоль по умолчанию берёт cp1252 для stdout, и print() с
 # кириллицей роняет процесс UnicodeEncodeError'ом — не в терминальном
@@ -50,6 +51,7 @@ from apps.api.auth import (
 from apps.api.db import (
     AccountCredential,
     CustomScheduleEntry,
+    GradeSnapshot,
     Photo,
     Source,
     SourceCredential,
@@ -58,6 +60,7 @@ from apps.api.db import (
     init_db,
     make_engine,
     make_session_factory,
+    utcnow,
 )
 from apps.api.sources.edupage import AuthError as EdupageAuthError
 from apps.api.sources.edupage import CaptchaRequired as EdupageCaptchaRequired
@@ -391,30 +394,61 @@ def unlink_edupage(
 # ---- реальные данные через переиспользованную сессию источника ------------
 
 
-@app.get("/api/grades")
-def grades(
-    quarter: int = 1,
-    school_year: Optional[str] = None,
-    detailed: bool = True,
-    student: Student = Depends(get_current_student),
-    auth: AuthService = Depends(get_auth),
-):
-    """``quarter`` по умолчанию 1 — у СУШ нет признака «текущая четверть»
-    (см. docstring SushClient.subjects), не гадаем по календарю.
+def _snapshot_key(school_year: Optional[str]) -> str:
+    """Сырой параметр запроса, не GUID — см. GradeSnapshot.school_year_key."""
+    return school_year if school_year else "__current__"
 
-    ``school_year`` — человекочитаемое имя или подстрока, например
-    ``"2025-2026"``, **не GUID**. Id учебных лет — внутренние идентификаторы
-    источника, не проверено (и не стоит полагаться), что они стабильны
-    между сессиями или у разных учеников; узнаём их каждый раз заново у
-    текущей живой сессии, а не берём откуда-то заранее сохранённое —
-    ровно на этом уже споткнулись при живой проверке.
 
-    ``detailed`` (по умолчанию включено) — тянет баллы по каждой теме
-    внутри каждого вида оценивания (нужно калькулятору, чтобы считать не
-    только по агрегату). Это до 2 живых запросов на предмет — на класс из
-    16 предметов может занять несколько секунд. ``detailed=false`` —
-    быстрый ответ только с агрегатами (Score/Mark/веса), без тем.
-    """
+def _load_snapshot(
+    db: DbSession, student_id: str, quarter: int, school_year: Optional[str]
+) -> Optional[GradeSnapshot]:
+    return (
+        db.query(GradeSnapshot)
+        .filter(
+            GradeSnapshot.student_id == student_id,
+            GradeSnapshot.school_year_key == _snapshot_key(school_year),
+            GradeSnapshot.quarter == quarter,
+        )
+        .first()
+    )
+
+
+def _save_snapshot(
+    db: DbSession, student_id: str, quarter: int, school_year: Optional[str], body: dict
+) -> GradeSnapshot:
+    snap = _load_snapshot(db, student_id, quarter, school_year)
+    if snap is None:
+        snap = GradeSnapshot(
+            student_id=student_id,
+            school_year_key=_snapshot_key(school_year),
+            quarter=quarter,
+        )
+        db.add(snap)
+    snap.data = json.dumps(body)
+    snap.fetched_at = utcnow()
+    db.commit()
+    return snap
+
+
+def _strip_topics(body: dict) -> dict:
+    """Проекция снэпшота под ``detailed=false`` — тот же быстрый агрегат,
+    что раньше отдавал ``client.subjects()`` без похода за темами."""
+    return {
+        **body,
+        "subjects": [
+            {**s, "evaluations": [{**ev, "topics": []} for ev in s["evaluations"]]}
+            for s in body["subjects"]
+        ],
+    }
+
+
+def _fetch_grades_live(
+    auth: AuthService, student: Student, quarter: int, school_year: Optional[str]
+) -> dict:
+    """Полный живой поход в СУШ — всегда с темами (``subjects_detailed``),
+    чтобы один поход закрывал и /api/grades, и последующие клики по
+    предметам в /api/grades/subject из того же снэпшота, а не гонял СУШ
+    заново на каждый клик."""
     try:
         client = auth.get_sush_client(student)
     except CircuitOpen as exc:
@@ -432,10 +466,8 @@ def grades(
     # и получить OOM на машине с 256MB (живой случай 16.09.2026).
     try:
         school_year_id = _resolve_school_year_id(client, school_year)
-
-        fetch = client.subjects_detailed if detailed else client.subjects
         try:
-            subjects = fetch(school_year_id=school_year_id, quarter=quarter)
+            subjects = client.subjects_detailed(school_year_id=school_year_id, quarter=quarter)
         except SushContractError:
             raise  # источник изменил форму ответа — это баг, не глотаем молча
         except SushSessionExpired as exc:
@@ -450,6 +482,47 @@ def grades(
         return {"subjects": [_stub_subject_json(r) for r in _report_card_rows(client, school_year_id)], "note": None}
     finally:
         client.close()
+
+
+@app.get("/api/grades")
+def grades(
+    quarter: int = 1,
+    school_year: Optional[str] = None,
+    detailed: bool = True,
+    force: bool = False,
+    student: Student = Depends(get_current_student),
+    auth: AuthService = Depends(get_auth),
+    db: DbSession = Depends(get_db),
+):
+    """``quarter`` по умолчанию 1 — у СУШ нет признака «текущая четверть»
+    (см. docstring SushClient.subjects), не гадаем по календарю.
+
+    ``school_year`` — человекочитаемое имя или подстрока, например
+    ``"2025-2026"``, **не GUID**. Id учебных лет — внутренние идентификаторы
+    источника, не проверено (и не стоит полагаться), что они стабильны
+    между сессиями или у разных учеников; узнаём их каждый раз заново у
+    текущей живой сессии, а не берём откуда-то заранее сохранённое —
+    ровно на этом уже споткнулись при живой проверке.
+
+    ``detailed`` — проекция уже сохранённого снэпшота (см. GradeSnapshot),
+    не признак похода в СУШ: темы внутри evaluations либо есть, либо нет в
+    ответе, сам снэпшот всегда полный. ``detailed=false`` — быстрый ответ
+    только с агрегатами (Score/Mark/веса), без тем.
+
+    По умолчанию читаем последний сохранённый снэпшот без похода в СУШ
+    вообще — быстрый путь, счёт на миллисекунды. Живой поход через
+    резидентный прокси (10+ секунд, см. docs/sources.md) — только когда
+    снэпшота ещё нет или явно передан ``force=true`` («Обновить» в
+    интерфейсе)."""
+    if not force:
+        snap = _load_snapshot(db, student.id, quarter, school_year)
+        if snap is not None:
+            body = json.loads(snap.data)
+            return {**(body if detailed else _strip_topics(body)), "fetched_at": snap.fetched_at.isoformat()}
+
+    body = _fetch_grades_live(auth, student, quarter, school_year)
+    snap = _save_snapshot(db, student.id, quarter, school_year, body)
+    return {**(body if detailed else _strip_topics(body)), "fetched_at": snap.fetched_at.isoformat()}
 
 
 def _report_card_rows(client: SushClient, school_year_id: Optional[str]) -> list:
@@ -524,64 +597,45 @@ def grades_subject(
     name: str,
     quarter: int = 1,
     school_year: Optional[str] = None,
+    force: bool = False,
     student: Student = Depends(get_current_student),
     auth: AuthService = Depends(get_auth),
+    db: DbSession = Depends(get_db),
 ):
     """Разбивка по темам ОДНОГО предмета — то, что подгружается лениво при
     открытии карточки в интерфейсе (см. design_handoff_navigation/
-    README.md, "Two-tier loading"). /api/grades без ``detailed`` уже даёт
-    быстрый список для сетки; сюда идут только по клику на конкретный
-    предмет, чтобы не тянуть темы всех 16 сразу, если открыли один.
+    README.md, "Two-tier loading").
+
+    Читает из того же снэпшота, что /api/grades (см. GradeSnapshot) — тот
+    уже хранит темы по всем предметам разом, так что клик по предмету
+    после первой загрузки списка ничего не качает из СУШ, просто достаёт
+    один элемент из уже сохранённого JSON. Живой поход — только если
+    снэпшота ещё нет вообще (открыли сразу по прямой ссылке на предмет,
+    минуя список) или передан ``force=true``.
 
     Адресуемся по ``name`` (имени предмета), не по ``JournalId``/``Id`` —
     живой прогон 14 сентября показал, что оба это идентификаторы, которые
     СУШ выдаёт заново на каждый вызов ``subjects()`` (они завязаны на
     сессию внутреннего дневника, открываемую заново каждым запросом), а не
-    стабильный ключ предмета: тот же ``JournalId``, полученный в списке
-    ``/api/grades``, не находился в свежем списке этого эндпоинта — 404,
-    который фронтенд тихо проглатывал как «темы не запланированы». Имя
-    предмета внутри одной четверти уникально (16 разных предметов) и не
-    меняется между запросами — это и есть настоящий признак, «выбор по
-    признаку, не по индексу», применённый ещё раз."""
-    try:
-        client = auth.get_sush_client(student)
-    except CircuitOpen as exc:
-        raise HTTPException(409, f"нужен ручной вход в СУШ: {exc.reason}")
-    except ValueError as exc:
-        raise HTTPException(400, str(exc))
-    except VaultError:
-        raise HTTPException(409, "данные СУШ не читаются текущим ключом — привяжи заново")
-
-    try:
-        school_year_id = _resolve_school_year_id(client, school_year)
-        try:
-            subjects = client.subjects(school_year_id=school_year_id, quarter=quarter)
-        except SushContractError:
-            raise
-        except SushSessionExpired as exc:
-            raise HTTPException(409, f"сессия СУШ истекла на середине запроса: {exc}")
-        except SushSourceError as exc:
-            raise HTTPException(404, str(exc))
-
-        subject = next((s for s in subjects if s.Name == name), None)
-        if subject is None:
-            # Тот же fallback, что и в /api/grades — предмет мог быть в списке
-            # именно потому, что дневник для него пуст (см. _report_card_rows).
-            stub = next((r for r in _report_card_rows(client, school_year_id) if r.SubjectName == name), None)
-            if stub is not None:
-                return _stub_subject_json(stub)
+    стабильный ключ предмета. Имя предмета внутри одной четверти уникально
+    (16 разных предметов) и не меняется между запросами — это и есть
+    настоящий признак, «выбор по признаку, не по индексу», применённый ещё
+    раз."""
+    if not force:
+        snap = _load_snapshot(db, student.id, quarter, school_year)
+        if snap is not None:
+            body = json.loads(snap.data)
+            subject = next((s for s in body["subjects"] if s["name"] == name), None)
+            if subject is not None:
+                return subject
             raise HTTPException(404, f"предмет с name={name!r} не найден в этой четверти")
 
-        for ev in subject.Evaluations:
-            if ev.MaxScores:
-                try:
-                    ev.results = client.assessment_results(subject.JournalId, ev.Id)
-                except SushSourceError as exc:
-                    raise HTTPException(502, f"не удалось получить баллы по темам: {exc}")
-
-        return _subject_json(subject)
-    finally:
-        client.close()
+    body = _fetch_grades_live(auth, student, quarter, school_year)
+    _save_snapshot(db, student.id, quarter, school_year, body)
+    subject = next((s for s in body["subjects"] if s["name"] == name), None)
+    if subject is None:
+        raise HTTPException(404, f"предмет с name={name!r} не найден в этой четверти")
+    return subject
 
 
 @app.get("/api/schedule/today")

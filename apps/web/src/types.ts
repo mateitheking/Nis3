@@ -93,6 +93,7 @@ export interface GradeSubject {
 export interface GradesResponse {
   subjects: GradeSubject[]
   note: string | null
+  fetched_at: string
 }
 
 export interface SourceStatus {

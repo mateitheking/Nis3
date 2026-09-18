@@ -36,6 +36,7 @@ class FakeSushClient:
     behavior = "ok"  # "ok" | "captcha" | "auth_error"
     session_alive_after_restore = True
     subjects_data: list = []  # settable per-test, см. test_main.py::test_grades_subject_*
+    subjects_detailed_calls = 0  # счётчик живых походов — см. test_main.py::test_grades_snapshot_*
     churn_ids = False
     """Имитирует реальный живой баг 14.09.2026: СУШ выдаёт новый Id/JournalId
     на каждый вызов subjects() (они завязаны на сессию внутреннего дневника,
@@ -89,6 +90,7 @@ class FakeSushClient:
         return FakeSushClient.subjects_data
 
     def subjects_detailed(self, school_year_id=None, quarter=1):
+        FakeSushClient.subjects_detailed_calls += 1
         return self.subjects(school_year_id, quarter)
 
     def assessment_results(self, journal_id, eval_id):
@@ -162,6 +164,7 @@ def reset_fakes():
     FakeSushClient.session_alive_after_restore = True
     FakeSushClient.subjects_data = []
     FakeSushClient.churn_ids = False
+    FakeSushClient.subjects_detailed_calls = 0
     FakeEdupageClient.login_calls = 0
     FakeEdupageClient.behavior = "ok"
     FakeEdupageClient.session_alive_after_restore = True

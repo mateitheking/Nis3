@@ -241,6 +241,40 @@ class CustomScheduleEntry(Base):
     student: Mapped[Student] = relationship()
 
 
+class GradeSnapshot(Base):
+    """Последний снятый с СУШ срез оценок одной четверти — отдаём его сразу
+    вместо живого похода за резидентный прокси на КАЖДОЕ открытие страницы
+    или клик по предмету (см. main.py::grades, grades_subject). Живой поход
+    остаётся, но по явному ``force=true`` — снэпшот и есть быстрый путь по
+    умолчанию, а обновление ученик запускает сам, когда готов подождать.
+
+    ``school_year_key`` — сырой параметр ``school_year`` запроса (человеко-
+    читаемое имя вроде "2025-2026") или ``"__current__"``, если не передан.
+    Намеренно НЕ резолвим его в GUID года для ключа кэша: сам резолвинг —
+    живой запрос к СУШ (``school_years()``), а весь смысл снэпшота в том,
+    чтобы совсем не ходить в сеть на быстром пути.
+
+    ``data`` — JSON тела ответа ``/api/grades`` целиком (``{"subjects":
+    [...], "note": ...}``), уже с темами внутри evaluations: /api/grades и
+    /api/grades/subject читают из одного и того же снэпшота, второй просто
+    достаёт из него один предмет по имени."""
+
+    __tablename__ = "grade_snapshots"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    student_id: Mapped[str] = mapped_column(ForeignKey("students.id"), index=True)
+    school_year_key: Mapped[str] = mapped_column(String(100))
+    quarter: Mapped[int]
+    data: Mapped[str] = mapped_column(Text())
+    fetched_at: Mapped[datetime] = mapped_column(DateTime(), default=utcnow)
+
+    student: Mapped[Student] = relationship()
+
+    __table_args__ = (
+        UniqueConstraint("student_id", "school_year_key", "quarter", name="uq_grade_snapshot"),
+    )
+
+
 def make_engine(url: str = "sqlite:///./nis.db"):
     # timeout=30 — SQLite позволяет ровно одному писателю за раз; страница
     # вроде Расписания бьёт по API параллельно (неделя = 5 дней расписания

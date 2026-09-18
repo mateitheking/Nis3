@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import type { GradeEvaluation, GradeSubject } from '../../types'
+import { formatRelativeTime } from '../../ui/dateFormat'
 import {
   MARK_THRESHOLDS,
   colorForPercent,
@@ -44,6 +45,41 @@ export function YearNav({ label, onPrev, onNext }: { label: string; onPrev: () =
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="12" height="12">
           <path d="M9 18l6-6-6-6" />
         </svg>
+      </button>
+    </div>
+  )
+}
+
+/** Оценки по умолчанию — снэпшот из БД, не живой поход в СУШ (10+ секунд
+ * через резидентный прокси, см. docs/sources.md) — так что показываем,
+ * когда он снят, и даём кнопку явно обновить, когда ученик готов подождать. */
+export function RefreshBar({
+  fetchedAt,
+  refreshing,
+  onRefresh,
+}: {
+  fetchedAt: string | null
+  refreshing: boolean
+  onRefresh: () => void
+}) {
+  return (
+    <div className="gr-refresh-bar">
+      <span className="gr-refresh-label">
+        {fetchedAt ? `Обновлено: ${formatRelativeTime(fetchedAt)}` : ' '}
+      </span>
+      <button
+        type="button"
+        className="gr-refresh-btn"
+        onClick={onRefresh}
+        disabled={refreshing}
+      >
+        <svg
+          className={refreshing ? 'gr-refresh-spin' : ''}
+          viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="13" height="13"
+        >
+          <path d="M21 12a9 9 0 1 1-2.64-6.36M21 3v6h-6" />
+        </svg>
+        {refreshing ? 'Обновляем…' : 'Обновить'}
       </button>
     </div>
   )

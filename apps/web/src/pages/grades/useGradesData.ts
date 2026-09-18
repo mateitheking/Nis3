@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useAccountShell } from '../../hooks/useAccountShell'
-import { getJsonWithDetail } from '../../lib/apiCache'
+import { getJsonWithDetail, invalidateCache } from '../../lib/apiCache'
 import type { GradeSubject, GradesResponse } from '../../types'
 
 function currentAcademicStartYear(): number {
@@ -14,8 +14,10 @@ export function useGradesData() {
   const [yearOffset, setYearOffset] = useState(0)
   const [subjects, setSubjects] = useState<GradeSubject[] | null>(null)
   const [note, setNote] = useState<string | null>(null)
+  const [fetchedAt, setFetchedAt] = useState<string | null>(null)
   const [listError, setListError] = useState<string | null>(null)
   const [loadingList, setLoadingList] = useState(true)
+  const [refreshing, setRefreshing] = useState(false)
 
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [detail, setDetail] = useState<GradeSubject | null>(null)
@@ -37,30 +39,57 @@ export function useGradesData() {
   // свежему запуску.
   const loadSeq = useRef(0)
 
+  const listUrl = `/api/grades?quarter=${quarter}&school_year=${encodeURIComponent(yearLabel)}&detailed=false`
+
   const loadList = useCallback(async () => {
     const seq = ++loadSeq.current
     setLoadingList(true)
     setListError(null)
     setSelectedId(null)
     setDetail(null)
-    const res = await getJsonWithDetail<GradesResponse>(
-      `/api/grades?quarter=${quarter}&school_year=${encodeURIComponent(yearLabel)}&detailed=false`,
-    )
+    const res = await getJsonWithDetail<GradesResponse>(listUrl)
     if (seq !== loadSeq.current) return // устарел — следом уже стартовал новый запрос
     if (res.ok) {
       setSubjects(res.data.subjects)
       setNote(res.data.note)
+      setFetchedAt(res.data.fetched_at)
     } else {
       setSubjects(null)
       setListError(res.detail)
     }
     setLoadingList(false)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [quarter, yearLabel])
+  }, [listUrl])
 
   useEffect(() => {
     loadList()
   }, [loadList])
+
+  // «Обновить» — единственный способ дождаться живых данных из СУШ (10+
+  // секунд через резидентный прокси, см. docs/sources.md): по умолчанию
+  // /api/grades всегда отдаёт сохранённый снэпшот, сеть не трогает. force
+  // обновляет снэпшот целиком (все предметы со всеми темами разом), так
+  // что уже открытая карточка предмета тоже подтягивается заново —
+  // отдельно её обновлять не нужно.
+  const refresh = useCallback(async () => {
+    const seq = ++loadSeq.current
+    setRefreshing(true)
+    setListError(null)
+    const res = await getJsonWithDetail<GradesResponse>(`${listUrl}&force=true`, { force: true })
+    invalidateCache('/api/grades') // старые /api/grades и /api/grades/subject больше не актуальны
+    if (seq === loadSeq.current) {
+      if (res.ok) {
+        setSubjects(res.data.subjects)
+        setNote(res.data.note)
+        setFetchedAt(res.data.fetched_at)
+      } else {
+        setListError(res.detail)
+      }
+    }
+    setRefreshing(false)
+    if (selectedId) await selectSubject(selectedId) // открытая карточка — тоже из свежего снэпшота
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [listUrl, selectedId])
 
   const detailSeq = useRef(0)
 
@@ -105,8 +134,11 @@ export function useGradesData() {
     nextYear: () => setYearOffset((o) => o + 1),
     subjects,
     note,
+    fetchedAt,
     listError,
     loadingList,
+    refreshing,
+    refresh,
     selectedId,
     detail,
     loadingDetail,

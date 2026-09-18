@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Sidebar } from '../../ui/Sidebar'
 import { SettingsDrawer } from '../../ui/SettingsDrawer'
-import { QuarterTabs, SubjectCard, SubjectDetail, YearNav } from './parts'
+import { QuarterTabs, RefreshBar, SubjectCard, SubjectDetail, YearNav } from './parts'
 import type { GradesData } from './useGradesData'
 
 export function GradesDesktop({
@@ -17,7 +17,7 @@ export function GradesDesktop({
   const {
     me, sources, link, unlink, logout,
     quarter, setQuarter, yearLabel, prevYear, nextYear,
-    subjects, note, listError, loadingList,
+    subjects, note, fetchedAt, listError, loadingList, refreshing, refresh,
     selectedId, detail, loadingDetail, selectSubject,
   } = data
 
@@ -44,6 +44,7 @@ export function GradesDesktop({
             <div className="gr-desktop-list-col">
               <YearNav label={yearLabel} onPrev={prevYear} onNext={nextYear} />
               <QuarterTabs quarter={quarter} onChange={setQuarter} />
+              <RefreshBar fetchedAt={fetchedAt} refreshing={refreshing} onRefresh={refresh} />
 
               {loadingList ? (
                 <div className="gr-skeleton-list">

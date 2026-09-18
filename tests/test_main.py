@@ -27,6 +27,7 @@ def reset_fakes():
     FakeSushClient.subjects_data = []
     FakeSushClient.churn_ids = False
     FakeSushClient.report_card_data = []
+    FakeSushClient.subjects_detailed_calls = 0
     FakeEdupageClient.login_calls = 0
     FakeEdupageClient.behavior = "ok"
     FakeEdupageClient.session_alive_after_restore = True
@@ -467,7 +468,8 @@ def test_grades_stays_empty_when_both_diary_and_report_card_empty(client):
     FakeSushClient.report_card_data = []
     r = client.get("/api/grades?detailed=false")
     assert r.status_code == 200
-    assert r.json() == {"subjects": [], "note": None}
+    assert r.json()["subjects"] == []
+    assert r.json()["note"] is None
 
 
 def test_grades_subject_falls_back_to_report_card_stub(client):
@@ -525,6 +527,54 @@ def test_second_grades_call_does_not_relogin(client):
     client.get("/api/grades")
     client.get("/api/grades")
     assert FakeSushClient.login_calls == 1
+
+
+def test_grades_snapshot_avoids_second_live_fetch(client):
+    """Второй /api/grades отдаёт сохранённый снэпшот, не ходит в СУШ
+    заново — см. GradeSnapshot. Без этого каждое открытие страницы и
+    каждый клик по предмету заново гонял резидентный прокси (медленно)."""
+    client.post("/auth/register", json={"display_name": "X", "email": "snap1@nis.edu.kz", "password": "password123"})
+    client.post("/auth/link/sush", json={"school": "ptr", "iin": "081218550884", "password": "pass123"})
+    FakeSushClient.subjects_data = [_sample_subject()]
+
+    r1 = client.get("/api/grades")
+    assert r1.status_code == 200
+    assert FakeSushClient.subjects_detailed_calls == 1
+    assert r1.json()["fetched_at"]
+
+    r2 = client.get("/api/grades")
+    assert r2.status_code == 200
+    assert FakeSushClient.subjects_detailed_calls == 1  # снэпшот, не новый живой поход
+    assert r2.json()["subjects"][0]["journal_id"] == "j1"
+
+
+def test_grades_force_true_refetches_live(client):
+    client.post("/auth/register", json={"display_name": "X", "email": "snap2@nis.edu.kz", "password": "password123"})
+    client.post("/auth/link/sush", json={"school": "ptr", "iin": "081218550884", "password": "pass123"})
+    FakeSushClient.subjects_data = [_sample_subject()]
+
+    client.get("/api/grades")
+    assert FakeSushClient.subjects_detailed_calls == 1
+
+    r = client.get("/api/grades?force=true")
+    assert r.status_code == 200
+    assert FakeSushClient.subjects_detailed_calls == 2  # force обходит снэпшот
+
+
+def test_grades_subject_reads_from_snapshot_without_live_fetch(client):
+    """Клик по предмету после того, как список уже загружен, не должен
+    заново ходить в СУШ — тема уже есть в снэпшоте от /api/grades."""
+    client.post("/auth/register", json={"display_name": "X", "email": "snap3@nis.edu.kz", "password": "password123"})
+    client.post("/auth/link/sush", json={"school": "ptr", "iin": "081218550884", "password": "pass123"})
+    FakeSushClient.subjects_data = [_sample_subject()]
+
+    client.get("/api/grades")
+    assert FakeSushClient.subjects_detailed_calls == 1
+
+    r = client.get("/api/grades/subject?name=Химия")
+    assert r.status_code == 200
+    assert r.json()["name"] == "Химия"
+    assert FakeSushClient.subjects_detailed_calls == 1  # из снэпшота, не живой поход
 
 
 def test_link_sush_captcha_returns_ok_with_flag_not_500(client):

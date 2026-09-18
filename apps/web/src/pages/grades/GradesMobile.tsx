@@ -1,7 +1,7 @@
 import logo from '../../assets/nis-logo-mark.png'
 import { initials } from '../../ui/dashboardParts'
 import { BottomNav } from '../../ui/BottomNav'
-import { QuarterTabs, SubjectCard, SubjectDetail, YearNav } from './parts'
+import { QuarterTabs, RefreshBar, SubjectCard, SubjectDetail, YearNav } from './parts'
 import type { GradesData } from './useGradesData'
 
 export function GradesMobile({
@@ -14,7 +14,7 @@ export function GradesMobile({
   const {
     me,
     quarter, setQuarter, yearLabel, prevYear, nextYear,
-    subjects, note, listError, loadingList,
+    subjects, note, fetchedAt, listError, loadingList, refreshing, refresh,
     selectedId, detail, loadingDetail, selectSubject, closeDetail,
   } = data
 
@@ -36,6 +36,7 @@ export function GradesMobile({
             <h1>Оценки</h1>
             <QuarterTabs quarter={quarter} onChange={setQuarter} />
             <YearNav label={yearLabel} onPrev={prevYear} onNext={nextYear} />
+            <RefreshBar fetchedAt={fetchedAt} refreshing={refreshing} onRefresh={refresh} />
           </div>
 
           <div className="gr-mobile-scroll">
