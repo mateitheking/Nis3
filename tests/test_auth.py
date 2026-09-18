@@ -43,7 +43,7 @@ class FakeSushClient:
     этого флага фейк всегда отдаёт ОДНИ И ТЕ ЖЕ Id — ровно то расхождение
     фейка с реальностью, из-за которого тесты не поймали баг живьём."""
 
-    def __init__(self, school: str):
+    def __init__(self, school: str, cache_key: str | None = None):
         self.school = school
         self._cookies: list[dict] = []
         self._logged_in = False

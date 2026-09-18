@@ -261,7 +261,7 @@ class AuthService:
         if row is not None and row.circuit_open:
             raise CircuitOpen(Source.SUSH, row.circuit_reason)
 
-        client = SushClient(cred.school)
+        client = SushClient(cred.school, cache_key=student.id)
 
         if row is not None and row.encrypted_cookies:
             try:

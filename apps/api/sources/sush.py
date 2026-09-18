@@ -23,6 +23,7 @@ import os
 import re
 import secrets
 import string
+import threading
 import time as _time
 from concurrent.futures import ThreadPoolExecutor
 from typing import Any, Callable, TypeVar
@@ -79,6 +80,39 @@ def _sticky_proxy_url(url: str) -> str:
     user, _, password = creds.partition(":")
     session_id = "".join(secrets.choice(string.ascii_lowercase + string.digits) for _ in range(8))
     return f"{scheme}://{user}:{password}_session-{session_id}_lifetime-5m@{host}"
+
+
+# Кэш цепочки «год → четверть → параллель → класс → ученик → URL дневника»
+# (см. SushClient.subjects). Каждый живой запрос честно проходит её заново —
+# 18.09.2026 выяснилось, что бо́льшая часть 19-секундной загрузки уходит
+# именно сюда (6-8 последовательных запросов через резидентный прокси), а не
+# в детальные баллы (те уже распараллелены). Место ученика в параллели/классе
+# внутри одной четверти не меняется, поэтому 30 минут — разумный компромисс:
+# ощутимо ускоряет повторные заходы, но не держит стухшие данные неделями.
+# В памяти процесса, не в БД — потерять кэш при рестарте не страшно, это не
+# источник правды, только ускоритель повторного вычисления.
+_REF_CACHE_TTL = 1800.0
+_ref_cache: dict[tuple, tuple[float, Any]] = {}
+_ref_cache_lock = threading.Lock()
+
+
+def _ref_cache_get(key: tuple) -> Any:
+    with _ref_cache_lock:
+        entry = _ref_cache.get(key)
+    if entry is None:
+        return None
+    ts, value = entry
+    if _time.time() - ts > _REF_CACHE_TTL:
+        with _ref_cache_lock:
+            _ref_cache.pop(key, None)
+        return None
+    return value
+
+
+def _ref_cache_set(key: tuple, value: Any) -> None:
+    with _ref_cache_lock:
+        _ref_cache[key] = (_time.time(), value)
+
 
 # Сообщения СУШ об истёкшей сессии (из enis2 + HAR + живых прогонов).
 _SESSION_EXPIRED_MARKERS = (
@@ -423,9 +457,19 @@ def period_by_quarter(periods: list[Period], quarter: int) -> Period:
 class SushClient:
     """Сессия к СУШ одной школы. Держит куки; логинится только при нужде."""
 
-    def __init__(self, school: str, client: curl_requests.Session | None = None):
+    def __init__(
+        self,
+        school: str,
+        client: curl_requests.Session | None = None,
+        cache_key: str | None = None,
+    ):
         self.school = school
         self.base = f"https://sms.{school}.nis.edu.kz"
+        # Ключ кэша цепочки параллель/класс/ученик (см. _ref_cache) — обычно
+        # id нашего Student, передаётся вызывающим (get_sush_client). None =
+        # кэш выключен (например, в тестах с FakeSushClient или там, где
+        # личность ученика не установлена).
+        self._cache_key = cache_key
         self._client = client or curl_requests.Session(
             # impersonate= — не только заголовок, а настоящий TLS/HTTP2-отпечаток
             # Chrome (JA3), это и есть реальный фикс капчи, не сам факт прокси
@@ -450,6 +494,19 @@ class SushClient:
     def close(self) -> None:
         if self._owns_client:
             self._client.close()
+
+    def _cached(self, kind: str, extra: tuple, compute: Callable[[], Any]) -> Any:
+        """См. _ref_cache — обёртка над справочными вызовами, которые не
+        меняются в течение четверти (параллель/класс/ученик/URL дневника)."""
+        if self._cache_key is None:
+            return compute()
+        key = (self._cache_key, self.school, kind, extra)
+        cached = _ref_cache_get(key)
+        if cached is not None:
+            return cached
+        value = compute()
+        _ref_cache_set(key, value)
+        return value
 
     def __enter__(self) -> "SushClient":
         return self
@@ -604,17 +661,23 @@ class SushClient:
     # ---- справочники ----
 
     def school_years(self) -> list[SchoolYear]:
-        raw = self._post_json(
-            "/Ref/GetSchoolYears", {"page": 1, "start": 0, "limit": 100}
-        )
-        return parse_school_years(raw)
+        def compute() -> list[SchoolYear]:
+            raw = self._post_json(
+                "/Ref/GetSchoolYears", {"page": 1, "start": 0, "limit": 100}
+            )
+            return parse_school_years(raw)
+
+        return self._cached("years", (), compute)
 
     def periods(self, school_year_id: str) -> list[Period]:
-        raw = self._post_json(
-            "/Ref/GetPeriods",
-            {"schoolYearId": school_year_id, "page": 1, "start": 0, "limit": 100},
-        )
-        return parse_periods(raw)
+        def compute() -> list[Period]:
+            raw = self._post_json(
+                "/Ref/GetPeriods",
+                {"schoolYearId": school_year_id, "page": 1, "start": 0, "limit": 100},
+            )
+            return parse_periods(raw)
+
+        return self._cached("periods", (school_year_id,), compute)
 
     def subjects(
         self, school_year_id: str | None = None, quarter: int = 1
@@ -645,30 +708,39 @@ class SushClient:
         periods = self.periods(year.Id)
         period = period_by_quarter(periods, quarter)
 
-        common = {"periodId": period.Id}
-        parallel = self._one(
-            self._ref_list("/JceDiary/GetParallels", dict(common)), "параллель дневника"
-        )
-        klass = self._one(
-            self._ref_list(
-                "/JceDiary/GetKlasses", {**common, "parallelId": parallel.Id}
-            ),
-            "класс дневника",
-        )
-        student = self._one(
-            self._ref_list("/JceDiary/GetStudents", {**common, "klassId": klass.Id}),
-            "ученик дневника",
-        )
+        def resolve_chain() -> tuple[str, str, str, str]:
+            common = {"periodId": period.Id}
+            parallel = self._one(
+                self._ref_list("/JceDiary/GetParallels", dict(common)), "параллель дневника"
+            )
+            klass = self._one(
+                self._ref_list(
+                    "/JceDiary/GetKlasses", {**common, "parallelId": parallel.Id}
+                ),
+                "класс дневника",
+            )
+            student = self._one(
+                self._ref_list("/JceDiary/GetStudents", {**common, "klassId": klass.Id}),
+                "ученик дневника",
+            )
 
-        diary_raw = self._post_json(
-            "/JceDiary/GetJceDiary",
-            {**common, "parallelId": parallel.Id, "klassId": klass.Id,
-             "studentId": student.Id},
+            diary_raw = self._post_json(
+                "/JceDiary/GetJceDiary",
+                {**common, "parallelId": parallel.Id, "klassId": klass.Id,
+                 "studentId": student.Id},
+            )
+            inner_url = _envelope(diary_raw, "GetJceDiary")
+            if not isinstance(inner_url, dict) or not str(inner_url.get("Url", "")).startswith("http"):
+                raise ContractError(f"GetJceDiary вернул не URL: {inner_url!r}")
+            return parallel.Id, klass.Id, student.Id, inner_url["Url"]
+
+        # Место ученика в параллели/классе на эту четверть — кэшируем всю
+        # цепочку разом (см. _ref_cache): 4 последовательных запроса, из
+        # которых состоит бо́льшая часть времени subjects(), не меняются
+        # между вызовами внутри одной четверти.
+        _parallel_id, _klass_id, _student_id, url = self._cached(
+            "diary_chain", (period.Id,), resolve_chain
         )
-        inner_url = _envelope(diary_raw, "GetJceDiary")
-        if not isinstance(inner_url, dict) or not str(inner_url.get("Url", "")).startswith("http"):
-            raise ContractError(f"GetJceDiary вернул не URL: {inner_url!r}")
-        url = inner_url["Url"]
 
         # GET на этот URL ставит сессию внутреннего дневника — как и в
         # report_card (сверено по HAR: браузер делает именно GET без тела,
