@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { AddEntryModal } from '../schedule/parts'
 import { occupiedPeriodsOf } from '../schedule/useScheduleData'
-import { formatLongDate, tomorrowIso } from '../../ui/dateFormat'
+import { formatLongDate } from '../../ui/dateFormat'
 import { Sidebar } from '../../ui/Sidebar'
 import { SettingsDrawer } from '../../ui/SettingsDrawer'
 import { EventsCard, NotificationsCard, ScheduleCard } from './parts'
@@ -25,7 +25,7 @@ export function HomeDesktop({
 }) {
   const [settingsOpen, setSettingsOpen] = useState(false)
   const {
-    me, tomorrowLessons, tomorrowExams, events, notifications, sources, loading, link, unlink, logout,
+    me, scheduleDate, tomorrowLessons, tomorrowExams, events, notifications, sources, loading, link, unlink, logout,
     addModalOpen, openAddModal, closeAddModal, submitCustomEntry, adding, addError,
   } = data
   const handleLogout = async () => {
@@ -54,6 +54,7 @@ export function HomeDesktop({
             <ScheduleCard
               lessons={tomorrowLessons}
               exams={tomorrowExams}
+              date={scheduleDate}
               loading={loading}
               onOpen={() => onNavigate('Расписание')}
               onAdd={openAddModal}
@@ -81,7 +82,7 @@ export function HomeDesktop({
 
       {addModalOpen && (
         <AddEntryModal
-          dateLabel={formatLongDate(tomorrowIso())}
+          dateLabel={formatLongDate(scheduleDate)}
           occupiedPeriods={occupiedPeriodsOf(tomorrowLessons)}
           submitting={adding}
           error={addError}

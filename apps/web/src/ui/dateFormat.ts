@@ -1,4 +1,6 @@
 const WEEKDAYS = ['воскресенье', 'понедельник', 'вторник', 'среда', 'четверг', 'пятница', 'суббота']
+// Винительный падеж для фразы 'на <день>' — 'на понедельник', но 'на среду'/'на пятницу'/'на субботу'.
+const WEEKDAYS_ACCUSATIVE = ['воскресенье', 'понедельник', 'вторник', 'среду', 'четверг', 'пятницу', 'субботу']
 const MONTHS = [
   'января', 'февраля', 'марта', 'апреля', 'мая', 'июня',
   'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря',
@@ -27,18 +29,33 @@ export function formatLongDate(iso: string): string {
   return `${WEEKDAYS[d.getDay()]}, ${String(d.getDate()).padStart(2, '0')} ${MONTHS[d.getMonth()]}`
 }
 
+/** Целое число дней от сегодня (местная полночь) до `iso`, может быть
+ * отрицательным. Общий счётчик для `daysFromToday` и для 'До первого
+ * урока' на карточке расписания (см. home/parts.tsx::ScheduleCard). */
+export function daysOffsetFromToday(iso: string): number {
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  const target = parseIsoDate(iso)
+  return Math.round((target.getTime() - today.getTime()) / 86_400_000)
+}
+
 /** 'через N дн.' — чистая арифметика от сегодняшней даты, сервер её не
  * считает (см. apps/api/main.py::events_upcoming). Капитализация первой
  * буквы намеренно не делается — 'среда' в фразе идёт после запятой. */
 export function daysFromToday(iso: string): string {
-  const today = new Date()
-  today.setHours(0, 0, 0, 0)
-  const target = parseIsoDate(iso)
-  const diffDays = Math.round((target.getTime() - today.getTime()) / 86_400_000)
+  const diffDays = daysOffsetFromToday(iso)
   if (diffDays === 0) return 'сегодня'
   if (diffDays === 1) return 'завтра'
   if (diffDays < 0) return `${Math.abs(diffDays)} дн. назад`
   return `через ${diffDays} дн.`
+}
+
+/** 'на понедельник' / 'на среду' — винительный падеж для заголовка карточки
+ * расписания, когда показываем не буквально завтра (например, в пятницу
+ * ближайший день с уроками — понедельник). */
+export function weekdayAccusative(iso: string): string {
+  const d = parseIsoDate(iso)
+  return WEEKDAYS_ACCUSATIVE[d.getDay()]
 }
 
 /** Полный ISO datetime ('2026-09-10T09:30:00', без таймзоны — так его

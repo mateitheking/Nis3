@@ -1,5 +1,14 @@
 import type { ExamEvent, Lesson, NotificationItem, UpcomingEvent } from '../../types'
-import { daysFromToday, formatMessageDateTime, formatShortDayMonth, formatWeekdayDate, hoursUntil, tomorrowIso } from '../../ui/dateFormat'
+import {
+  daysFromToday,
+  daysOffsetFromToday,
+  formatMessageDateTime,
+  formatShortDayMonth,
+  formatWeekdayDate,
+  hoursUntil,
+  tomorrowIso,
+  weekdayAccusative,
+} from '../../ui/dateFormat'
 import { examBadgeFor } from '../schedule/useScheduleData'
 
 function subjectShort(subject: string): string {
@@ -9,19 +18,27 @@ function subjectShort(subject: string): string {
 export function ScheduleCard({
   lessons,
   exams,
+  date,
   loading,
   onOpen,
   onAdd,
 }: {
   lessons: Lesson[] | null
   exams: ExamEvent[] | null
+  /** Реальный день, который показывает карточка — не всегда буквально
+   * завтра: если на завтра пусто (выходные), это ближайший день с уроками
+   * (см. useHomeData::findNextScheduleDay). */
+  date: string
   loading: boolean
   onOpen?: () => void
   onAdd?: () => void
 }) {
-  const tomorrow = formatShortDayMonth(tomorrowIso())
+  const title =
+    date === tomorrowIso()
+      ? `Расписание на завтра, ${formatShortDayMonth(date)}`
+      : `Расписание на ${weekdayAccusative(date)}, ${formatShortDayMonth(date)}`
   const first = lessons && lessons.length > 0 ? lessons[0] : null
-  const hoursToFirst = first?.start ? hoursUntil(first.start, 1) : null
+  const hoursToFirst = first?.start ? hoursUntil(first.start, daysOffsetFromToday(date)) : null
 
   const Wrap = onOpen ? 'button' : 'div'
 
@@ -39,7 +56,7 @@ export function ScheduleCard({
               <span className="home-schedule-countdown">через {hoursToFirst} ч</span>
             </div>
           )}
-          <div className="home-schedule-title">Расписание на завтра, {tomorrow}</div>
+          <div className="home-schedule-title">{title}</div>
         </div>
         {loading ? (
           <div className="home-schedule-empty">Загружаем…</div>
@@ -52,7 +69,7 @@ export function ScheduleCard({
         ) : (
           <div className="home-schedule-grid" style={{ gridTemplateColumns: `repeat(${lessons.length}, 1fr)` }}>
             {lessons.map((l, i) => {
-              const exam = !l.custom ? examBadgeFor(exams, tomorrowIso(), l.subject) : null
+              const exam = !l.custom ? examBadgeFor(exams, date, l.subject) : null
               return (
                 <div className="home-schedule-cell" key={i}>
                   {exam && (

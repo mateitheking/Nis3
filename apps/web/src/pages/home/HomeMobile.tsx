@@ -15,7 +15,7 @@ export function HomeMobile({
   onLoggedOut: () => void
 }) {
   const [settingsOpen, setSettingsOpen] = useState(false)
-  const { me, tomorrowLessons, tomorrowExams, events, notifications, sources, loading, link, unlink, logout } = data
+  const { me, scheduleDate, tomorrowLessons, tomorrowExams, events, notifications, sources, loading, link, unlink, logout } = data
   const handleLogout = async () => {
     await logout()
     onLoggedOut()
@@ -43,6 +43,7 @@ export function HomeMobile({
         <ScheduleCard
           lessons={tomorrowLessons}
           exams={tomorrowExams}
+          date={scheduleDate}
           loading={loading}
           onOpen={() => onNavigate('Расписание')}
         />
