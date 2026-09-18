@@ -64,9 +64,7 @@ export function RefreshBar({
 }) {
   return (
     <div className="gr-refresh-bar">
-      <span className="gr-refresh-label">
-        {fetchedAt ? `Обновлено: ${formatRelativeTime(fetchedAt)}` : ' '}
-      </span>
+      {fetchedAt && <span className="gr-refresh-label">Обновлено: {formatRelativeTime(fetchedAt)}</span>}
       <button
         type="button"
         className="gr-refresh-btn"
