@@ -67,6 +67,7 @@ from apps.api.sources.edupage import CaptchaRequired as EdupageCaptchaRequired
 from apps.api.sources.edupage import SourceError as EdupageSourceError
 from apps.api.sources.sush import AuthError as SushAuthError
 from apps.api.sources.sush import ContractError as SushContractError
+from apps.api.sources.sush import NetworkError as SushNetworkError
 from apps.api.sources.sush import SessionExpired as SushSessionExpired
 from apps.api.sources.sush import SourceError as SushSourceError
 from apps.api.sources.sush import SushClient
@@ -472,6 +473,15 @@ def _fetch_grades_live(
             raise  # источник изменил форму ответа — это баг, не глотаем молча
         except SushSessionExpired as exc:
             raise HTTPException(409, f"сессия СУШ истекла на середине запроса: {exc}")
+        except SushNetworkError as exc:
+            # Живой случай 18.09.2026: резидентный прокси иногда не успевает
+            # за 30с — это сбой сети, а не «данных на эту четверть нет».
+            # Раньше это ловилось общим SushSourceError и уходило в note
+            # как честный пустой ответ — ученик видел сырой текст curl-
+            # ошибки вместо пустого списка предметов. Явный 502 — фронт
+            # покажет его как ошибку с возможностью повторить, не как
+            # «Обновить» вместо пустой четверти.
+            raise HTTPException(502, f"СУШ временно недоступен, попробуй обновить ещё раз: {exc}")
         except SushSourceError as exc:
             # «Нет утвержденной нагрузки на данную четверть!» и подобные бизнес-
             # ответы — честное «данных ещё нет», не ошибка сервера

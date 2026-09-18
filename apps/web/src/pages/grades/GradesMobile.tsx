@@ -47,7 +47,7 @@ export function GradesMobile({
                 <div className="gr-skeleton" />
               </div>
             ) : listError ? (
-              <div className="gr-desktop-empty">СУШ не привязан или сессия истекла — зайдите в настройки</div>
+              <div className="gr-desktop-empty">{listError}</div>
             ) : note ? (
               <div className="gr-desktop-empty">{note}</div>
             ) : subjects && subjects.length > 0 ? (

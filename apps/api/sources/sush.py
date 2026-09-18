@@ -44,6 +44,7 @@ __all__ = [
     "ContractError",
     "AuthError",
     "SessionExpired",
+    "NetworkError",
     "CaptchaRequired",
     "TwoFactorRequired",
     "parse_school_years",
@@ -147,6 +148,17 @@ class AuthError(SourceError):
 
 class SessionExpired(SourceError):
     """Сессия истекла — нужен перелогин."""
+
+
+class NetworkError(SourceError):
+    """Сеть/сервер СУШ физически недоступны (таймаут, обрыв соединения,
+    HTTP-код не 200) — инфраструктурный сбой, не бизнес-ответ источника.
+    Живой случай 18.09.2026: резидентный прокси иногда не успевает
+    установить соединение за 30с — раньше это ловилось общим SourceError и
+    показывалось ученику как честное «данных на эту четверть нет» (см.
+    main.py::_fetch_grades_live), хотя это был просто сетевой сбой, а не
+    отсутствие данных. Отдельный подкласс — чтобы вызывающий код различал
+    «источник ответил по делу» от «источник не ответил вообще»."""
 
 
 class CaptchaRequired(SourceError):
@@ -570,7 +582,7 @@ class SushClient:
                 f"{self.base}{login_page}", allow_redirects=True
             )
         except curl_requests.exceptions.RequestException as exc:
-            raise SourceError(f"{self.school}: страница входа недоступна ({exc})") from exc
+            raise NetworkError(f"{self.school}: страница входа недоступна ({exc})") from exc
 
         resp = self._post(
             "/root/Account/LogOn",
@@ -634,14 +646,14 @@ class SushClient:
         try:
             resp = self._client.post(url, data=data or {}, headers=headers)
         except curl_requests.exceptions.RequestException as exc:
-            raise SourceError(f"{self.school}: сеть недоступна ({exc})") from exc
+            raise NetworkError(f"{self.school}: сеть недоступна ({exc})") from exc
         # редирект на логин = сессия истекла / нет доступа
         if resp.status_code in (301, 302) and "Account/Login" in resp.headers.get(
             "location", ""
         ):
             raise SessionExpired(f"{self.school}: редирект на логин ({path})")
         if resp.status_code != 200:
-            raise SourceError(f"{self.school}: {path} → HTTP {resp.status_code}")
+            raise NetworkError(f"{self.school}: {path} → HTTP {resp.status_code}")
         return resp
 
     def _post_json(
@@ -749,7 +761,7 @@ class SushClient:
         try:
             self._client.get(url, allow_redirects=True)
         except curl_requests.exceptions.RequestException as exc:
-            raise SourceError(f"{self.school}: не открылся дневник ({exc})") from exc
+            raise NetworkError(f"{self.school}: не открылся дневник ({exc})") from exc
 
         raw = self._post_json(
             "/Jce/Diary/GetSubjects", {"page": 1, "start": 0, "limit": 100},
@@ -892,7 +904,7 @@ class SushClient:
         try:
             self._client.get(inner_url, allow_redirects=True)
         except curl_requests.exceptions.RequestException as exc:
-            raise SourceError(f"{self.school}: не открылся отчёт ({exc})") from exc
+            raise NetworkError(f"{self.school}: не открылся отчёт ({exc})") from exc
 
         raw = self._post_json(
             f"/ReportCardByStudent/GetData?_dc={int(_time.time() * 1000)}",

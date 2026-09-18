@@ -561,6 +561,21 @@ def test_grades_force_true_refetches_live(client):
     assert FakeSushClient.subjects_detailed_calls == 2  # force обходит снэпшот
 
 
+def test_grades_network_error_is_502_not_fake_empty_note(client):
+    """Живой случай 18.09.2026: резидентный прокси иногда обрывается по
+    таймауту при живом походе (force=true). Раньше это ловилось как общий
+    SourceError и уходило в note — ученик видел сырой текст curl-ошибки
+    вместо пустого списка предметов, как будто в четверти честно нет
+    данных. Сетевой сбой должен быть понятной ошибкой (502), не note."""
+    client.post("/auth/register", json={"display_name": "X", "email": "neterr@nis.edu.kz", "password": "password123"})
+    client.post("/auth/link/sush", json={"school": "ptr", "iin": "081218550884", "password": "pass123"})
+    FakeSushClient.behavior = "network_error"
+
+    r = client.get("/api/grades?force=true")
+    assert r.status_code == 502
+    assert "недоступен" in r.json()["detail"]
+
+
 def test_grades_subject_reads_from_snapshot_without_live_fetch(client):
     """Клик по предмету после того, как список уже загружен, не должен
     заново ходить в СУШ — тема уже есть в снэпшоте от /api/grades."""

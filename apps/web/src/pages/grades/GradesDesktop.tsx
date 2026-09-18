@@ -53,7 +53,7 @@ export function GradesDesktop({
                   <div className="gr-skeleton" />
                 </div>
               ) : listError ? (
-                <div className="gr-desktop-empty">СУШ не привязан или сессия истекла</div>
+                <div className="gr-desktop-empty">{listError}</div>
               ) : note ? (
                 <div className="gr-desktop-empty">{note}</div>
               ) : subjects && subjects.length > 0 ? (

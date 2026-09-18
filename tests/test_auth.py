@@ -90,7 +90,11 @@ class FakeSushClient:
         return FakeSushClient.subjects_data
 
     def subjects_detailed(self, school_year_id=None, quarter=1):
+        from apps.api.sources.sush import NetworkError
+
         FakeSushClient.subjects_detailed_calls += 1
+        if FakeSushClient.behavior == "network_error":
+            raise NetworkError("ptr: сеть недоступна (имитация живого случая 18.09.2026)")
         return self.subjects(school_year_id, quarter)
 
     def assessment_results(self, journal_id, eval_id):
