@@ -21,7 +21,10 @@ from __future__ import annotations
 
 import os
 import re
+import secrets
+import string
 import time as _time
+from concurrent.futures import ThreadPoolExecutor
 from typing import Any, Callable, TypeVar
 
 from curl_cffi import requests as curl_requests
@@ -51,6 +54,31 @@ __all__ = [
 ]
 
 _TIMEOUT = 30.0
+
+# Число одновременных запросов при разборе детальных оценок (см.
+# subjects_detailed) — не выше разумного, чтобы не долбить и источник, и
+# прокси-шлюз десятками параллельных соединений разом.
+_DETAIL_CONCURRENCY = 6
+
+
+def _sticky_proxy_url(url: str) -> str:
+    """Прибивает резидентный прокси (IPRoyal) к одному exit IP на время
+    жизни клиента вместо ротации на каждое новое соединение.
+
+    СУШ вяжет всю сессию на один IP (подтверждено вживую 18.09.2026) — с
+    ротацией это работало только потому, что все запросы раньше шли
+    последовательно через одно и то же keep-alive соединение. Как только
+    detail-запросы (см. subjects_detailed) пошли параллельно, каждый новый
+    поток открывает своё соединение к прокси-шлюзу, и без sticky-сессии
+    оно рискует получить другой exit IP — та же поломка, что уже один раз
+    случилась при попытке сузить прокси на один логин (revert 42df391), но
+    по другой причине.
+    """
+    scheme, _, rest = url.partition("://")
+    creds, _, host = rest.partition("@")
+    user, _, password = creds.partition(":")
+    session_id = "".join(secrets.choice(string.ascii_lowercase + string.digits) for _ in range(8))
+    return f"{scheme}://{user}:{password}_session-{session_id}_lifetime-5m@{host}"
 
 # Сообщения СУШ об истёкшей сессии (из enis2 + HAR + живых прогонов).
 _SESSION_EXPIRED_MARKERS = (
@@ -410,7 +438,8 @@ class SushClient:
             # СУШ показывает reCAPTCHA на логине с адресов датацентров (Railway,
             # Fly — подтверждено вживую 16.09.2026). SUSH_PROXY_URL — резидентный/
             # ISP-прокси (http://user:pass@host:port), пусто = без прокси, как раньше.
-            proxy=os.environ.get("SUSH_PROXY_URL") or None,
+            # _sticky_proxy_url — см. её docstring: один exit IP на весь клиент.
+            proxy=_sticky_proxy_url(os.environ["SUSH_PROXY_URL"]) if os.environ.get("SUSH_PROXY_URL") else None,
             headers={
                 "Origin": self.base,
                 "Accept-Language": "ru-RU,ru;q=0.9,en;q=0.8",
@@ -679,14 +708,28 @@ class SushClient:
         Один дополнительный запрос на каждый **непустой** вид оценивания
         (``Evaluation.MaxScores`` не пуст, то есть в четверти реально что-то
         запланировано) — до 2 на предмет, СОР и СОЧ отдельно. На класс из
-        16 предметов это может быть 15-20 живых запросов подряд, счёт на
-        секунды — так и есть, отдельного batch-эндпоинта источник не даёт.
+        16 предметов это до 15-20 запросов; гоним их пачками по
+        ``_DETAIL_CONCURRENCY`` штук вместо строго по одному — источник
+        отдельного batch-эндпоинта не даёт, а resource.Session у curl_cffi
+        потокобезопасна (свой curl-хендл на поток, общие куки), так что
+        параллелить безопасно при условии sticky-прокси (см.
+        _sticky_proxy_url) — иначе разные потоки рискуют получить разный
+        exit IP и порвать сессию.
         """
         subjects = self.subjects(school_year_id=school_year_id, quarter=quarter)
-        for subj in subjects:
-            for ev in subj.Evaluations:
-                if ev.MaxScores:
-                    ev.results = self.assessment_results(subj.JournalId, ev.Id)
+        tasks = [
+            (subj, ev)
+            for subj in subjects
+            for ev in subj.Evaluations
+            if ev.MaxScores
+        ]
+        if tasks:
+            with ThreadPoolExecutor(max_workers=min(_DETAIL_CONCURRENCY, len(tasks))) as pool:
+                results = pool.map(
+                    lambda t: self.assessment_results(t[0].JournalId, t[1].Id), tasks
+                )
+                for (_, ev), res in zip(tasks, results):
+                    ev.results = res
         return subjects
 
     # ---- табель (report card) ----
