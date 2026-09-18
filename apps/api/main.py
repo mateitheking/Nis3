@@ -449,49 +449,63 @@ def _fetch_grades_live(
     """Полный живой поход в СУШ — всегда с темами (``subjects_detailed``),
     чтобы один поход закрывал и /api/grades, и последующие клики по
     предметам в /api/grades/subject из того же снэпшота, а не гонял СУШ
-    заново на каждый клик."""
-    try:
-        client = auth.get_sush_client(student)
-    except CircuitOpen as exc:
-        raise HTTPException(409, f"нужен ручной вход в СУШ: {exc.reason}")
-    except ValueError as exc:
-        raise HTTPException(400, str(exc))
-    except VaultError:
-        # пароль сохранён под ключом, которого сейчас нет (например, ключ
-        # сменился с прошлой привязки) — самим не восстановить, только
-        # перепривязать источник заново
-        raise HTTPException(409, "данные СУШ не читаются текущим ключом — привяжи заново")
+    заново на каждый клик.
 
-    # SushClient держит curl_cffi-сессию (нативный libcurl-хендл, тяжелее
-    # httpx) — не закрывать её значило копить их по одной на каждый запрос
-    # и получить OOM на машине с 256MB (живой случай 16.09.2026).
-    try:
-        school_year_id = _resolve_school_year_id(client, school_year)
+    До двух попыток: живой случай 18.09.2026 — СУШ рвёт нашу фоновую
+    сессию («Текущая сессия завершена по причине входа с другой рабочей
+    станции») даже когда ученик точно не заходил сам, просто сессия
+    протухла между restore_cookies()/has_session() (лёгкая проверка) и
+    самим запросом. Раньше это было конечной 409-ошибкой — ученику
+    приходилось жать «Обновить» второй раз руками. Один retry здесь
+    безопасен и не противоречит правилу «не перебирать пароль при капче»
+    (см. get_sush_client): капча/2FA — это CircuitOpen, отдельная ветка,
+    сюда не попадает и не ретраится."""
+    for attempt in (1, 2):
         try:
-            subjects = client.subjects_detailed(school_year_id=school_year_id, quarter=quarter)
-        except SushContractError:
-            raise  # источник изменил форму ответа — это баг, не глотаем молча
-        except SushSessionExpired as exc:
-            raise HTTPException(409, f"сессия СУШ истекла на середине запроса: {exc}")
-        except SushNetworkError as exc:
-            # Живой случай 18.09.2026: резидентный прокси иногда не успевает
-            # за 30с — это сбой сети, а не «данных на эту четверть нет».
-            # Раньше это ловилось общим SushSourceError и уходило в note
-            # как честный пустой ответ — ученик видел сырой текст curl-
-            # ошибки вместо пустого списка предметов. Явный 502 — фронт
-            # покажет его как ошибку с возможностью повторить, не как
-            # «Обновить» вместо пустой четверти.
-            raise HTTPException(502, f"СУШ временно недоступен, попробуй обновить ещё раз: {exc}")
-        except SushSourceError as exc:
-            # «Нет утвержденной нагрузки на данную четверть!» и подобные бизнес-
-            # ответы — честное «данных ещё нет», не ошибка сервера
-            return {"subjects": [], "note": str(exc)}
+            client = auth.get_sush_client(student)
+        except CircuitOpen as exc:
+            raise HTTPException(409, f"нужен ручной вход в СУШ: {exc.reason}")
+        except ValueError as exc:
+            raise HTTPException(400, str(exc))
+        except VaultError:
+            # пароль сохранён под ключом, которого сейчас нет (например, ключ
+            # сменился с прошлой привязки) — самим не восстановить, только
+            # перепривязать источник заново
+            raise HTTPException(409, "данные СУШ не читаются текущим ключом — привяжи заново")
 
-        if subjects:
-            return {"subjects": [_subject_json(s) for s in subjects], "note": None}
-        return {"subjects": [_stub_subject_json(r) for r in _report_card_rows(client, school_year_id)], "note": None}
-    finally:
-        client.close()
+        # SushClient держит curl_cffi-сессию (нативный libcurl-хендл, тяжелее
+        # httpx) — не закрывать её значило копить их по одной на каждый запрос
+        # и получить OOM на машине с 256MB (живой случай 16.09.2026).
+        try:
+            school_year_id = _resolve_school_year_id(client, school_year)
+            try:
+                subjects = client.subjects_detailed(school_year_id=school_year_id, quarter=quarter)
+            except SushContractError:
+                raise  # источник изменил форму ответа — это баг, не глотаем молча
+            except SushSessionExpired as exc:
+                if attempt == 1:
+                    continue  # get_sush_client() увидит мёртвую сессию и перелогинится
+                raise HTTPException(409, f"сессия СУШ истекла на середине запроса: {exc}")
+            except SushNetworkError as exc:
+                # Живой случай 18.09.2026: резидентный прокси иногда не успевает
+                # за 30с — это сбой сети, а не «данных на эту четверть нет».
+                # Раньше это ловилось общим SushSourceError и уходило в note
+                # как честный пустой ответ — ученик видел сырой текст curl-
+                # ошибки вместо пустого списка предметов. Явный 502 — фронт
+                # покажет его как ошибку с возможностью повторить, не как
+                # «Обновить» вместо пустой четверти.
+                raise HTTPException(502, f"СУШ временно недоступен, попробуй обновить ещё раз: {exc}")
+            except SushSourceError as exc:
+                # «Нет утвержденной нагрузки на данную четверть!» и подобные бизнес-
+                # ответы — честное «данных ещё нет», не ошибка сервера
+                return {"subjects": [], "note": str(exc)}
+
+            if subjects:
+                return {"subjects": [_subject_json(s) for s in subjects], "note": None}
+            return {"subjects": [_stub_subject_json(r) for r in _report_card_rows(client, school_year_id)], "note": None}
+        finally:
+            client.close()
+    raise AssertionError("недостижимо")  # цикл всегда либо return, либо raise на attempt==2
 
 
 @app.get("/api/grades")

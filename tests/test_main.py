@@ -561,6 +561,22 @@ def test_grades_force_true_refetches_live(client):
     assert FakeSushClient.subjects_detailed_calls == 2  # force обходит снэпшот
 
 
+def test_grades_retries_once_on_session_expired_mid_request(client):
+    """Живой случай 18.09.2026: СУШ рвёт фоновую сессию между лёгкой
+    проверкой (has_session) и самим запросом, хотя ученик не заходил сам.
+    Один автоматический повтор должен вытянуть данные без того, чтобы
+    ученик сам жал «Обновить» второй раз."""
+    client.post("/auth/register", json={"display_name": "X", "email": "retry1@nis.edu.kz", "password": "password123"})
+    client.post("/auth/link/sush", json={"school": "ptr", "iin": "081218550884", "password": "pass123"})
+    FakeSushClient.subjects_data = [_sample_subject()]
+    FakeSushClient.behavior = "session_expires_once"
+
+    r = client.get("/api/grades?force=true")
+    assert r.status_code == 200
+    assert r.json()["subjects"][0]["journal_id"] == "j1"
+    assert FakeSushClient.subjects_detailed_calls == 2  # первая попытка упала, вторая вытянула
+
+
 def test_grades_network_error_is_502_not_fake_empty_note(client):
     """Живой случай 18.09.2026: резидентный прокси иногда обрывается по
     таймауту при живом походе (force=true). Раньше это ловилось как общий

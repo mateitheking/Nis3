@@ -90,11 +90,13 @@ class FakeSushClient:
         return FakeSushClient.subjects_data
 
     def subjects_detailed(self, school_year_id=None, quarter=1):
-        from apps.api.sources.sush import NetworkError
+        from apps.api.sources.sush import NetworkError, SessionExpired
 
         FakeSushClient.subjects_detailed_calls += 1
         if FakeSushClient.behavior == "network_error":
             raise NetworkError("ptr: сеть недоступна (имитация живого случая 18.09.2026)")
+        if FakeSushClient.behavior == "session_expires_once" and FakeSushClient.subjects_detailed_calls == 1:
+            raise SessionExpired("GetParallels: Текущая сессия завершена по причине входа с другой рабочей станции")
         return self.subjects(school_year_id, quarter)
 
     def assessment_results(self, journal_id, eval_id):
