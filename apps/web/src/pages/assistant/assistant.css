@@ -65,7 +65,7 @@
   width: 26px;
   height: 26px;
   border-radius: 50%;
-  background: #242424;
+  background: var(--bg-chip);
   border: 1px solid var(--text-tertiary);
   color: var(--text-secondary);
   display: flex;
@@ -105,7 +105,7 @@
 }
 .ai-bubble.is-user {
   background: var(--accent);
-  color: #0a0a0a;
+  color: var(--bg-page);
   border-color: transparent;
   border-radius: 16px 16px 4px 16px;
 }
@@ -179,7 +179,7 @@
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  background: #242424;
+  background: var(--bg-chip);
   border: 1px solid var(--text-tertiary);
   color: var(--text-secondary);
   display: flex;

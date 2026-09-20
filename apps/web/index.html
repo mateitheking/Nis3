@@ -9,6 +9,25 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
+    <script>
+      // Ставим тему/акцент до первой отрисовки — иначе страница на долю
+      // секунды мелькает дефолтной тёмной темой перед тем, как React
+      // применит сохранённый выбор пользователя.
+      (function () {
+        try {
+          var theme = localStorage.getItem('nis-theme')
+          var resolved =
+            theme === 'light' || theme === 'dark'
+              ? theme
+              : window.matchMedia('(prefers-color-scheme: light)').matches
+                ? 'light'
+                : 'dark'
+          document.documentElement.dataset.theme = resolved
+          var accent = localStorage.getItem('nis-accent')
+          document.documentElement.dataset.accent = accent || 'gold'
+        } catch (e) {}
+      })()
+    </script>
   </head>
   <body>
     <div id="root"></div>

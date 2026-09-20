@@ -1,10 +1,18 @@
 /* Токены — один в один из design_handoff_navigation/README.md ("Design
    Tokens"), не придуманы заново. Меняются в одном месте для всего приложения
-   по мере добавления следующих экранов. */
+   по мере добавления следующих экранов.
+
+   Тема переключается атрибутом [data-theme] на <html> (см. index.html —
+   ставится синхронно до отрисовки, и ui/appearance.ts — держит выбор в
+   localStorage). Тёмная — исходная палитра, поэтому она же живёт в голом
+   :root; светлая переопределяет токены в :root[data-theme="light"]. Акцент —
+   отдельный атрибут [data-accent], пресеты ниже трогают только цветовые
+   токены акцента, не всю палитру. */
 :root {
   --bg-page: #0a0a0a;
   --bg-card: #141414;
   --bg-card-alt: #181818;
+  --bg-chip: #242424;
   --bg-input: #0e0e0e;
   --bg-input-mobile: #141414;
   --bg-sidebar: #0d0d0d;
@@ -19,15 +27,66 @@
   --text-primary: #f5f5f5;
   --text-secondary: #8a8a8a;
   --text-tertiary: #5c5c5c;
+  --text-muted: #c2c2c2;
 
   --success-dot: #4caf6a;
   --success-text: #7fd88f;
   --error: #d97757;
+  --error-text: #f0b8a4;
 
   --radius-card: 20px;
   --radius-input: 12px;
 
   --font-sans: 'Inter', system-ui, sans-serif;
+}
+
+:root[data-theme='light'] {
+  --bg-page: #f7f5f1;
+  --bg-card: #ffffff;
+  --bg-card-alt: #f1efe9;
+  --bg-chip: #ece8de;
+  --bg-input: #ffffff;
+  --bg-input-mobile: #ffffff;
+  --bg-sidebar: #fbfaf7;
+
+  --border-subtle: rgba(24, 18, 8, 0.08);
+  --border-input: rgba(24, 18, 8, 0.14);
+  --border-input-focus: #b8894a;
+
+  --accent: #b8894a;
+  --accent-hover: #a67a3c;
+
+  --text-primary: #201d17;
+  --text-secondary: #6b6558;
+  --text-tertiary: #a39c8c;
+  --text-muted: #4a453a;
+
+  --success-dot: #2f9e58;
+  --success-text: #1f7a41;
+  --error: #c0532f;
+  --error-text: #8a3a1f;
+}
+
+/* Акцент — пресет поверх темы, гость выбирает независимо от светлой/тёмной. */
+:root[data-accent='blue'] {
+  --accent: #5b8def;
+  --accent-hover: #7ba3f2;
+  --border-input-focus: #5b8def;
+}
+:root[data-accent='green'] {
+  --accent: #4caf6a;
+  --accent-hover: #66c17f;
+  --border-input-focus: #4caf6a;
+}
+:root[data-accent='purple'] {
+  --accent: #9b7fd4;
+  --accent-hover: #b09de0;
+  --border-input-focus: #9b7fd4;
+}
+:root[data-accent='rose'] {
+  --accent: #d97fa0;
+  --accent-hover: #e598b3;
+  --border-input-focus: #d97fa0;
 }
 
 * {

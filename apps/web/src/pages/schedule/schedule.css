@@ -191,7 +191,7 @@
 .sch-add-row span {
   font-size: 13.5px;
   font-weight: 700;
-  color: #0a0a0a;
+  color: var(--bg-page);
 }
 
 .sch-grid-scroll {
@@ -385,7 +385,7 @@
 .sch-period-btn.is-selected {
   background: var(--accent);
   border-color: var(--accent);
-  color: #0a0a0a;
+  color: var(--bg-page);
 }
 .sch-period-btn:disabled {
   opacity: 0.3;

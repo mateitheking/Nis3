@@ -4,6 +4,7 @@ import type { Me, SourceStatus, SourcesStatus } from '../types'
 import { Checkbox } from './authFormParts'
 import { formatRelativeTime } from './dateFormat'
 import { NIS_SCHOOLS } from '../data/nisSchools'
+import { ACCENTS, useAppearance, type ThemeMode } from './appearance'
 
 export function initials(name: string): string {
   const parts = name.trim().split(/\s+/).filter(Boolean)
@@ -227,6 +228,54 @@ function SourceSettingsCard({
   )
 }
 
+const THEME_OPTIONS: { key: ThemeMode; label: string }[] = [
+  { key: 'system', label: 'Системная' },
+  { key: 'light', label: 'Светлая' },
+  { key: 'dark', label: 'Тёмная' },
+]
+
+export function AppearanceSettings() {
+  const { theme, accent, setTheme, setAccent } = useAppearance()
+  return (
+    <div className="home-settings-group">
+      <span className="home-settings-label">Внешний вид</span>
+      <div className="home-settings-box">
+        <div className="home-appearance-row">
+          <span className="home-settings-field-label">Тема</span>
+          <div className="home-theme-toggle">
+            {THEME_OPTIONS.map((opt) => (
+              <button
+                key={opt.key}
+                type="button"
+                className={opt.key === theme ? 'is-active' : ''}
+                onClick={() => setTheme(opt.key)}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div className="home-appearance-row">
+          <span className="home-settings-field-label">Акцентный цвет</span>
+          <div className="home-accent-row">
+            {ACCENTS.map((a) => (
+              <button
+                key={a.key}
+                type="button"
+                className={`home-accent-swatch${a.key === accent ? ' is-active' : ''}`}
+                style={{ background: a.swatch }}
+                onClick={() => setAccent(a.key)}
+                aria-label={a.label}
+                title={a.label}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export function SettingsPanelBody({
   me,
   sources,
@@ -249,6 +298,8 @@ export function SettingsPanelBody({
           <div className="home-settings-sub">Ученик Nis3</div>
         </div>
       </div>
+
+      <AppearanceSettings />
 
       <div className="home-settings-group">
         <span className="home-settings-label">Аккаунт</span>

@@ -127,7 +127,7 @@
 
 .af-checkbox-label {
   font-size: 13px;
-  color: #c2c2c2;
+  color: var(--text-muted);
   line-height: 1.4;
 }
 .af-checkbox-box--mobile {
@@ -228,7 +228,7 @@
   border-radius: 10px;
   background: rgba(217, 119, 87, 0.12);
   border: 1px solid rgba(217, 119, 87, 0.35);
-  color: #f0b8a4;
+  color: var(--error-text);
   font-size: 13px;
   line-height: 1.4;
 }

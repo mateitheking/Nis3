@@ -10,7 +10,7 @@
   border-radius: 10px;
   background: rgba(217, 119, 87, 0.12);
   border: 1px solid rgba(217, 119, 87, 0.35);
-  color: #f0b8a4;
+  color: var(--error-text);
   font-size: 13px;
 }
 .files-uploading {
@@ -84,7 +84,7 @@
   /* width задаётся инлайново из photo.width — своя ширина на каждое фото,
      см. parts.tsx::PhotoBoard */
   transform: translate(-50%, -50%);
-  background: #1c1c1c;
+  background: var(--bg-card-alt);
   border-radius: 10px;
   padding: 6px 6px 10px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
@@ -140,7 +140,7 @@
 .files-edit-toggle.is-active {
   background: var(--accent);
   border-color: var(--accent);
-  color: #0a0a0a;
+  color: var(--bg-page);
   font-weight: 600;
 }
 
@@ -197,7 +197,7 @@
   height: 20px;
   border-radius: 50%;
   background: var(--accent);
-  color: #0a0a0a;
+  color: var(--bg-page);
   display: flex;
   align-items: center;
   justify-content: center;
