@@ -76,7 +76,7 @@
 }
 .af-input:focus {
   border-color: var(--border-input-focus);
-  box-shadow: 0 0 0 3px rgba(212, 175, 90, 0.15);
+  box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.15);
 }
 .af-input.is-invalid {
   border-color: var(--error);

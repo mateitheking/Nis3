@@ -117,7 +117,7 @@
 }
 .gr-card.is-active {
   background: var(--bg-card-alt);
-  border-color: rgba(212, 175, 90, 0.4);
+  border-color: rgba(var(--accent-rgb), 0.4);
 }
 .gr-card-name {
   font-size: 14px;

@@ -65,12 +65,12 @@
   min-height: 560px;
   border-radius: 18px;
   background:
-    radial-gradient(circle at 20% 15%, rgba(212, 175, 90, 0.05), transparent 40%),
+    radial-gradient(circle at 20% 15%, rgba(var(--accent-rgb), 0.05), transparent 40%),
     var(--bg-card);
   border: 1px solid var(--border-subtle);
 }
 .files-board.is-editing {
-  border: 1px dashed rgba(212, 175, 90, 0.45);
+  border: 1px dashed rgba(var(--accent-rgb), 0.45);
 }
 
 @keyframes files-card-pop {
@@ -126,7 +126,7 @@
   cursor: pointer;
 }
 .files-add-pill:hover {
-  border-color: rgba(212, 175, 90, 0.4);
+  border-color: rgba(var(--accent-rgb), 0.4);
 }
 .files-edit-toggle {
   padding: 8px 16px;
@@ -215,7 +215,7 @@
   width: 100%;
   aspect-ratio: 16 / 9;
   border-radius: 14px;
-  border: 1px dashed rgba(212, 175, 90, 0.4);
+  border: 1px dashed rgba(var(--accent-rgb), 0.4);
   background: none;
   padding: 0;
   display: flex;

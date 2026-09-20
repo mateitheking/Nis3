@@ -209,7 +209,7 @@
   text-align: left;
 }
 .ai-starter:hover {
-  border-color: rgba(212, 175, 90, 0.4);
+  border-color: rgba(var(--accent-rgb), 0.4);
   color: var(--accent);
 }
 

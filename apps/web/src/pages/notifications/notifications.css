@@ -42,7 +42,7 @@
   margin-top: 1px;
 }
 .notif-badge-message {
-  background: rgba(212, 175, 90, 0.18);
+  background: rgba(var(--accent-rgb), 0.18);
   color: var(--accent);
 }
 .notif-body {

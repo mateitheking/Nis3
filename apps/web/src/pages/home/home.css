@@ -59,7 +59,7 @@ button.home-card {
 }
 button.home-card:hover {
   transform: translateY(-2px);
-  border-color: rgba(212, 175, 90, 0.3);
+  border-color: rgba(var(--accent-rgb), 0.3);
   box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
 }
 button.home-card:active {
@@ -710,7 +710,7 @@ select.home-settings-input {
   transform: translateX(2px);
 }
 .home-sidebar-nav-item.is-active {
-  background: rgba(212, 175, 90, 0.12);
+  background: rgba(var(--accent-rgb), 0.12);
   color: var(--accent);
 }
 .home-sidebar-nav-item span {
@@ -759,7 +759,7 @@ select.home-settings-input {
 }
 .home-sidebar-telegram:hover {
   color: var(--accent);
-  border-color: rgba(212, 175, 90, 0.4);
+  border-color: rgba(var(--accent-rgb), 0.4);
 }
 .home-sidebar-telegram-icon {
   width: 15px;
