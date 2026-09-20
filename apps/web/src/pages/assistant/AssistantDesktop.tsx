@@ -16,7 +16,7 @@ export function AssistantDesktop({
   const [settingsOpen, setSettingsOpen] = useState(false)
   const {
     me, sources, configured, messages, sending, error, send, clear, link, unlink, logout,
-    updateName, uploadAvatar, deleteAvatar, changePassword,
+    updateName, uploadAvatar, deleteAvatar, changePassword, resendVerification,
   } = data
   const handleLogout = async () => {
     await logout()
@@ -66,6 +66,7 @@ export function AssistantDesktop({
         onUpdateAvatar={uploadAvatar}
         onDeleteAvatar={deleteAvatar}
         onChangePassword={changePassword}
+        onResendVerification={resendVerification}
       />
     </div>
   )

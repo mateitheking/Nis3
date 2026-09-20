@@ -6,6 +6,7 @@ export interface Me {
   student_id: string
   display_name: string
   email: string | null
+  email_verified: boolean
   avatar_url: string | null
 }
 

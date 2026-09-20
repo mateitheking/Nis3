@@ -116,9 +116,16 @@ export function useAccountShell() {
     return { ok: false, error: data.detail ?? `Не получилось (${res.status})` }
   }
 
+  async function resendVerification(): Promise<{ ok: boolean; error?: string }> {
+    const res = await fetch('/api/me/resend-verification', { method: 'POST', credentials: 'same-origin' })
+    const data = await res.json().catch(() => ({}))
+    if (!res.ok) return { ok: false, error: data.detail ?? `Не получилось (${res.status})` }
+    return { ok: true }
+  }
+
   return {
     me, sources, link, unlink, logout, reloadSources,
-    updateName, uploadAvatar, deleteAvatar, changePassword,
+    updateName, uploadAvatar, deleteAvatar, changePassword, resendVerification,
   }
 }
 

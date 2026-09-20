@@ -17,7 +17,7 @@ export function FilesDesktop({
   const [editMode, setEditMode] = useState(false)
   const {
     me, sources, photos, loading, uploading, error, upload, remove, move, resize, link, unlink, logout,
-    updateName, uploadAvatar, deleteAvatar, changePassword,
+    updateName, uploadAvatar, deleteAvatar, changePassword, resendVerification,
   } = data
   const handleLogout = async () => {
     await logout()
@@ -77,6 +77,7 @@ export function FilesDesktop({
         onUpdateAvatar={uploadAvatar}
         onDeleteAvatar={deleteAvatar}
         onChangePassword={changePassword}
+        onResendVerification={resendVerification}
       />
     </div>
   )

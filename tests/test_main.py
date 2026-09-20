@@ -1051,6 +1051,115 @@ def test_change_password_rejects_short_new_password(client):
     assert r.status_code == 400
 
 
+# ---- подтверждение почты -----------------------------------------------------
+
+
+def _mock_emailer(monkeypatch):
+    """Подменяет отправку письма — тесты не должны бить в реальный Resend.
+    Возвращает список отправленного, чтобы вытащить токен из ссылки."""
+    import apps.api.main as main_mod
+    sent: list[dict] = []
+    monkeypatch.setattr(main_mod.emailer, "is_configured", lambda: True)
+
+    def fake_send(to_email, verify_url):
+        sent.append({"to": to_email, "url": verify_url})
+
+    monkeypatch.setattr(main_mod.emailer, "send_verification_email", fake_send)
+    return sent
+
+
+def test_register_sends_verification_email_when_configured(client, monkeypatch):
+    sent = _mock_emailer(monkeypatch)
+    client.post("/auth/register", json={
+        "display_name": "X", "email": "verify1@nis.edu.kz", "password": "password123",
+    })
+    assert len(sent) == 1
+    assert sent[0]["to"] == "verify1@nis.edu.kz"
+    assert "/auth/verify-email?token=" in sent[0]["url"]
+
+
+def test_register_skips_email_when_not_configured(client):
+    """RESEND_API_KEY не задан в тестовом окружении по умолчанию —
+    регистрация не должна падать из-за этого (см. _send_verification_email_best_effort)."""
+    r = client.post("/auth/register", json={
+        "display_name": "X", "email": "verify2@nis.edu.kz", "password": "password123",
+    })
+    assert r.status_code == 200
+
+
+def test_me_reports_email_unverified_by_default(client):
+    _register_and_get(client, email="verify3@nis.edu.kz")
+    assert client.get("/api/me").json()["email_verified"] is False
+
+
+def test_verify_email_link_marks_account_verified(client, monkeypatch):
+    sent = _mock_emailer(monkeypatch)
+    client.post("/auth/register", json={
+        "display_name": "X", "email": "verify4@nis.edu.kz", "password": "password123",
+    })
+    token = sent[0]["url"].split("token=")[1]
+    r = client.get(f"/auth/verify-email?token={token}")
+    assert r.status_code == 200
+    assert "Почта подтверждена" in r.text
+    assert client.get("/api/me").json()["email_verified"] is True
+
+
+def test_verify_email_rejects_bad_token(client):
+    r = client.get("/auth/verify-email?token=garbage")
+    assert r.status_code == 400
+
+
+def test_resend_verification_requires_email_configured(client):
+    _register_and_get(client, email="verify5@nis.edu.kz")
+    r = client.post("/api/me/resend-verification")
+    assert r.status_code == 503
+
+
+def test_resend_verification_respects_cooldown_right_after_register(client, monkeypatch):
+    sent = _mock_emailer(monkeypatch)
+    client.post("/auth/register", json={
+        "display_name": "X", "email": "verify6@nis.edu.kz", "password": "password123",
+    })
+    assert len(sent) == 1  # письмо при регистрации уже "отправлено"
+    r = client.post("/api/me/resend-verification")
+    assert r.status_code == 429
+
+
+def test_resend_verification_works_after_cooldown_elapses(client, monkeypatch):
+    sent = _mock_emailer(monkeypatch)
+    client.post("/auth/register", json={
+        "display_name": "X", "email": "verify7@nis.edu.kz", "password": "password123",
+    })
+    import apps.api.main as main_mod
+    from apps.api.db import AccountCredential, utcnow
+    from datetime import timedelta
+    db = main_mod.app.state.session_factory()
+    try:
+        row = db.query(AccountCredential).filter_by(email="verify7@nis.edu.kz").one()
+        row.email_verify_sent_at = utcnow() - timedelta(minutes=5)
+        db.commit()
+    finally:
+        db.close()
+
+    r = client.post("/api/me/resend-verification")
+    assert r.status_code == 200
+    assert r.json() == {"ok": True, "already_verified": False}
+    assert len(sent) == 2
+
+
+def test_resend_verification_already_verified(client, monkeypatch):
+    sent = _mock_emailer(monkeypatch)
+    client.post("/auth/register", json={
+        "display_name": "X", "email": "verify8@nis.edu.kz", "password": "password123",
+    })
+    token = sent[0]["url"].split("token=")[1]
+    client.get(f"/auth/verify-email?token={token}")
+
+    r = client.post("/api/me/resend-verification")
+    assert r.status_code == 200
+    assert r.json() == {"ok": True, "already_verified": True}
+
+
 # ---- свои записи в расписании -----------------------------------------------
 
 

@@ -408,6 +408,41 @@ function EditableName({
   )
 }
 
+function EmailVerificationStatus({
+  verified,
+  onResend,
+}: {
+  verified: boolean
+  onResend: () => Promise<UpdateResult>
+}) {
+  const [sending, setSending] = useState(false)
+  const [message, setMessage] = useState<string | null>(null)
+
+  if (verified) {
+    return <span className="home-settings-verify-badge home-settings-verify-badge--ok">Подтверждён</span>
+  }
+
+  async function resend() {
+    setSending(true)
+    setMessage(null)
+    const res = await onResend()
+    setSending(false)
+    setMessage(res.ok ? 'Письмо отправлено — проверьте почту' : res.error ?? 'Не получилось отправить')
+  }
+
+  return (
+    <div className="home-settings-verify-wrap">
+      <div className="home-settings-verify-row">
+        <span className="home-settings-verify-badge home-settings-verify-badge--pending">Не подтверждён</span>
+        <button type="button" className="home-settings-verify-resend" onClick={resend} disabled={sending}>
+          {sending ? 'Отправляем…' : 'Отправить письмо'}
+        </button>
+      </div>
+      {message && <div className="home-settings-msg-warning">{message}</div>}
+    </div>
+  )
+}
+
 function ChangePasswordCard({
   onSave,
 }: {
@@ -527,6 +562,7 @@ export function SettingsPanelBody({
   onUpdateAvatar,
   onDeleteAvatar,
   onChangePassword,
+  onResendVerification,
 }: {
   me: Me | null
   sources: SourcesStatus | null
@@ -537,6 +573,7 @@ export function SettingsPanelBody({
   onUpdateAvatar: (file: File) => Promise<UpdateResult>
   onDeleteAvatar: () => void
   onChangePassword: (currentPassword: string, newPassword: string) => Promise<UpdateResult>
+  onResendVerification: () => Promise<UpdateResult>
 }) {
   return (
     <>
@@ -556,6 +593,7 @@ export function SettingsPanelBody({
           <div className="home-settings-field">
             <span className="home-settings-field-label">Email</span>
             <div className="home-settings-field-value">{me?.email}</div>
+            {me && <EmailVerificationStatus verified={me.email_verified} onResend={onResendVerification} />}
           </div>
           <ChangePasswordCard onSave={onChangePassword} />
         </div>

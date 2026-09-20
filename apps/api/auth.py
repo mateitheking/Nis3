@@ -52,11 +52,16 @@ __all__ = [
     "CircuitOpen",
     "EmailTaken",
     "InvalidCredentials",
+    "InvalidVerificationToken",
     "AuthService",
     "SESSION_TTL",
+    "EMAIL_VERIFY_TTL",
+    "EMAIL_VERIFY_RESEND_COOLDOWN",
 ]
 
 SESSION_TTL = timedelta(days=14)
+EMAIL_VERIFY_TTL = timedelta(hours=24)
+EMAIL_VERIFY_RESEND_COOLDOWN = timedelta(seconds=60)
 
 
 class AppSessionExpired(RuntimeError):
@@ -74,6 +79,10 @@ class CircuitOpen(RuntimeError):
 
 class EmailTaken(RuntimeError):
     """Почта уже зарегистрирована — на нашем сайте, не у источника."""
+
+
+class InvalidVerificationToken(RuntimeError):
+    """Токен подтверждения почты не найден, уже использован или истёк."""
 
 
 class InvalidCredentials(RuntimeError):
@@ -139,6 +148,36 @@ class AuthService:
             raise InvalidCredentials()
         cred.password_hash = bcrypt.hashpw(new_password.encode("utf-8"), bcrypt.gensalt()).decode("ascii")
         self.db.flush()
+
+    def start_email_verification(self, student: Student) -> str:
+        """Новый токен подтверждения почты — возвращает СЫРОЙ токен для
+        письма; в БД остаётся только его хеш (тот же приём, что у токена
+        сессии сайта, см. issue_app_session). Перезаписывает предыдущий
+        незавершённый токен, если был — им больше нельзя воспользоваться."""
+        cred = self.db.scalar(
+            select(AccountCredential).where(AccountCredential.student_id == student.id)
+        )
+        if cred is None:
+            raise InvalidCredentials()
+        token = secrets.token_urlsafe(32)
+        cred.email_verify_token_hash = hashlib.sha256(token.encode("utf-8")).hexdigest()
+        cred.email_verify_expires_at = utcnow() + EMAIL_VERIFY_TTL
+        cred.email_verify_sent_at = utcnow()
+        self.db.flush()
+        return token
+
+    def confirm_email(self, token: str) -> Student:
+        token_hash = hashlib.sha256(token.encode("utf-8")).hexdigest()
+        cred = self.db.scalar(
+            select(AccountCredential).where(AccountCredential.email_verify_token_hash == token_hash)
+        )
+        if cred is None or cred.email_verify_expires_at is None or cred.email_verify_expires_at < utcnow():
+            raise InvalidVerificationToken()
+        cred.email_verified = True
+        cred.email_verify_token_hash = None
+        cred.email_verify_expires_at = None
+        self.db.flush()
+        return cred.student
 
     def authenticate(self, email: str, password: str) -> Student:
         """Вход по почте+паролю в наш сайт (не в СУШ/EduPage).

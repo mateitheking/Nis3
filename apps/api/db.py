@@ -113,6 +113,14 @@ class AccountCredential(Base):
     password_hash: Mapped[str] = mapped_column(String(255))
     created_at: Mapped[datetime] = mapped_column(DateTime(), default=utcnow)
 
+    # Подтверждение почты — токен хранится ХЕШЕМ (sha256), как токен сессии
+    # сайта (см. auth.py), не в открытом виде. sent_at — для кулдауна на
+    # повторную отправку в main.py, не для чего-то другого.
+    email_verified: Mapped[bool] = mapped_column(Boolean(), default=False)
+    email_verify_token_hash: Mapped[Optional[str]] = mapped_column(String(64), default=None)
+    email_verify_expires_at: Mapped[Optional[datetime]] = mapped_column(DateTime(), default=None)
+    email_verify_sent_at: Mapped[Optional[datetime]] = mapped_column(DateTime(), default=None)
+
     student: Mapped[Student] = relationship()
 
 
@@ -311,6 +319,15 @@ def init_db(engine) -> None:
     _ensure_columns(
         engine, "students",
         [("avatar_storage_path", "VARCHAR(500)"), ("avatar_content_type", "VARCHAR(100)")],
+    )
+    _ensure_columns(
+        engine, "account_credentials",
+        [
+            ("email_verified", "BOOLEAN NOT NULL DEFAULT 0"),
+            ("email_verify_token_hash", "VARCHAR(64)"),
+            ("email_verify_expires_at", "DATETIME"),
+            ("email_verify_sent_at", "DATETIME"),
+        ],
     )
 
 

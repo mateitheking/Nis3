@@ -32,20 +32,23 @@ from pathlib import Path
 from typing import Optional
 
 from fastapi import Cookie, Depends, FastAPI, File, HTTPException, Query, Response, UploadFile
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import FileResponse, HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from sqlalchemy import delete, select
 from sqlalchemy.orm import Session as DbSession
 
 from apps.api import assistant as assistant_mod
+from apps.api import emailer
 from apps.api import photos as photos_mod
 from apps.api.auth import (
     AppSessionExpired,
     AuthService,
     CircuitOpen,
+    EMAIL_VERIFY_RESEND_COOLDOWN,
     EmailTaken,
     InvalidCredentials,
+    InvalidVerificationToken,
     SESSION_TTL,
 )
 from apps.api.db import (
@@ -182,6 +185,24 @@ def _set_session_cookie(response: Response, token: str, *, remember: bool = True
     )
 
 
+PUBLIC_BASE_URL = os.environ.get("PUBLIC_BASE_URL", "https://nis3.fly.dev")
+
+
+def _send_verification_email_best_effort(auth: AuthService, student: Student, email: str) -> None:
+    """Письмо — не критический путь регистрации: если Resend не настроен
+    или временно недоступен, аккаунт всё равно должен создаться (см.
+    emailer.py про EmailSendError). Печатаем предупреждение, не роняем
+    запрос — тот же приём, что у calendar_events() с кривым событием."""
+    if not emailer.is_configured():
+        return
+    try:
+        raw_token = auth.start_email_verification(student)
+        verify_url = f"{PUBLIC_BASE_URL}/auth/verify-email?token={raw_token}"
+        emailer.send_verification_email(email, verify_url)
+    except Exception as exc:
+        print(f"[email] не удалось отправить письмо подтверждения: {exc}")
+
+
 @app.post("/auth/register")
 def register(body: RegisterBody, response: Response, auth: AuthService = Depends(get_auth)):
     if "@" not in body.email or "." not in body.email.split("@")[-1]:
@@ -194,6 +215,7 @@ def register(body: RegisterBody, response: Response, auth: AuthService = Depends
         student = auth.register_account(body.display_name.strip(), body.email, body.password)
     except EmailTaken:
         raise HTTPException(409, "эта почта уже зарегистрирована")
+    _send_verification_email_best_effort(auth, student, body.email.strip())
     token = auth.issue_app_session(student)
     _set_session_cookie(response, token)
     return {"student_id": student.id, "display_name": student.display_name}
@@ -225,11 +247,34 @@ def logout(response: Response, nis_session: Optional[str] = Cookie(None),
     return {"ok": True}
 
 
+_VERIFY_PAGE_STYLE = (
+    "font-family: sans-serif; max-width: 420px; margin: 80px auto; text-align: center; "
+    "color: #201d17;"
+)
+
+
+@app.get("/auth/verify-email", response_class=HTMLResponse)
+def verify_email(token: str, auth: AuthService = Depends(get_auth)):
+    try:
+        auth.confirm_email(token)
+    except InvalidVerificationToken:
+        return HTMLResponse(
+            f'<div style="{_VERIFY_PAGE_STYLE}"><h2>Ссылка недействительна</h2>'
+            f"<p>Она уже использована или устарела — запросите новое письмо в настройках Nis3.</p></div>",
+            status_code=400,
+        )
+    return HTMLResponse(
+        f'<div style="{_VERIFY_PAGE_STYLE}"><h2>Почта подтверждена</h2>'
+        f"<p>Можно закрыть эту вкладку и вернуться в Nis3.</p></div>"
+    )
+
+
 def _me_json(student: Student, cred: AccountCredential | None) -> dict:
     return {
         "student_id": student.id,
         "display_name": student.display_name,
         "email": cred.email if cred else None,
+        "email_verified": bool(cred.email_verified) if cred else False,
         "avatar_url": "/api/me/avatar" if student.avatar_storage_path else None,
     }
 
@@ -339,6 +384,35 @@ def change_password(
     except InvalidCredentials:
         raise HTTPException(401, "текущий пароль неверный")
     return {"ok": True}
+
+
+@app.post("/api/me/resend-verification")
+def resend_verification(
+    student: Student = Depends(get_current_student),
+    auth: AuthService = Depends(get_auth),
+    db: DbSession = Depends(get_db),
+):
+    if not emailer.is_configured():
+        raise HTTPException(503, "отправка писем сейчас не настроена")
+    cred = db.scalar(
+        select(AccountCredential).where(AccountCredential.student_id == student.id)
+    )
+    if cred is None:
+        raise HTTPException(400, "у аккаунта нет почты")
+    if cred.email_verified:
+        return {"ok": True, "already_verified": True}
+    if cred.email_verify_sent_at is not None:
+        elapsed = utcnow() - cred.email_verify_sent_at
+        if elapsed < EMAIL_VERIFY_RESEND_COOLDOWN:
+            wait_s = int((EMAIL_VERIFY_RESEND_COOLDOWN - elapsed).total_seconds()) + 1
+            raise HTTPException(429, f"подождите ещё {wait_s} с. перед повторной отправкой")
+    raw_token = auth.start_email_verification(student)
+    verify_url = f"{PUBLIC_BASE_URL}/auth/verify-email?token={raw_token}"
+    try:
+        emailer.send_verification_email(cred.email, verify_url)
+    except emailer.EmailSendError as exc:
+        raise HTTPException(502, f"не получилось отправить письмо: {exc}")
+    return {"ok": True, "already_verified": False}
 
 
 # ---- привязка источников ---------------------------------------------------

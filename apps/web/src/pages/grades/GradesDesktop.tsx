@@ -15,7 +15,7 @@ export function GradesDesktop({
 }) {
   const [settingsOpen, setSettingsOpen] = useState(false)
   const {
-    me, sources, link, unlink, logout, updateName, uploadAvatar, deleteAvatar, changePassword,
+    me, sources, link, unlink, logout, updateName, uploadAvatar, deleteAvatar, changePassword, resendVerification,
     quarter, setQuarter, yearLabel, prevYear, nextYear,
     subjects, note, fetchedAt, listError, loadingList, refreshing, refresh,
     selectedId, detail, loadingDetail, selectSubject,
@@ -100,6 +100,7 @@ export function GradesDesktop({
         onUpdateAvatar={uploadAvatar}
         onDeleteAvatar={deleteAvatar}
         onChangePassword={changePassword}
+        onResendVerification={resendVerification}
       />
     </div>
   )

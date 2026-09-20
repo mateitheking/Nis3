@@ -15,7 +15,14 @@ from datetime import timedelta
 import pytest
 
 import apps.api.auth as auth_mod
-from apps.api.auth import AppSessionExpired, AuthService, CircuitOpen, EmailTaken, InvalidCredentials
+from apps.api.auth import (
+    AppSessionExpired,
+    AuthService,
+    CircuitOpen,
+    EmailTaken,
+    InvalidCredentials,
+    InvalidVerificationToken,
+)
 from apps.api.db import Source, init_db, make_engine, make_session_factory
 from apps.api.sources.edupage import AuthError as EdupageAuthError
 from apps.api.sources.edupage import CaptchaRequired as EdupageCaptchaRequired
@@ -288,6 +295,67 @@ def test_password_not_stored_in_plaintext(svc, db):
     row = db.query(AccountCredential).filter_by(email="ivan@nis.edu.kz").one()
     assert row.password_hash != "password123"
     assert row.password_hash.startswith("$2b$")  # bcrypt-хеш, не просто строка
+
+
+# --- подтверждение почты -----------------------------------------------------
+
+
+def test_email_verification_roundtrip(svc):
+    student = svc.register_account("Иван", "ivan@nis.edu.kz", "password123")
+    token = svc.start_email_verification(student)
+    confirmed = svc.confirm_email(token)
+    assert confirmed.id == student.id
+
+
+def test_email_verification_marks_verified_and_clears_token(svc, db):
+    student = svc.register_account("Иван", "ivan@nis.edu.kz", "password123")
+    token = svc.start_email_verification(student)
+    svc.confirm_email(token)
+    from apps.api.db import AccountCredential
+    row = db.query(AccountCredential).filter_by(student_id=student.id).one()
+    assert row.email_verified is True
+    assert row.email_verify_token_hash is None
+
+
+def test_email_verification_token_not_stored_in_plaintext(svc, db):
+    student = svc.register_account("Иван", "ivan@nis.edu.kz", "password123")
+    token = svc.start_email_verification(student)
+    from apps.api.db import AccountCredential
+    row = db.query(AccountCredential).filter_by(student_id=student.id).one()
+    assert row.email_verify_token_hash != token
+
+
+def test_email_verification_rejects_unknown_token(svc):
+    svc.register_account("Иван", "ivan@nis.edu.kz", "password123")
+    with pytest.raises(InvalidVerificationToken):
+        svc.confirm_email("совсем-не-тот-токен")
+
+
+def test_email_verification_rejects_already_used_token(svc):
+    student = svc.register_account("Иван", "ivan@nis.edu.kz", "password123")
+    token = svc.start_email_verification(student)
+    svc.confirm_email(token)
+    with pytest.raises(InvalidVerificationToken):
+        svc.confirm_email(token)
+
+
+def test_email_verification_rejects_expired_token(svc, db):
+    student = svc.register_account("Иван", "ivan@nis.edu.kz", "password123")
+    token = svc.start_email_verification(student)
+    from apps.api.db import AccountCredential, utcnow
+    row = db.query(AccountCredential).filter_by(student_id=student.id).one()
+    row.email_verify_expires_at = utcnow() - timedelta(days=1)
+    db.flush()
+    with pytest.raises(InvalidVerificationToken):
+        svc.confirm_email(token)
+
+
+def test_starting_new_verification_invalidates_previous_token(svc):
+    student = svc.register_account("Иван", "ivan@nis.edu.kz", "password123")
+    old_token = svc.start_email_verification(student)
+    svc.start_email_verification(student)
+    with pytest.raises(InvalidVerificationToken):
+        svc.confirm_email(old_token)
 
 
 # --- переиспользование сессии СУШ -------------------------------------------

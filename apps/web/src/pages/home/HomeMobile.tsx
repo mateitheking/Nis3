@@ -17,7 +17,7 @@ export function HomeMobile({
   const [settingsOpen, setSettingsOpen] = useState(false)
   const {
     me, scheduleDate, tomorrowLessons, tomorrowExams, events, notifications, sources, loading, link, unlink, logout,
-    updateName, uploadAvatar, deleteAvatar, changePassword,
+    updateName, uploadAvatar, deleteAvatar, changePassword, resendVerification,
   } = data
   const handleLogout = async () => {
     await logout()
@@ -77,6 +77,7 @@ export function HomeMobile({
         onUpdateAvatar={uploadAvatar}
         onDeleteAvatar={deleteAvatar}
         onChangePassword={changePassword}
+        onResendVerification={resendVerification}
       />
     </div>
   )
