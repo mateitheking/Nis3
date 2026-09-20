@@ -55,10 +55,19 @@
   color: var(--text-primary);
   line-height: 1.35;
 }
+.notif-subject {
+  font-size: 12.5px;
+  color: var(--accent);
+  font-weight: 600;
+  margin-top: 3px;
+}
 .notif-sub {
   font-size: 12.5px;
   color: var(--text-secondary);
   margin-top: 3px;
+}
+.notif-subject + .notif-sub {
+  margin-top: 1px;
 }
 .notif-time {
   font-size: 11.5px;
