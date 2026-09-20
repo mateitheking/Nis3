@@ -29,6 +29,7 @@ export function ScheduleDesktop({
     me, sources, view, setView, prevDay, nextDay, week, weekLessons,
     selectedDate, selectedLessons, exams, consultations, events,
     loadingWeek, loadingDay, loadingEvents, refreshing, refresh, link, unlink, logout,
+    updateName, uploadAvatar, deleteAvatar,
     addModalDateIso, openAddModal, closeAddModal, submitCustomEntry, deleteCustomEntry, adding, addError,
   } = data
   const handleLogout = async () => {
@@ -125,6 +126,9 @@ export function ScheduleDesktop({
         onUnlink={unlink}
         onLink={link}
         onLogout={handleLogout}
+        onUpdateName={updateName}
+        onUpdateAvatar={uploadAvatar}
+        onDeleteAvatar={deleteAvatar}
       />
 
       {addModalDateIso && (

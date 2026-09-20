@@ -14,7 +14,10 @@ export function AssistantDesktop({
   onLoggedOut: () => void
 }) {
   const [settingsOpen, setSettingsOpen] = useState(false)
-  const { me, sources, configured, messages, sending, error, send, clear, link, unlink, logout } = data
+  const {
+    me, sources, configured, messages, sending, error, send, clear, link, unlink, logout,
+    updateName, uploadAvatar, deleteAvatar,
+  } = data
   const handleLogout = async () => {
     await logout()
     onLoggedOut()
@@ -59,6 +62,9 @@ export function AssistantDesktop({
         onUnlink={unlink}
         onLink={link}
         onLogout={handleLogout}
+        onUpdateName={updateName}
+        onUpdateAvatar={uploadAvatar}
+        onDeleteAvatar={deleteAvatar}
       />
     </div>
   )

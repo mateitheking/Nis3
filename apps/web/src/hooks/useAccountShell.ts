@@ -69,7 +69,39 @@ export function useAccountShell() {
     clearAssistantChat()
   }
 
-  return { me, sources, link, unlink, logout, reloadSources }
+  async function updateName(displayName: string): Promise<{ ok: boolean; error?: string }> {
+    const res = await fetch('/api/me', {
+      method: 'PATCH',
+      credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ display_name: displayName }),
+    })
+    const data = await res.json().catch(() => ({}))
+    if (!res.ok) return { ok: false, error: data.detail ?? `Не получилось (${res.status})` }
+    invalidateCache('/api/me')
+    setMe(data)
+    return { ok: true }
+  }
+
+  async function uploadAvatar(file: File): Promise<{ ok: boolean; error?: string }> {
+    const form = new FormData()
+    form.append('file', file)
+    const res = await fetch('/api/me/avatar', { method: 'POST', credentials: 'same-origin', body: form })
+    const data = await res.json().catch(() => ({}))
+    if (!res.ok) return { ok: false, error: data.detail ?? `Не получилось (${res.status})` }
+    invalidateCache('/api/me')
+    setMe(data)
+    return { ok: true }
+  }
+
+  async function deleteAvatar() {
+    const res = await fetch('/api/me/avatar', { method: 'DELETE', credentials: 'same-origin' })
+    const data = await res.json().catch(() => ({}))
+    invalidateCache('/api/me')
+    if (res.ok) setMe(data)
+  }
+
+  return { me, sources, link, unlink, logout, reloadSources, updateName, uploadAvatar, deleteAvatar }
 }
 
 export type AccountShell = ReturnType<typeof useAccountShell>

@@ -257,10 +257,94 @@ button.home-card:active {
   padding-bottom: 16px;
   border-bottom: 1px solid var(--border-subtle);
 }
+.home-settings-avatar-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  flex: none;
+}
+.home-settings-avatar-btn {
+  position: relative;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  border-radius: 50%;
+  display: block;
+}
+.home-settings-avatar-btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+.home-settings-avatar-edit {
+  position: absolute;
+  right: -2px;
+  bottom: -2px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--bg-page);
+  border: 2px solid var(--bg-sidebar);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.home-settings-avatar-remove {
+  font-size: 10.5px;
+  color: var(--text-tertiary);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-family: inherit;
+  text-decoration: underline;
+}
+.home-settings-avatar-remove:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+.home-settings-profile-info {
+  flex: 1;
+  min-width: 0;
+}
+.home-settings-name-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-family: inherit;
+  color: var(--text-tertiary);
+  max-width: 100%;
+}
+.home-settings-name-btn svg {
+  flex: none;
+  opacity: 0.7;
+}
+.home-settings-name-edit {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.home-settings-name-edit-actions {
+  display: flex;
+  gap: 8px;
+}
+.home-settings-name-edit-actions .home-settings-linkbtn,
+.home-settings-name-edit-actions .home-settings-danger {
+  flex: 1;
+}
 .home-settings-name {
   font-size: 14.5px;
   font-weight: 700;
   color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .home-settings-sub {
   font-size: 12px;

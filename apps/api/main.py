@@ -225,16 +225,100 @@ def logout(response: Response, nis_session: Optional[str] = Cookie(None),
     return {"ok": True}
 
 
+def _me_json(student: Student, cred: AccountCredential | None) -> dict:
+    return {
+        "student_id": student.id,
+        "display_name": student.display_name,
+        "email": cred.email if cred else None,
+        "avatar_url": "/api/me/avatar" if student.avatar_storage_path else None,
+    }
+
+
 @app.get("/api/me")
 def me(student: Student = Depends(get_current_student), db: DbSession = Depends(get_db)):
     cred = db.scalar(
         select(AccountCredential).where(AccountCredential.student_id == student.id)
     )
-    return {
-        "student_id": student.id,
-        "display_name": student.display_name,
-        "email": cred.email if cred else None,
-    }
+    return _me_json(student, cred)
+
+
+class UpdateMeBody(BaseModel):
+    display_name: str
+
+
+@app.patch("/api/me")
+def update_me(
+    body: UpdateMeBody,
+    student: Student = Depends(get_current_student),
+    db: DbSession = Depends(get_db),
+):
+    name = body.display_name.strip()
+    if not name:
+        raise HTTPException(400, "имя не может быть пустым")
+    student.display_name = name
+    db.flush()
+    cred = db.scalar(
+        select(AccountCredential).where(AccountCredential.student_id == student.id)
+    )
+    return _me_json(student, cred)
+
+
+@app.post("/api/me/avatar")
+async def upload_avatar(
+    file: UploadFile = File(...),
+    student: Student = Depends(get_current_student),
+    db: DbSession = Depends(get_db),
+):
+    data = await file.read()
+    content_type = file.content_type or "application/octet-stream"
+    try:
+        photos_mod.validate_upload(content_type, len(data))
+    except photos_mod.UploadRejected as exc:
+        raise HTTPException(400, str(exc))
+
+    old_path = student.avatar_storage_path
+    storage_path = photos_mod.new_storage_path(student.id, file.filename or "avatar")
+    photos_mod.save_bytes(storage_path, data)
+    student.avatar_storage_path = storage_path
+    student.avatar_content_type = content_type
+    db.flush()
+    if old_path:
+        photos_mod.delete_file(old_path)
+
+    cred = db.scalar(
+        select(AccountCredential).where(AccountCredential.student_id == student.id)
+    )
+    return _me_json(student, cred)
+
+
+@app.get("/api/me/avatar")
+def get_my_avatar(student: Student = Depends(get_current_student)):
+    if not student.avatar_storage_path:
+        raise HTTPException(404, "аватар не установлен")
+    full_path = photos_mod.UPLOADS_DIR / student.avatar_storage_path
+    if not full_path.exists():
+        raise HTTPException(404, "файл потерян на диске")
+    # no-store — иначе браузер может продолжить показывать старую аватарку
+    # с того же /api/me/avatar после замены (URL не меняется).
+    return FileResponse(
+        full_path, media_type=student.avatar_content_type or "image/jpeg",
+        headers={"Cache-Control": "no-store"},
+    )
+
+
+@app.delete("/api/me/avatar")
+def delete_my_avatar(
+    student: Student = Depends(get_current_student), db: DbSession = Depends(get_db)
+):
+    if student.avatar_storage_path:
+        photos_mod.delete_file(student.avatar_storage_path)
+        student.avatar_storage_path = None
+        student.avatar_content_type = None
+        db.flush()
+    cred = db.scalar(
+        select(AccountCredential).where(AccountCredential.student_id == student.id)
+    )
+    return _me_json(student, cred)
 
 
 # ---- привязка источников ---------------------------------------------------

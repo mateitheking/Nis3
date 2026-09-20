@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState, type ChangeEvent } from 'react'
 import type { LinkFields, LinkResult } from '../hooks/useAccountShell'
 import type { Me, SourceStatus, SourcesStatus } from '../types'
 import { Checkbox } from './authFormParts'
@@ -13,7 +13,17 @@ export function initials(name: string): string {
   return (parts[0][0] + parts[1][0]).toUpperCase()
 }
 
-export function Avatar({ name, size }: { name: string; size: number }) {
+export function Avatar({ name, size, avatarUrl }: { name: string; size: number; avatarUrl?: string | null }) {
+  if (avatarUrl) {
+    return (
+      <img
+        src={avatarUrl}
+        alt={name}
+        className="home-avatar"
+        style={{ width: size, height: size, objectFit: 'cover' }}
+      />
+    )
+  }
   return (
     <div className="home-avatar" style={{ width: size, height: size, fontSize: size * 0.36 }}>
       {initials(name)}
@@ -276,26 +286,154 @@ export function AppearanceSettings() {
   )
 }
 
+type UpdateResult = { ok: boolean; error?: string }
+
+function AvatarEditor({
+  me,
+  onUpload,
+  onRemove,
+}: {
+  me: Me | null
+  onUpload: (file: File) => Promise<UpdateResult>
+  onRemove: () => void
+}) {
+  const [busy, setBusy] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  async function handleFile(e: ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    e.target.value = ''
+    if (!file) return
+    setBusy(true)
+    setError(null)
+    const res = await onUpload(file)
+    if (!res.ok) setError(res.error ?? 'Не получилось загрузить')
+    setBusy(false)
+  }
+
+  return (
+    <div className="home-settings-avatar-wrap">
+      <button
+        type="button"
+        className="home-settings-avatar-btn"
+        onClick={() => inputRef.current?.click()}
+        disabled={busy}
+        aria-label="Сменить фото"
+      >
+        <Avatar name={me?.display_name ?? '??'} size={52} avatarUrl={me?.avatar_url} />
+        <span className="home-settings-avatar-edit">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="11" height="11">
+            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+            <circle cx="12" cy="13" r="4" />
+          </svg>
+        </span>
+      </button>
+      <input ref={inputRef} type="file" accept="image/*" hidden onChange={handleFile} />
+      {me?.avatar_url && (
+        <button type="button" className="home-settings-avatar-remove" onClick={onRemove} disabled={busy}>
+          Удалить фото
+        </button>
+      )}
+      {error && <div className="home-settings-msg-error">{error}</div>}
+    </div>
+  )
+}
+
+function EditableName({
+  value,
+  onSave,
+}: {
+  value: string
+  onSave: (name: string) => Promise<UpdateResult>
+}) {
+  const [editing, setEditing] = useState(false)
+  const [draft, setDraft] = useState(value)
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  if (!editing) {
+    return (
+      <button
+        type="button"
+        className="home-settings-name-btn"
+        onClick={() => {
+          setDraft(value)
+          setError(null)
+          setEditing(true)
+        }}
+      >
+        <span className="home-settings-name">{value || '…'}</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="12" height="12">
+          <path d="M12 20h9" />
+          <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
+        </svg>
+      </button>
+    )
+  }
+
+  async function save() {
+    const trimmed = draft.trim()
+    if (!trimmed) {
+      setError('Имя не может быть пустым')
+      return
+    }
+    setSaving(true)
+    setError(null)
+    const res = await onSave(trimmed)
+    setSaving(false)
+    if (res.ok) setEditing(false)
+    else setError(res.error ?? 'Не получилось сохранить')
+  }
+
+  return (
+    <div className="home-settings-name-edit">
+      <input
+        className="home-settings-input"
+        value={draft}
+        onChange={(e) => setDraft(e.target.value)}
+        disabled={saving}
+        autoFocus
+      />
+      <div className="home-settings-name-edit-actions">
+        <button type="button" className="home-settings-linkbtn" onClick={save} disabled={saving}>
+          Сохранить
+        </button>
+        <button type="button" className="home-settings-danger" onClick={() => setEditing(false)} disabled={saving}>
+          Отмена
+        </button>
+      </div>
+      {error && <div className="home-settings-msg-error">{error}</div>}
+    </div>
+  )
+}
+
 export function SettingsPanelBody({
   me,
   sources,
   onUnlink,
   onLink,
   onLogout,
+  onUpdateName,
+  onUpdateAvatar,
+  onDeleteAvatar,
 }: {
   me: Me | null
   sources: SourcesStatus | null
   onUnlink: (source: 'sush' | 'edupage') => void
   onLink: (source: 'sush' | 'edupage', fields: LinkFields) => Promise<LinkResult>
   onLogout: () => void
+  onUpdateName: (name: string) => Promise<UpdateResult>
+  onUpdateAvatar: (file: File) => Promise<UpdateResult>
+  onDeleteAvatar: () => void
 }) {
   return (
     <>
       <div className="home-settings-profile">
-        <Avatar name={me?.display_name ?? '??'} size={52} />
-        <div>
-          <div className="home-settings-name">{me?.display_name ?? '…'}</div>
-          <div className="home-settings-sub">Ученик Nis3</div>
+        <AvatarEditor me={me} onUpload={onUpdateAvatar} onRemove={onDeleteAvatar} />
+        <div className="home-settings-profile-info">
+          <EditableName value={me?.display_name ?? ''} onSave={onUpdateName} />
+          <div className="home-settings-sub">Ученик</div>
         </div>
       </div>
 
@@ -304,10 +442,6 @@ export function SettingsPanelBody({
       <div className="home-settings-group">
         <span className="home-settings-label">Аккаунт</span>
         <div className="home-settings-box">
-          <div className="home-settings-field">
-            <span className="home-settings-field-label">Имя</span>
-            <div className="home-settings-field-value">{me?.display_name}</div>
-          </div>
           <div className="home-settings-field">
             <span className="home-settings-field-label">Email</span>
             <div className="home-settings-field-value">{me?.email}</div>

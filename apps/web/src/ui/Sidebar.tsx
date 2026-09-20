@@ -24,10 +24,10 @@ export function Sidebar({
       </div>
 
       <div className="home-sidebar-profile">
-        <Avatar name={me?.display_name ?? '??'} size={38} />
+        <Avatar name={me?.display_name ?? '??'} size={38} avatarUrl={me?.avatar_url} />
         <div className="home-sidebar-profile-text">
           <div className="home-sidebar-profile-name">{me?.display_name ?? '…'}</div>
-          <div className="home-sidebar-profile-sub">Ученик Nis3</div>
+          <div className="home-sidebar-profile-sub">Ученик</div>
         </div>
         <button type="button" className="home-sidebar-gear" onClick={onOpenSettings} aria-label="Настройки">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" width="14" height="14">

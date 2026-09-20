@@ -934,6 +934,83 @@ def test_photo_position_update_not_visible_to_other_student(client):
     assert r.status_code == 404
 
 
+# ---- профиль: имя и аватарка -------------------------------------------------
+
+
+def test_me_has_no_avatar_url_by_default(client):
+    _register_and_get(client, email="noavatar@nis.edu.kz")
+    assert client.get("/api/me").json()["avatar_url"] is None
+
+
+def test_rename_updates_display_name_everywhere(client):
+    _register_and_get(client, email="rename1@nis.edu.kz")
+    r = client.patch("/api/me", json={"display_name": "Новое Имя"})
+    assert r.status_code == 200
+    assert r.json()["display_name"] == "Новое Имя"
+    assert client.get("/api/me").json()["display_name"] == "Новое Имя"
+
+
+def test_rename_rejects_empty_name(client):
+    _register_and_get(client, email="rename2@nis.edu.kz")
+    r = client.patch("/api/me", json={"display_name": "   "})
+    assert r.status_code == 400
+
+
+def test_avatar_upload_serve_and_delete_roundtrip(client):
+    _register_and_get(client, email="avatar1@nis.edu.kz")
+    r = client.post(
+        "/api/me/avatar",
+        files={"file": ("selfie.png", _TINY_PNG, "image/png")},
+    )
+    assert r.status_code == 200
+    assert r.json()["avatar_url"] == "/api/me/avatar"
+    assert client.get("/api/me").json()["avatar_url"] == "/api/me/avatar"
+
+    fetched = client.get("/api/me/avatar")
+    assert fetched.status_code == 200
+    assert fetched.content == _TINY_PNG
+    assert fetched.headers["content-type"] == "image/png"
+
+    d = client.delete("/api/me/avatar")
+    assert d.status_code == 200
+    assert d.json()["avatar_url"] is None
+    assert client.get("/api/me/avatar").status_code == 404
+
+
+def test_avatar_reupload_replaces_old_file(client):
+    """Второй аплоад не должен оставлять старый файл сиротой на диске —
+    старый storage_path должен реально стереться (см. old_path в
+    upload_avatar), не просто перезаписаться в БД."""
+    import apps.api.photos as photos_mod
+
+    _register_and_get(client, email="avatar2@nis.edu.kz")
+    client.post("/api/me/avatar", files={"file": ("first.png", _TINY_PNG, "image/png")})
+    before = len(list((photos_mod.UPLOADS_DIR).rglob("*"))) if photos_mod.UPLOADS_DIR.exists() else 0
+
+    client.post("/api/me/avatar", files={"file": ("second.png", _TINY_PNG, "image/png")})
+    after = len(list(photos_mod.UPLOADS_DIR.rglob("*")))
+    assert after == before  # старый файл удалён, новый занял его место — не растёт
+
+
+def test_avatar_upload_rejects_non_image(client):
+    _register_and_get(client, email="avatar3@nis.edu.kz")
+    r = client.post(
+        "/api/me/avatar",
+        files={"file": ("notes.txt", b"just text", "text/plain")},
+    )
+    assert r.status_code == 400
+
+
+def test_avatar_not_visible_to_other_student(client):
+    _register_and_get(client, email="avatarowner@nis.edu.kz")
+    client.post("/api/me/avatar", files={"file": ("test.png", _TINY_PNG, "image/png")})
+    client.post("/auth/logout")
+
+    _register_and_get(client, email="avatarother@nis.edu.kz")
+    assert client.get("/api/me/avatar").status_code == 404
+    assert client.get("/api/me").json()["avatar_url"] is None
+
+
 # ---- свои записи в расписании -----------------------------------------------
 
 

@@ -1,5 +1,5 @@
 import logo from '../../assets/nis-logo-mark.png'
-import { initials } from '../../ui/dashboardParts'
+import { Avatar } from '../../ui/dashboardParts'
 import { BottomNav } from '../../ui/BottomNav'
 import { QuarterTabs, RefreshBar, SubjectCard, SubjectDetail, YearNav } from './parts'
 import type { GradesData } from './useGradesData'
@@ -27,7 +27,7 @@ export function GradesMobile({
           <img src={logo} alt="Nis3" />
           <span>Nis3.</span>
         </div>
-        <div className="sch-mobile-avatar">{initials(me?.display_name ?? '??')}</div>
+        <Avatar name={me?.display_name ?? '??'} size={34} avatarUrl={me?.avatar_url} />
       </div>
 
       {!selectedId ? (

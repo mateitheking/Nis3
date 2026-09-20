@@ -26,6 +26,7 @@ export function HomeDesktop({
   const [settingsOpen, setSettingsOpen] = useState(false)
   const {
     me, scheduleDate, tomorrowLessons, tomorrowExams, events, notifications, sources, loading, link, unlink, logout,
+    updateName, uploadAvatar, deleteAvatar,
     addModalOpen, openAddModal, closeAddModal, submitCustomEntry, adding, addError,
   } = data
   const handleLogout = async () => {
@@ -78,6 +79,9 @@ export function HomeDesktop({
         onUnlink={unlink}
         onLink={link}
         onLogout={handleLogout}
+        onUpdateName={updateName}
+        onUpdateAvatar={uploadAvatar}
+        onDeleteAvatar={deleteAvatar}
       />
 
       {addModalOpen && (

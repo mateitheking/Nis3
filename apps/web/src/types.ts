@@ -6,6 +6,7 @@ export interface Me {
   student_id: string
   display_name: string
   email: string | null
+  avatar_url: string | null
 }
 
 export interface Lesson {

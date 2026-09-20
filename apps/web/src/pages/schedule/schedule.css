@@ -521,20 +521,6 @@
   font-weight: 800;
   font-size: 15px;
 }
-.sch-mobile-avatar {
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  background: var(--bg-card);
-  border: 1px solid var(--border-subtle);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--text-secondary);
-  cursor: pointer;
-}
 .sch-mobile-titleblock {
   padding: 14px 18px 4px;
   flex: none;

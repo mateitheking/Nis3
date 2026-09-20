@@ -14,7 +14,7 @@ export function NotificationsDesktop({
   onLoggedOut: () => void
 }) {
   const [settingsOpen, setSettingsOpen] = useState(false)
-  const { me, sources, items, loading, error, link, unlink, logout } = data
+  const { me, sources, items, loading, error, link, unlink, logout, updateName, uploadAvatar, deleteAvatar } = data
   const handleLogout = async () => {
     await logout()
     onLoggedOut()
@@ -50,6 +50,9 @@ export function NotificationsDesktop({
         onUnlink={unlink}
         onLink={link}
         onLogout={handleLogout}
+        onUpdateName={updateName}
+        onUpdateAvatar={uploadAvatar}
+        onDeleteAvatar={deleteAvatar}
       />
     </div>
   )

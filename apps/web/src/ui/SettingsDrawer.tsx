@@ -11,6 +11,9 @@ export function SettingsDrawer({
   onUnlink,
   onLink,
   onLogout,
+  onUpdateName,
+  onUpdateAvatar,
+  onDeleteAvatar,
 }: {
   open: boolean
   onClose: () => void
@@ -20,6 +23,9 @@ export function SettingsDrawer({
   onUnlink: (source: 'sush' | 'edupage') => void
   onLink: (source: 'sush' | 'edupage', fields: LinkFields) => Promise<LinkResult>
   onLogout: () => void
+  onUpdateName: (name: string) => Promise<{ ok: boolean; error?: string }>
+  onUpdateAvatar: (file: File) => Promise<{ ok: boolean; error?: string }>
+  onDeleteAvatar: () => void
 }) {
   if (!open) return null
   return (
@@ -42,7 +48,16 @@ export function SettingsDrawer({
           </button>
         </div>
         <div className="home-settings-panel-scroll">
-          <SettingsPanelBody me={me} sources={sources} onUnlink={onUnlink} onLink={onLink} onLogout={onLogout} />
+          <SettingsPanelBody
+            me={me}
+            sources={sources}
+            onUnlink={onUnlink}
+            onLink={onLink}
+            onLogout={onLogout}
+            onUpdateName={onUpdateName}
+            onUpdateAvatar={onUpdateAvatar}
+            onDeleteAvatar={onDeleteAvatar}
+          />
         </div>
       </div>
     </>

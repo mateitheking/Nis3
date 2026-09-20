@@ -15,7 +15,10 @@ export function HomeMobile({
   onLoggedOut: () => void
 }) {
   const [settingsOpen, setSettingsOpen] = useState(false)
-  const { me, scheduleDate, tomorrowLessons, tomorrowExams, events, notifications, sources, loading, link, unlink, logout } = data
+  const {
+    me, scheduleDate, tomorrowLessons, tomorrowExams, events, notifications, sources, loading, link, unlink, logout,
+    updateName, uploadAvatar, deleteAvatar,
+  } = data
   const handleLogout = async () => {
     await logout()
     onLoggedOut()
@@ -34,9 +37,9 @@ export function HomeMobile({
           <span className="home-mobile-menu-bar" />
           <span className="home-mobile-menu-bar" />
         </button>
-        <Avatar name={me?.display_name ?? '??'} size={44} />
+        <Avatar name={me?.display_name ?? '??'} size={44} avatarUrl={me?.avatar_url} />
         <span className="home-mobile-name">{me?.display_name ?? '…'}</span>
-        <span className="home-mobile-sub">Ученик Nis3</span>
+        <span className="home-mobile-sub">Ученик</span>
       </div>
 
       <div className="home-mobile-scroll">
@@ -70,6 +73,9 @@ export function HomeMobile({
         onUnlink={unlink}
         onLink={link}
         onLogout={handleLogout}
+        onUpdateName={updateName}
+        onUpdateAvatar={uploadAvatar}
+        onDeleteAvatar={deleteAvatar}
       />
     </div>
   )

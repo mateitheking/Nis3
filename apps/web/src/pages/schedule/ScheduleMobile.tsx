@@ -1,5 +1,5 @@
 import logo from '../../assets/nis-logo-mark.png'
-import { initials } from '../../ui/dashboardParts'
+import { Avatar } from '../../ui/dashboardParts'
 import { BottomNav } from '../../ui/BottomNav'
 import { formatDayMonth, isoDate } from '../../ui/dateFormat'
 import { ConsultationsCard, DayNav, LessonList, RefreshButton, UpcomingCard, ViewToggle, WeekGrid } from './parts'
@@ -37,7 +37,7 @@ export function ScheduleMobile({
             <span>Nis3.</span>
           </div>
         </div>
-        <div className="sch-mobile-avatar">{initials(me?.display_name ?? '??')}</div>
+        <Avatar name={me?.display_name ?? '??'} size={34} avatarUrl={me?.avatar_url} />
       </div>
 
       <div className="sch-mobile-titleblock">

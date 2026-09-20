@@ -71,6 +71,11 @@ class Student(Base):
 
     id: Mapped[str] = mapped_column(String(36), primary_key=True)  # uuid4
     display_name: Mapped[str] = mapped_column(String(200))
+    # Аватарка — тот же диск-плюс-метаданные приём, что и Photo/photos.py:
+    # путь относительно photos.UPLOADS_DIR, сами байты не в БД. NULL —
+    # аватарки нет, фронт показывает инициалы (см. ui/dashboardParts.tsx).
+    avatar_storage_path: Mapped[Optional[str]] = mapped_column(String(500), default=None)
+    avatar_content_type: Mapped[Optional[str]] = mapped_column(String(100), default=None)
     created_at: Mapped[datetime] = mapped_column(DateTime(), default=utcnow)
 
     credentials: Mapped[list["SourceCredential"]] = relationship(
@@ -303,6 +308,10 @@ def init_db(engine) -> None:
         [("pos_x", "REAL NOT NULL DEFAULT 50"), ("pos_y", "REAL NOT NULL DEFAULT 50"), ("width", "REAL NOT NULL DEFAULT 170")],
     )
     _ensure_columns(engine, "custom_schedule_entries", [("period", "INTEGER")])
+    _ensure_columns(
+        engine, "students",
+        [("avatar_storage_path", "VARCHAR(500)"), ("avatar_content_type", "VARCHAR(100)")],
+    )
 
 
 def _ensure_columns(engine, table: str, columns: list[tuple[str, str]]) -> None:
