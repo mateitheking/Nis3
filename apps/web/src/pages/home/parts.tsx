@@ -151,7 +151,13 @@ export function NotificationsCard({
               <div className="home-event-body">
                 <div className="home-event-title">{n.title}</div>
                 <div className="home-event-date">
-                  {n.kind === 'message' && n.author ? n.author : n.event_date ? formatWeekdayDate(n.event_date) : ''}
+                  {n.kind === 'message' && n.author
+                    ? n.author
+                    : n.event_date
+                      ? n.subject_name
+                        ? `${n.subject_name} · ${formatWeekdayDate(n.event_date)}`
+                        : formatWeekdayDate(n.event_date)
+                      : ''}
                 </div>
               </div>
               <span className="home-event-days">{formatMessageDateTime(n.posted_at)}</span>
@@ -188,7 +194,9 @@ export function EventsCard({ events, loading }: { events: UpcomingEvent[] | null
               <span className="home-event-badge">{e.badge}</span>
               <div className="home-event-body">
                 <div className="home-event-title">{e.title}</div>
-                <div className="home-event-date">{formatWeekdayDate(e.event_date)}</div>
+                <div className="home-event-date">
+                  {e.subject_name ? `${e.subject_name} · ${formatWeekdayDate(e.event_date)}` : formatWeekdayDate(e.event_date)}
+                </div>
               </div>
               <span className="home-event-days">{daysFromToday(e.event_date)}</span>
             </div>

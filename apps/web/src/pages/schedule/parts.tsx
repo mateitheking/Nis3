@@ -543,7 +543,7 @@ export function UpcomingCard({
   events,
   loading,
 }: {
-  events: { kind: string; badge: string; title: string; event_date: string }[] | null
+  events: { kind: string; badge: string; title: string; event_date: string; subject_name: string | null }[] | null
   loading: boolean
 }) {
   if (loading) return <div className="sch-empty">Загружаем…</div>
@@ -556,7 +556,9 @@ export function UpcomingCard({
           <span className="home-event-badge">{e.badge}</span>
           <div className="home-event-body">
             <div className="home-event-title">{e.title}</div>
-            <div className="home-event-date">{formatWeekdayDate(e.event_date)}</div>
+            <div className="home-event-date">
+              {e.subject_name ? `${e.subject_name} · ${formatWeekdayDate(e.event_date)}` : formatWeekdayDate(e.event_date)}
+            </div>
           </div>
           <span className="home-event-days">{daysFromToday(e.event_date)}</span>
         </div>

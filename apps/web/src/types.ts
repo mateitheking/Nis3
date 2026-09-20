@@ -58,6 +58,7 @@ export interface NotificationItem {
   posted_at: string
   event_date: string | null
   author: string | null
+  subject_name: string | null
 }
 
 export interface Consultation {

@@ -949,6 +949,7 @@ def notifications(
             "posted_at": n.posted_at.isoformat(),
             "event_date": n.event_date.isoformat() if n.event_date else None,
             "author": n.author,
+            "subject_name": n.subject_name,
         }
         for n in items
     ]

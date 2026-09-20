@@ -459,6 +459,27 @@ def test_notifications_merges_calendar_and_messages_sorted_by_posted_at():
     assert {n.kind for n in items} == {"message", "assessment"}
 
 
+def test_notifications_resolves_subject_name_for_calendar_items(monkeypatch):
+    """calendar_events() уже резолвит subject_id → subject_name (см. её
+    докстринг); notifications() — та же лента через другой путь разбора
+    (_notification_from_raw) и раньше теряла subject_id по дороге, из-за
+    чего «Ближайшие события»/«Уведомления» на фронте не могли показать,
+    к какому предмету СОР — нашлось по жалобе пользователя 20 сентября
+    2026. Резолвинг подменяем моком — сеть/Subjects(...) здесь не при чём,
+    важно только что subject_id действительно доходит до этого вызова."""
+    client = EdupageClient("nispetropavlovsk")
+    client._edupage = _FakeEdupage([
+        _FakeRawEvent(
+            1, "bexam",
+            {"typ": "bexam", "name": "СОР1", "date": "2026-09-20", "subjectid": "5"},
+            event_type_name="EVENT", timestamp=datetime(2026, 9, 5, 10, 0),
+        ),
+    ])
+    monkeypatch.setattr(client, "_resolve_subject", lambda subject_id: "Химия" if subject_id == "5" else None)
+    items = client.notifications(date(2026, 9, 1))
+    assert items[0].subject_name == "Химия"
+
+
 def test_notifications_excludes_off_schedule_lesson_notices():
     """Живая находка 14 сентября 2026: additional_data.typ == 'lesson'
     (внерасписанное занятие/консультация, приложение EduPage подписывает

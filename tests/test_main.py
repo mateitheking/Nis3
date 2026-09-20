@@ -337,10 +337,12 @@ def test_notifications_returns_list_shaped_correctly(client):
         {
             "id": 1, "kind": "message", "badge": "Сообщение", "title": "Родительское собрание в пятницу",
             "posted_at": "2026-09-10T09:30:00", "event_date": None, "author": "Иванова А.Б.",
+            "subject_name": None,
         },
         {
             "id": 2, "kind": "assessment", "badge": "СОР", "title": "СОР 1",
             "posted_at": "2026-09-05T08:00:00", "event_date": "2026-09-21", "author": None,
+            "subject_name": None,
         },
     ]
 

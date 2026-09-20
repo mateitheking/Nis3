@@ -54,7 +54,10 @@ export function NotificationsList({
                   {n.kind === 'message' && n.author ? (
                     <div className="notif-sub">{n.author}</div>
                   ) : n.event_date ? (
-                    <div className="notif-sub">Предстоит: {formatWeekdayDate(n.event_date)}</div>
+                    <div className="notif-sub">
+                      Предстоит: {n.subject_name ? `${n.subject_name} · ` : ''}
+                      {formatWeekdayDate(n.event_date)}
+                    </div>
                   ) : null}
                 </div>
                 <span className="notif-time">{timePart(n.posted_at)}</span>

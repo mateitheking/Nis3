@@ -323,6 +323,8 @@ class NotificationItem(BaseModel):
     posted_at: datetime
     event_date: Optional[date] = None  # только у календарных типов
     author: Optional[str] = None  # только у "message"
+    subject_id: Optional[str] = None  # только у календарных типов, до _resolve_subject
+    subject_name: Optional[str] = None  # только у календарных типов
 
 
 def _notification_from_raw(
@@ -346,6 +348,7 @@ def _notification_from_raw(
             title=calendar.title,
             posted_at=timestamp,
             event_date=calendar.event_date,
+            subject_id=calendar.subject_id,
         )
     message = parse_message(event_id, event_type_name, text, timestamp, author, is_starred)
     if message is not None:
@@ -867,6 +870,9 @@ class EdupageClient:
                 continue
             if item is not None:
                 out.append(item)
+        for item in out:
+            if item.subject_id and item.subject_name is None:
+                item.subject_name = self._resolve_subject(item.subject_id)
         return sorted(out, key=lambda n: n.posted_at, reverse=True)
 
     def schedule_changes(
