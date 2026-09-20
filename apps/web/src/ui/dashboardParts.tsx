@@ -408,6 +408,115 @@ function EditableName({
   )
 }
 
+function ChangePasswordCard({
+  onSave,
+}: {
+  onSave: (currentPassword: string, newPassword: string) => Promise<UpdateResult>
+}) {
+  const [open, setOpen] = useState(false)
+  const [current, setCurrent] = useState('')
+  const [next, setNext] = useState('')
+  const [confirm, setConfirm] = useState('')
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [done, setDone] = useState(false)
+
+  function reset() {
+    setCurrent('')
+    setNext('')
+    setConfirm('')
+    setError(null)
+  }
+
+  if (!open) {
+    return (
+      <div className="home-settings-linkform">
+        <button
+          type="button"
+          className="home-settings-linkbtn home-settings-linkbtn--ghost"
+          onClick={() => {
+            reset()
+            setDone(false)
+            setOpen(true)
+          }}
+        >
+          Изменить пароль
+        </button>
+        {done && <div className="home-settings-msg-warning">Пароль изменён</div>}
+      </div>
+    )
+  }
+
+  async function save() {
+    if (next.length < 8) {
+      setError('Новый пароль слишком короткий (минимум 8 символов)')
+      return
+    }
+    if (next !== confirm) {
+      setError('Пароли не совпадают')
+      return
+    }
+    setSaving(true)
+    setError(null)
+    const res = await onSave(current, next)
+    setSaving(false)
+    if (res.ok) {
+      reset()
+      setOpen(false)
+      setDone(true)
+    } else {
+      setError(res.error ?? 'Не получилось сохранить')
+    }
+  }
+
+  return (
+    <div className="home-settings-linkform">
+      <input
+        type="password"
+        className="home-settings-input"
+        placeholder="Текущий пароль"
+        value={current}
+        onChange={(e) => setCurrent(e.target.value)}
+        disabled={saving}
+        autoFocus
+      />
+      <input
+        type="password"
+        className="home-settings-input"
+        placeholder="Новый пароль"
+        value={next}
+        onChange={(e) => setNext(e.target.value)}
+        disabled={saving}
+      />
+      <input
+        type="password"
+        className="home-settings-input"
+        placeholder="Повторите новый пароль"
+        value={confirm}
+        onChange={(e) => setConfirm(e.target.value)}
+        disabled={saving}
+      />
+      {error && <div className="home-settings-msg-error">{error}</div>}
+      <div className="home-settings-name-edit-actions">
+        <button type="button" className="home-settings-linkbtn" onClick={save} disabled={saving}>
+          Сохранить
+        </button>
+        <button
+          type="button"
+          className="home-settings-danger"
+          onClick={() => {
+            reset()
+            setOpen(false)
+          }}
+          disabled={saving}
+        >
+          Отмена
+        </button>
+      </div>
+    </div>
+  )
+}
+
 export function SettingsPanelBody({
   me,
   sources,
@@ -417,6 +526,7 @@ export function SettingsPanelBody({
   onUpdateName,
   onUpdateAvatar,
   onDeleteAvatar,
+  onChangePassword,
 }: {
   me: Me | null
   sources: SourcesStatus | null
@@ -426,6 +536,7 @@ export function SettingsPanelBody({
   onUpdateName: (name: string) => Promise<UpdateResult>
   onUpdateAvatar: (file: File) => Promise<UpdateResult>
   onDeleteAvatar: () => void
+  onChangePassword: (currentPassword: string, newPassword: string) => Promise<UpdateResult>
 }) {
   return (
     <>
@@ -446,6 +557,7 @@ export function SettingsPanelBody({
             <span className="home-settings-field-label">Email</span>
             <div className="home-settings-field-value">{me?.email}</div>
           </div>
+          <ChangePasswordCard onSave={onChangePassword} />
         </div>
       </div>
 

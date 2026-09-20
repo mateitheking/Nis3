@@ -14,6 +14,7 @@ export function SettingsDrawer({
   onUpdateName,
   onUpdateAvatar,
   onDeleteAvatar,
+  onChangePassword,
 }: {
   open: boolean
   onClose: () => void
@@ -26,6 +27,7 @@ export function SettingsDrawer({
   onUpdateName: (name: string) => Promise<{ ok: boolean; error?: string }>
   onUpdateAvatar: (file: File) => Promise<{ ok: boolean; error?: string }>
   onDeleteAvatar: () => void
+  onChangePassword: (currentPassword: string, newPassword: string) => Promise<{ ok: boolean; error?: string }>
 }) {
   if (!open) return null
   return (
@@ -57,6 +59,7 @@ export function SettingsDrawer({
             onUpdateName={onUpdateName}
             onUpdateAvatar={onUpdateAvatar}
             onDeleteAvatar={onDeleteAvatar}
+            onChangePassword={onChangePassword}
           />
         </div>
       </div>

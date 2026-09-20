@@ -321,6 +321,26 @@ def delete_my_avatar(
     return _me_json(student, cred)
 
 
+class ChangePasswordBody(BaseModel):
+    current_password: str
+    new_password: str
+
+
+@app.post("/api/me/password")
+def change_password(
+    body: ChangePasswordBody,
+    student: Student = Depends(get_current_student),
+    auth: AuthService = Depends(get_auth),
+):
+    if len(body.new_password) < 8:
+        raise HTTPException(400, "новый пароль слишком короткий (минимум 8 символов)")
+    try:
+        auth.change_password(student, body.current_password, body.new_password)
+    except InvalidCredentials:
+        raise HTTPException(401, "текущий пароль неверный")
+    return {"ok": True}
+
+
 # ---- привязка источников ---------------------------------------------------
 
 

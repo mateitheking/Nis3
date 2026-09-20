@@ -126,6 +126,20 @@ class AuthService:
         self.db.flush()
         return student
 
+    def change_password(self, student: Student, current_password: str, new_password: str) -> None:
+        """Смена пароля из настроек — в отличие от authenticate(), тут
+        студент уже известен (сессия сайта уже есть), проверяем только сам
+        пароль, не ищем аккаунт по почте заново."""
+        cred = self.db.scalar(
+            select(AccountCredential).where(AccountCredential.student_id == student.id)
+        )
+        if cred is None:
+            raise InvalidCredentials()
+        if not bcrypt.checkpw(current_password.encode("utf-8"), cred.password_hash.encode("ascii")):
+            raise InvalidCredentials()
+        cred.password_hash = bcrypt.hashpw(new_password.encode("utf-8"), bcrypt.gensalt()).decode("ascii")
+        self.db.flush()
+
     def authenticate(self, email: str, password: str) -> Student:
         """Вход по почте+паролю в наш сайт (не в СУШ/EduPage).
 

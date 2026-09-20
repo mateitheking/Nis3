@@ -101,7 +101,25 @@ export function useAccountShell() {
     if (res.ok) setMe(data)
   }
 
-  return { me, sources, link, unlink, logout, reloadSources, updateName, uploadAvatar, deleteAvatar }
+  async function changePassword(
+    currentPassword: string,
+    newPassword: string,
+  ): Promise<{ ok: boolean; error?: string }> {
+    const res = await fetch('/api/me/password', {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ current_password: currentPassword, new_password: newPassword }),
+    })
+    if (res.ok) return { ok: true }
+    const data = await res.json().catch(() => ({}))
+    return { ok: false, error: data.detail ?? `Не получилось (${res.status})` }
+  }
+
+  return {
+    me, sources, link, unlink, logout, reloadSources,
+    updateName, uploadAvatar, deleteAvatar, changePassword,
+  }
 }
 
 export type AccountShell = ReturnType<typeof useAccountShell>

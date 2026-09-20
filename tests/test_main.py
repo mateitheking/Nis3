@@ -1011,6 +1011,46 @@ def test_avatar_not_visible_to_other_student(client):
     assert client.get("/api/me").json()["avatar_url"] is None
 
 
+def test_change_password_roundtrip_then_login_with_new_password(client):
+    _register_and_get(client, email="pw1@nis.edu.kz")
+    r = client.post("/api/me/password", json={
+        "current_password": "password123", "new_password": "newpassword456",
+    })
+    assert r.status_code == 200
+    assert r.json() == {"ok": True}
+
+    client.post("/auth/logout")
+    assert client.post("/auth/login", json={
+        "email": "pw1@nis.edu.kz", "password": "password123",
+    }).status_code == 401
+    ok = client.post("/auth/login", json={
+        "email": "pw1@nis.edu.kz", "password": "newpassword456",
+    })
+    assert ok.status_code == 200
+
+
+def test_change_password_rejects_wrong_current_password(client):
+    _register_and_get(client, email="pw2@nis.edu.kz")
+    r = client.post("/api/me/password", json={
+        "current_password": "wrongwrong", "new_password": "newpassword456",
+    })
+    assert r.status_code == 401
+
+    client.post("/auth/logout")
+    # старый пароль всё ещё работает — смена не должна была пройти
+    assert client.post("/auth/login", json={
+        "email": "pw2@nis.edu.kz", "password": "password123",
+    }).status_code == 200
+
+
+def test_change_password_rejects_short_new_password(client):
+    _register_and_get(client, email="pw3@nis.edu.kz")
+    r = client.post("/api/me/password", json={
+        "current_password": "password123", "new_password": "short",
+    })
+    assert r.status_code == 400
+
+
 # ---- свои записи в расписании -----------------------------------------------
 
 
