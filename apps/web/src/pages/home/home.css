@@ -645,6 +645,7 @@ select.home-settings-input {
   height: 30px;
   border-radius: 7px;
   object-fit: cover;
+  background: var(--accent);
   flex: none;
 }
 .home-sidebar-profile {
