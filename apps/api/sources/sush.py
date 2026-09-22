@@ -29,7 +29,7 @@ from concurrent.futures import ThreadPoolExecutor
 from typing import Any, Callable, TypeVar
 
 from curl_cffi import requests as curl_requests
-from pydantic import BaseModel, ConfigDict, ValidationError
+from pydantic import BaseModel, ConfigDict, ValidationError, field_validator
 
 __all__ = [
     "SushClient",
@@ -235,6 +235,17 @@ class AssessmentResult(_Model):
     MaxScore: float = 0.0
     Comment: str | None = None
     RubricId: str | None = None
+
+    @field_validator("Score", mode="before")
+    @classmethod
+    def _no_negative_sentinel(cls, v: Any) -> Any:
+        """СУШ отдаёт ``Score: -1`` для темы, которая запланирована
+        (``MaxScore`` задан), но ещё не оценена учителем — не «минус один
+        балл», а сентинел «оценки нет». Найдено живьём 22 сентября 2026:
+        ученик с незаполненным СОЧ по биологии видел «-1/9», «-4/60» и
+        отрицательные проценты в калькуляторе. Ноль — честное отображение
+        «пока не оценено», в отличие от отрицательного числа."""
+        return 0.0 if isinstance(v, (int, float)) and v < 0 else v
 
 
 class Evaluation(_Model):

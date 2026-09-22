@@ -411,3 +411,28 @@ def test_evaluation_earned_and_possible_sum_topics():
     assert ev.earned == pytest.approx(16.0)   # 3+5+4+4
     assert ev.possible == pytest.approx(24.0)  # 6×4
     assert round(ev.earned / ev.possible * 100, 2) == 66.67  # сходится со Score
+
+
+def test_assessment_result_treats_negative_score_as_ungraded():
+    """Живая находка 22 сентября 2026: СУШ отдаёт Score: -1 для темы,
+    которая запланирована (MaxScore задан), но учитель её ещё не оценил —
+    сентинел «оценки нет», не «минус один балл». Без нормализации
+    ученик с незаполненным СОЧ видел «-1/9», «-4/60» и отрицательные
+    проценты в калькуляторе (см. AssessmentResult._no_negative_sentinel)."""
+    from apps.api.sources.sush import AssessmentResult, Evaluation
+
+    r = AssessmentResult.model_validate({"Id": "x", "Name": "12.1 A Ecology", "Score": -1, "MaxScore": 9})
+    assert r.Score == 0.0
+
+    ev = Evaluation.model_validate({
+        "Id": "x", "ShortName": "СОЧ", "Percent": 50.0,
+        "MaxScores": {"a": 9.0, "b": 10.0, "c": 26.0, "d": 15.0},
+    })
+    ev.results = [
+        AssessmentResult.model_validate({"Id": "a", "Name": "A", "Score": -1, "MaxScore": 9}),
+        AssessmentResult.model_validate({"Id": "b", "Name": "B", "Score": -1, "MaxScore": 10}),
+        AssessmentResult.model_validate({"Id": "c", "Name": "C", "Score": -1, "MaxScore": 26}),
+        AssessmentResult.model_validate({"Id": "d", "Name": "D", "Score": -1, "MaxScore": 15}),
+    ]
+    assert ev.earned == 0.0  # не -4
+    assert ev.possible == pytest.approx(60.0)
