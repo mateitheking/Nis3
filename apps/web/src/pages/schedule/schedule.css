@@ -94,7 +94,7 @@
 .sch-toggle-row {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 24px;
   flex-wrap: wrap;
 }
 .sch-toggle-row .sch-toggle-btn {
