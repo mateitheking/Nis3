@@ -91,15 +91,38 @@
    .sch-toggle-btn.flex:1 выше, рассчитан на строку в одиночестве). Один
    компактный кластер слева направо, не space-between — попросили не
    растягивать с большим разрывом, а поставить вплотную. */
+/* Три колонки 1fr/auto/1fr — неделя ровно по центру строки независимо от
+   ширины тумблера слева и кнопки обновления справа. */
 .sch-toggle-row {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  gap: 24px;
-  flex-wrap: wrap;
+  gap: 12px;
+}
+.sch-toggle-row > .sch-toggle {
+  grid-column: 1;
+  justify-self: start;
+}
+.sch-toggle-row > .sch-weeknav {
+  grid-column: 2;
+  justify-self: center;
+}
+.sch-toggle-row > .sch-refresh-btn {
+  grid-column: 3;
+  justify-self: end;
 }
 .sch-toggle-row .sch-toggle-btn {
   flex: none;
   padding: 8px 18px;
+}
+/* На телефоне всё в одну строку не влезает — тумблер на всю ширину
+   первой строкой, неделя по центру и обновление справа — второй. */
+.sch-mobile-page .sch-toggle-row > .sch-toggle {
+  grid-column: 1 / -1;
+  justify-self: stretch;
+}
+.sch-mobile-page .sch-toggle-row .sch-toggle-btn {
+  flex: 1;
 }
 
 .sch-daynav {
