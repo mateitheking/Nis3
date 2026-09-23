@@ -110,7 +110,7 @@
   width: 17px;
   height: 17px;
   border-radius: 5px;
-  border: 1px solid rgba(255, 255, 255, 0.25);
+  border: 1px solid var(--border-strong);
   background: transparent;
   display: flex;
   align-items: center;
@@ -164,7 +164,7 @@
 .af-btn-secondary {
   background: transparent;
   color: var(--text-primary);
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  border: 1px solid var(--border-input);
 }
 .af-btn--mobile {
   font-size: 15px;
@@ -190,7 +190,7 @@
 .af-divider-line {
   flex: 1;
   height: 1px;
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--border-input);
 }
 .af-divider-text {
   font-size: 12.5px;
@@ -339,7 +339,7 @@
 .af-mobile-footer {
   flex: none;
   padding: 12px 20px 22px;
-  background: rgba(10, 10, 10, 0.92);
+  background: var(--bg-bar);
   backdrop-filter: blur(8px);
   border-top: 1px solid var(--border-subtle);
 }

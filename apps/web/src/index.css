@@ -19,7 +19,10 @@
 
   --border-subtle: rgba(255, 255, 255, 0.08);
   --border-input: rgba(255, 255, 255, 0.12);
+  --border-strong: rgba(255, 255, 255, 0.22);
   --border-input-focus: #d4af5a;
+  --bg-hover: rgba(255, 255, 255, 0.05);
+  --bg-bar: rgba(10, 10, 10, 0.92);
 
   --accent: #d4af5a;
   --accent-hover: #e6c583;
@@ -52,7 +55,10 @@
 
   --border-subtle: rgba(24, 18, 8, 0.08);
   --border-input: rgba(24, 18, 8, 0.14);
+  --border-strong: rgba(24, 18, 8, 0.24);
   --border-input-focus: #b8894a;
+  --bg-hover: rgba(24, 18, 8, 0.04);
+  --bg-bar: rgba(247, 245, 241, 0.92);
 
   --accent: #b8894a;
   --accent-hover: #a67a3c;

@@ -641,7 +641,7 @@ select.home-settings-input {
 }
 .home-mobile-bottomnav {
   flex: none;
-  background: rgba(10, 10, 10, 0.92);
+  background: var(--bg-bar);
   backdrop-filter: blur(8px);
   border-top: 1px solid var(--border-subtle);
   display: flex;
@@ -672,7 +672,7 @@ select.home-settings-input {
   height: 34px;
   border-radius: 50%;
   background: var(--bg-chip);
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  border: 1px solid var(--border-input);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -844,7 +844,7 @@ select.home-settings-input {
   color: var(--text-primary);
 }
 .home-sidebar-nav-item:hover:not(.is-active) {
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--bg-hover);
   transform: translateX(2px);
 }
 .home-sidebar-nav-item.is-active {
