@@ -2,7 +2,16 @@ import logo from '../../assets/nis-logo-mark.png'
 import { Avatar } from '../../ui/dashboardParts'
 import { BottomNav } from '../../ui/BottomNav'
 import { formatDayMonth, isoDate } from '../../ui/dateFormat'
-import { ConsultationsCard, DayNav, LessonList, RefreshButton, UpcomingCard, ViewToggle, WeekGrid } from './parts'
+import {
+  ConsultationsCard,
+  DayNav,
+  LessonList,
+  RefreshButton,
+  UpcomingCard,
+  ViewToggle,
+  WeekGrid,
+  WeekNav,
+} from './parts'
 import type { ScheduleData } from './useScheduleData'
 
 export function ScheduleMobile({
@@ -14,6 +23,7 @@ export function ScheduleMobile({
 }) {
   const {
     me, view, setView, prevDay, nextDay, week, weekLessons,
+    weekOffset, prevWeek, nextWeek, thisWeek,
     selectedDate, selectedLessons, exams, consultations, events,
     loadingWeek, loadingDay, loadingEvents, refreshing, refresh, deleteCustomEntry,
   } = data
@@ -43,9 +53,13 @@ export function ScheduleMobile({
       <div className="sch-mobile-titleblock">
         <h1>Расписание</h1>
         <div className="sch-header-actions">
-          <p>
-            {formatDayMonth(week[0])} — {formatDayMonth(week[4])}
-          </p>
+          <WeekNav
+            label={`${formatDayMonth(week[0])} — ${formatDayMonth(week[4])}`}
+            isCurrent={weekOffset === 0}
+            onPrev={prevWeek}
+            onNext={nextWeek}
+            onToday={thisWeek}
+          />
           <RefreshButton refreshing={refreshing} onRefresh={refresh} />
         </div>
         <div className="sch-mobile-toggle-wrap">

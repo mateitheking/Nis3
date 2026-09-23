@@ -3,6 +3,42 @@
   align-items: center;
   justify-content: space-between;
   gap: 10px;
+  flex-wrap: wrap;
+}
+.sch-weeknav {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.sch-weeknav-btn {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--text-secondary);
+  flex: none;
+  padding: 0;
+}
+.sch-weeknav-btn:hover {
+  color: var(--text-primary);
+  border-color: rgba(var(--accent-rgb), 0.4);
+}
+.sch-weeknav-today {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--accent);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-family: inherit;
+  text-decoration: underline;
+  flex: none;
 }
 .sch-refresh-btn {
   width: 30px;

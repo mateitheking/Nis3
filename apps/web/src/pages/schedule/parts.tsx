@@ -62,6 +62,41 @@ export function ViewToggle({
   )
 }
 
+export function WeekNav({
+  label,
+  isCurrent,
+  onPrev,
+  onNext,
+  onToday,
+}: {
+  label: string
+  isCurrent: boolean
+  onPrev: () => void
+  onNext: () => void
+  onToday: () => void
+}) {
+  return (
+    <div className="sch-weeknav">
+      <button type="button" className="sch-weeknav-btn" onClick={onPrev} aria-label="Предыдущая неделя">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="14" height="14">
+          <path d="M15 18l-6-6 6-6" />
+        </svg>
+      </button>
+      <span className="home-main-date">{label}</span>
+      <button type="button" className="sch-weeknav-btn" onClick={onNext} aria-label="Следующая неделя">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="14" height="14">
+          <path d="M9 18l6-6-6-6" />
+        </svg>
+      </button>
+      {!isCurrent && (
+        <button type="button" className="sch-weeknav-today" onClick={onToday}>
+          Текущая
+        </button>
+      )}
+    </div>
+  )
+}
+
 export function DayNav({
   date,
   onPrev,

@@ -11,6 +11,7 @@ import {
   UpcomingCard,
   ViewToggle,
   WeekGrid,
+  WeekNav,
 } from './parts'
 import { occupiedPeriodsOf } from './useScheduleData'
 import type { ScheduleData } from './useScheduleData'
@@ -27,6 +28,7 @@ export function ScheduleDesktop({
   const [settingsOpen, setSettingsOpen] = useState(false)
   const {
     me, sources, view, setView, prevDay, nextDay, week, weekLessons,
+    weekOffset, prevWeek, nextWeek, thisWeek,
     selectedDate, selectedLessons, exams, consultations, events,
     loadingWeek, loadingDay, loadingEvents, refreshing, refresh, link, unlink, logout,
     updateName, uploadAvatar, deleteAvatar, changePassword, resendVerification,
@@ -64,9 +66,13 @@ export function ScheduleDesktop({
           <div className="home-main-header">
             <span className="home-main-title">Расписание</span>
             <div className="sch-header-actions">
-              <span className="home-main-date">
-                {formatDayMonth(week[0])} — {formatDayMonth(week[4])}
-              </span>
+              <WeekNav
+                label={`${formatDayMonth(week[0])} — ${formatDayMonth(week[4])}`}
+                isCurrent={weekOffset === 0}
+                onPrev={prevWeek}
+                onNext={nextWeek}
+                onToday={thisWeek}
+              />
               <RefreshButton refreshing={refreshing} onRefresh={refresh} />
             </div>
           </div>

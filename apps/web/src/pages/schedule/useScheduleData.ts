@@ -78,6 +78,7 @@ export function examBadgeFor(exams: ExamEvent[] | null, dateIso: string, subject
 export function useScheduleData() {
   const shell = useAccountShell()
   const [dayOffset, setDayOffset] = useState(0)
+  const [weekOffset, setWeekOffset] = useState(0)
   const [view, setView] = useState<'list' | 'grid'>('grid')
 
   const [weekLessons, setWeekLessons] = useState<(Lesson[] | null)[] | null>(null)
@@ -103,7 +104,17 @@ export function useScheduleData() {
   // ближайшую предстоящую (с понедельника) — просьба пользователя
   // 16 сентября 2026: иначе сетка в субботу/воскресенье показывала бы
   // неделю, которая уже прошла целиком, без единого актуального дня.
-  const week = weekdayDates(nearestWeekday(today))
+  //
+  // Мемо, а не голое выражение (как selectedDate ниже) — намеренно:
+  // weekOffset теперь двигает week, а loadWeek()/refresh() зависят от
+  // week как от объекта (не только от ISO-строк, как examsFromIso ниже),
+  // так что его ссылка обязана быть стабильной между рендерами, где
+  // weekOffset не менялся, иначе эффект ниже перезапускался бы бесконечно.
+  const week = useMemo(() => {
+    const base = nearestWeekday(new Date())
+    base.setDate(base.getDate() + weekOffset * 7)
+    return weekdayDates(base)
+  }, [weekOffset])
   const selectedDate = addWeekdays(nearestWeekday(today), dayOffset)
 
   // Один заход на Расписание — это 11 отдельных запросов к EduPage (5 дней
@@ -134,8 +145,7 @@ export function useScheduleData() {
     setWeekLessons(lessons.map((l, i) => mergeLessons(l, (custom[i] ?? []).map(customEntryToLesson))))
     setWeekConsultations(cons)
     setLoadingWeek(false)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [limit])
+  }, [limit, week])
 
   const loadSelectedDay = useCallback(async () => {
     setLoadingDay(true)
@@ -153,8 +163,12 @@ export function useScheduleData() {
       setEvents(e)
       setLoadingEvents(false)
     })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [limit])
+
+  useEffect(() => {
     loadWeek()
-  }, [loadWeek, limit])
+  }, [loadWeek])
 
   useEffect(() => {
     loadSelectedDay()
@@ -287,6 +301,10 @@ export function useScheduleData() {
     dayOffset,
     prevDay: () => setDayOffset((o) => o - 1),
     nextDay: () => setDayOffset((o) => o + 1),
+    weekOffset,
+    prevWeek: () => setWeekOffset((o) => o - 1),
+    nextWeek: () => setWeekOffset((o) => o + 1),
+    thisWeek: () => setWeekOffset(0),
     week,
     weekLessons,
     selectedDate,
