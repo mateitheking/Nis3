@@ -65,19 +65,19 @@ export function ScheduleDesktop({
         <div className="home-main-inner">
           <div className="home-main-header">
             <span className="home-main-title">Расписание</span>
-            <div className="sch-header-actions">
-              <WeekNav
-                label={`${formatDayMonth(week[0])} — ${formatDayMonth(week[4])}`}
-                isCurrent={weekOffset === 0}
-                onPrev={prevWeek}
-                onNext={nextWeek}
-                onToday={thisWeek}
-              />
-              <RefreshButton refreshing={refreshing} onRefresh={refresh} />
-            </div>
+            <RefreshButton refreshing={refreshing} onRefresh={refresh} />
           </div>
 
-          <ViewToggle view={view} onChange={setView} />
+          <div className="sch-toggle-row">
+            <ViewToggle view={view} onChange={setView} />
+            <WeekNav
+              label={`${formatDayMonth(week[0])} — ${formatDayMonth(week[4])}`}
+              isCurrent={weekOffset === 0}
+              onPrev={prevWeek}
+              onNext={nextWeek}
+              onToday={thisWeek}
+            />
+          </div>
 
           {view === 'list' ? (
             <div className="home-card" style={{ padding: '18px 20px' }}>

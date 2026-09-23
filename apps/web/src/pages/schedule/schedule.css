@@ -92,9 +92,20 @@
   color: var(--bg-page);
   border-color: transparent;
 }
-.home-desktop-page .sch-toggle-btn {
+
+/* Список/Неделя делят строку с навигацией по неделям (WeekNav) — тогда
+   тумблер уже не должен тянуться на всю ширину (см. .sch-toggle-btn.flex:1
+   выше, рассчитан на строку в одиночестве). */
+.sch-toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.sch-toggle-row .sch-toggle-btn {
   flex: none;
-  padding: 8px 20px;
+  padding: 8px 18px;
 }
 
 .sch-daynav {

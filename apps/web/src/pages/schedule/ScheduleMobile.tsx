@@ -51,8 +51,12 @@ export function ScheduleMobile({
       </div>
 
       <div className="sch-mobile-titleblock">
-        <h1>Расписание</h1>
         <div className="sch-header-actions">
+          <h1>Расписание</h1>
+          <RefreshButton refreshing={refreshing} onRefresh={refresh} />
+        </div>
+        <div className="sch-mobile-toggle-wrap sch-toggle-row">
+          <ViewToggle view={view} onChange={setView} />
           <WeekNav
             label={`${formatDayMonth(week[0])} — ${formatDayMonth(week[4])}`}
             isCurrent={weekOffset === 0}
@@ -60,10 +64,6 @@ export function ScheduleMobile({
             onNext={nextWeek}
             onToday={thisWeek}
           />
-          <RefreshButton refreshing={refreshing} onRefresh={refresh} />
-        </div>
-        <div className="sch-mobile-toggle-wrap">
-          <ViewToggle view={view} onChange={setView} />
         </div>
       </div>
 
