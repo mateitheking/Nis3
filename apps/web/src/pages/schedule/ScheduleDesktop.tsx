@@ -65,7 +65,6 @@ export function ScheduleDesktop({
         <div className="home-main-inner">
           <div className="home-main-header">
             <span className="home-main-title">Расписание</span>
-            <RefreshButton refreshing={refreshing} onRefresh={refresh} />
           </div>
 
           <div className="sch-toggle-row">
@@ -77,6 +76,7 @@ export function ScheduleDesktop({
               onNext={nextWeek}
               onToday={thisWeek}
             />
+            <RefreshButton refreshing={refreshing} onRefresh={refresh} />
           </div>
 
           {view === 'list' ? (

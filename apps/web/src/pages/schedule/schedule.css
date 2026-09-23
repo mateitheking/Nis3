@@ -1,10 +1,3 @@
-.sch-header-actions {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  flex-wrap: wrap;
-}
 .sch-weeknav {
   display: flex;
   align-items: center;
@@ -93,14 +86,15 @@
   border-color: transparent;
 }
 
-/* Список/Неделя делят строку с навигацией по неделям (WeekNav) — тогда
-   тумблер уже не должен тянуться на всю ширину (см. .sch-toggle-btn.flex:1
-   выше, рассчитан на строку в одиночестве). */
+/* Список/Неделя делят строку с навигацией по неделям (WeekNav) и кнопкой
+   обновления — тогда тумблер уже не должен тянуться на всю ширину (см.
+   .sch-toggle-btn.flex:1 выше, рассчитан на строку в одиночестве). Один
+   компактный кластер слева направо, не space-between — попросили не
+   растягивать с большим разрывом, а поставить вплотную. */
 .sch-toggle-row {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
+  gap: 16px;
   flex-wrap: wrap;
 }
 .sch-toggle-row .sch-toggle-btn {
