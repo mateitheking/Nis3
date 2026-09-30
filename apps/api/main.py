@@ -1104,6 +1104,22 @@ def events_upcoming(
 CALENDAR_PAST_DAYS = 30
 
 
+def _unique_assessments(events: list) -> list:
+    """Живьём 30 сентября 2026: EduPage повторяет одно и то же СОР в ленте
+    под разными event_id (переопубликовали — «Biology SAU 1» трижды в один
+    день). В календаре это были бы дубли — схлопываем по содержанию."""
+    seen: set[tuple] = set()
+    out = []
+    for e in events:
+        if e.kind != "assessment":
+            continue
+        key = (e.event_date, e.subject_name, e.title, e.period)
+        if key not in seen:
+            seen.add(key)
+            out.append(e)
+    return out
+
+
 def _calendar_json(student: Student) -> dict:
     return {"url": f"{PUBLIC_BASE_URL}/calendar/{student.calendar_token}.ics"}
 
@@ -1138,7 +1154,7 @@ def calendar_feed(token: str, db: DbSession = Depends(get_db), auth: AuthService
         print(f"[calendar] EduPage недоступен для ленты: {exc!r}")
         raise HTTPException(503, "EduPage сейчас недоступен", headers={"Retry-After": "3600"})
     body = icalendar.build_calendar(
-        [e for e in events if e.kind == "assessment"],
+        _unique_assessments(events),
         name="Nis3 — СОР и СОЧ",
         host=urlparse(PUBLIC_BASE_URL).hostname or "nis3",
     )

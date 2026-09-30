@@ -92,6 +92,19 @@ def test_calendar_feed_serves_only_assessments_without_login(client):
     assert "Родительское собрание" not in r.text
 
 
+def test_calendar_feed_collapses_republished_duplicates(client):
+    """Живой случай: одно СОР пришло из EduPage трижды под разными id."""
+    _register_with_edupage(client, "cal6@nis.edu.kz")
+    FakeEdupageClient.calendar_events_data = [
+        _event(event_id=10, title="SAU 1", subject="Biology", period=1),
+        _event(event_id=11, title="SAU 1", subject="Biology", period=1),
+        _event(event_id=12, title="SAU 1", subject="Biology", period=1),
+        _event(event_id=13, title="SAU 2", subject="Biology", period=3),
+    ]
+    r = client.get(_feed_path(client))
+    assert r.text.count("BEGIN:VEVENT") == 2
+
+
 def test_calendar_feed_unknown_token_is_404(client):
     assert client.get("/calendar/nope.ics").status_code == 404
 
