@@ -4,7 +4,7 @@ import { getJsonCached, invalidateCache } from '../../lib/apiCache'
 import { customEntryToLesson, mergeLessons } from '../schedule/useScheduleData'
 import type { CustomEntryFields } from '../schedule/useScheduleData'
 import type { CustomEntry, ExamEvent, Lesson, NotificationItem, UpcomingEvent } from '../../types'
-import { isoDate, parseIsoDate, tomorrowIso } from '../../ui/dateFormat'
+import { isoDate, parseIsoDate, todayIso, tomorrowIso } from '../../ui/dateFormat'
 
 // Если на завтра пусто (чаще всего — впереди выходные), листаем вперёд до
 // ближайшего дня с уроками, а не показываем "Занятий нет" перед выходными —
@@ -13,22 +13,50 @@ import { isoDate, parseIsoDate, tomorrowIso } from '../../ui/dateFormat'
 // вникуда.
 const MAX_SCHEDULE_LOOKAHEAD_DAYS = 7
 
-/** Тянет `/api/schedule/today` + `/api/custom-entries` день за днём начиная
- * с завтра, пока не найдёт день с хотя бы одним уроком/записью, либо не
- * упрётся в лимит — тогда отдаёт последний проверенный день как есть.
- * `mergeLessons(null, [])` уже отдаёт null только когда ОБА источника
- * пусты (см. useScheduleData.ts) — на этом и держится остановка: null
- * означает "EduPage не привязан и своих записей тоже нет", а не просто
- * "уроков в этот день нет", поэтому дальше не листаем. */
+async function loadDay(iso: string): Promise<Lesson[] | null> {
+  const [lessonsRes, customRes] = await Promise.all([
+    getJsonCached<Lesson[]>(`/api/schedule/today?date=${iso}`),
+    getJsonCached<CustomEntry[]>(`/api/custom-entries?date=${iso}`),
+  ])
+  return mergeLessons(lessonsRes, (customRes ?? []).map(customEntryToLesson))
+}
+
+function toMinutes(hhmm: string): number {
+  const [h, m] = hhmm.split(':').map(Number)
+  return h * 60 + m
+}
+
+/** Сегодняшний день ещё актуален, пока не закончился последний
+ * неотменённый урок. Урок без времени (своя запись без часов) — не знаем,
+ * когда он кончается, поэтому такой день держим до конца суток. */
+function lessonsStillAhead(lessons: Lesson[]): boolean {
+  const active = lessons.filter((l) => !l.is_cancelled)
+  if (active.length === 0) return false
+  const times = active.map((l) => l.end ?? l.start).filter((t): t is string => !!t)
+  if (times.length < active.length) return true
+  const now = new Date()
+  return Math.max(...times.map(toMinutes)) > now.getHours() * 60 + now.getMinutes()
+}
+
+/** Сначала сегодня — пока уроки не закончились (живая жалоба 30 сентября
+ * 2026: утром Главная показывала завтрашнее расписание вместо сегодняшнего).
+ * Дальше — день за днём с завтра, пока не найдётся день с хотя бы одним
+ * уроком/записью, либо не упрёмся в лимит — тогда отдаём последний
+ * проверенный день как есть. `mergeLessons(null, [])` отдаёт null только
+ * когда ОБА источника пусты (см. useScheduleData.ts) — на этом и держится
+ * остановка: null означает "EduPage не привязан и своих записей тоже нет",
+ * а не просто "уроков в этот день нет", поэтому дальше не листаем. */
 async function findNextScheduleDay(): Promise<{ date: string; lessons: Lesson[] | null }> {
+  const today = todayIso()
+  const todayLessons = await loadDay(today)
+  if (todayLessons === null || lessonsStillAhead(todayLessons)) {
+    return { date: today, lessons: todayLessons }
+  }
+
   const d = parseIsoDate(tomorrowIso())
   for (let i = 0; i < MAX_SCHEDULE_LOOKAHEAD_DAYS; i++) {
     const iso = isoDate(d)
-    const [lessonsRes, customRes] = await Promise.all([
-      getJsonCached<Lesson[]>(`/api/schedule/today?date=${iso}`),
-      getJsonCached<CustomEntry[]>(`/api/custom-entries?date=${iso}`),
-    ])
-    const merged = mergeLessons(lessonsRes, (customRes ?? []).map(customEntryToLesson))
+    const merged = await loadDay(iso)
     if (merged === null || merged.length > 0 || i === MAX_SCHEDULE_LOOKAHEAD_DAYS - 1) {
       return { date: iso, lessons: merged }
     }
@@ -43,7 +71,7 @@ async function findNextScheduleDay(): Promise<{ date: string; lessons: Lesson[] 
  * данных для своих карточек. */
 export function useHomeData() {
   const shell = useAccountShell()
-  const [scheduleDate, setScheduleDate] = useState<string>(tomorrowIso())
+  const [scheduleDate, setScheduleDate] = useState<string>(todayIso())
   const [tomorrowLessons, setTomorrowLessons] = useState<Lesson[] | null>(null)
   const [tomorrowExams, setTomorrowExams] = useState<ExamEvent[] | null>(null)
   const [events, setEvents] = useState<UpcomingEvent[] | null>(null)
@@ -51,8 +79,8 @@ export function useHomeData() {
   const [loading, setLoading] = useState(true)
 
   // «+» на карточке расписания (см. Кабинет НИШ — Главная (ПК).dc.html) —
-  // тот же /api/custom-entries, что и на Расписании, просто всегда на
-  // «завтра»: карточка ровно про завтра и есть. Добавленное сразу попадает
+  // тот же /api/custom-entries, что и на Расписании, просто на тот день,
+  // который сейчас показывает карточка (scheduleDate). Добавленное сразу попадает
   // прямо в саму карточку (та же проекция в Lesson, что и на Расписании) —
   // не в отдельную ленту, ученик явно просил именно так.
   const [addModalOpen, setAddModalOpen] = useState(false)

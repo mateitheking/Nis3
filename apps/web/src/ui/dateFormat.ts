@@ -84,6 +84,10 @@ export function formatRelativeTime(iso: string): string {
   return `${diffD} дн назад`
 }
 
+export function todayIso(): string {
+  return isoDate(new Date())
+}
+
 export function tomorrowIso(): string {
   const d = new Date()
   d.setDate(d.getDate() + 1)

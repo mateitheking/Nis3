@@ -6,6 +6,7 @@ import {
   formatShortDayMonth,
   formatWeekdayDate,
   hoursUntil,
+  todayIso,
   tomorrowIso,
   weekdayAccusative,
 } from '../../ui/dateFormat'
@@ -34,9 +35,11 @@ export function ScheduleCard({
   onAdd?: () => void
 }) {
   const title =
-    date === tomorrowIso()
-      ? `Расписание на завтра, ${formatShortDayMonth(date)}`
-      : `Расписание на ${weekdayAccusative(date)}, ${formatShortDayMonth(date)}`
+    date === todayIso()
+      ? `Расписание на сегодня, ${formatShortDayMonth(date)}`
+      : date === tomorrowIso()
+        ? `Расписание на завтра, ${formatShortDayMonth(date)}`
+        : `Расписание на ${weekdayAccusative(date)}, ${formatShortDayMonth(date)}`
   const first = lessons && lessons.length > 0 ? lessons[0] : null
   const hoursToFirst = first?.start ? hoursUntil(first.start, daysOffsetFromToday(date)) : null
 
