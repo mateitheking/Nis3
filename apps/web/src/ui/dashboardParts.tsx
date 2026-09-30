@@ -1,4 +1,4 @@
-import { useRef, useState, type ChangeEvent } from 'react'
+import { useEffect, useRef, useState, type ChangeEvent } from 'react'
 import type { LinkFields, LinkResult } from '../hooks/useAccountShell'
 import type { Me, SourceStatus, SourcesStatus } from '../types'
 import { Checkbox } from './authFormParts'
@@ -408,6 +408,78 @@ function EditableName({
   )
 }
 
+/** Подписка на СОР/СОЧ из EduPage (см. main.py::calendar_feed). Google
+ * принимает её по webcal-адресу через ?cid= — один клик вместо ручного
+ * «Добавить по URL». */
+function CalendarSyncSettings() {
+  const [url, setUrl] = useState<string | null>(null)
+  const [message, setMessage] = useState<string | null>(null)
+
+  useEffect(() => {
+    fetch('/api/me/calendar', { credentials: 'same-origin' })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => setUrl(d?.url ?? null))
+      .catch(() => setUrl(null))
+  }, [])
+
+  const webcal = url?.replace(/^https?:/, 'webcal:')
+  const googleHref = webcal ? `https://calendar.google.com/calendar/r?cid=${encodeURIComponent(webcal)}` : undefined
+
+  async function copy() {
+    if (!url) return
+    try {
+      await navigator.clipboard.writeText(url)
+      setMessage('Ссылка скопирована')
+    } catch {
+      setMessage('Не получилось скопировать')
+    }
+  }
+
+  async function reset() {
+    if (!window.confirm('Старая ссылка перестанет работать — календарь придётся добавить заново. Сбросить?')) return
+    const r = await fetch('/api/me/calendar/reset', { method: 'POST', credentials: 'same-origin' })
+    if (r.ok) {
+      setUrl((await r.json()).url)
+      setMessage('Новая ссылка создана — добавь календарь заново')
+    } else {
+      setMessage('Не получилось сбросить')
+    }
+  }
+
+  return (
+    <div className="home-settings-group">
+      <span className="home-settings-label">Календарь</span>
+      <div className="home-settings-box">
+        <p className="home-settings-consent-text">
+          СОР, СОЧ и БЖБ из EduPage попадут в твой календарь и будут обновляться сами. Google подтягивает
+          изменения раз в несколько часов.
+        </p>
+        <a
+          className="home-settings-linkbtn"
+          href={googleHref}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-disabled={!googleHref}
+        >
+          Добавить в Google Calendar
+        </a>
+        <button
+          type="button"
+          className="home-settings-linkbtn home-settings-linkbtn--ghost"
+          onClick={copy}
+          disabled={!url}
+        >
+          Скопировать ссылку (Apple, Outlook)
+        </button>
+        <button type="button" className="home-settings-textbtn" onClick={reset} disabled={!url}>
+          Сбросить ссылку
+        </button>
+        {message && <div className="home-settings-msg-warning">{message}</div>}
+      </div>
+    </div>
+  )
+}
+
 function EmailVerificationStatus({
   verified,
   onResend,
@@ -598,6 +670,8 @@ export function SettingsPanelBody({
           <ChangePasswordCard onSave={onChangePassword} />
         </div>
       </div>
+
+      <CalendarSyncSettings />
 
       <SourceSettingsCard
         name="EduPage"

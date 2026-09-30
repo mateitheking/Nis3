@@ -32,6 +32,7 @@ def reset_fakes():
     FakeEdupageClient.behavior = "ok"
     FakeEdupageClient.session_alive_after_restore = True
     FakeEdupageClient.notifications_data = []
+    FakeEdupageClient.calendar_events_data = []
     yield
 
 

@@ -25,11 +25,13 @@ if sys.platform == "win32":
 
 import os
 import random
+import secrets
 import uuid
 from contextlib import asynccontextmanager
 from datetime import date, timedelta
 from pathlib import Path
 from typing import Optional
+from urllib.parse import urlparse
 
 from fastapi import Cookie, Depends, FastAPI, File, HTTPException, Query, Response, UploadFile
 from fastapi.responses import FileResponse, HTMLResponse, JSONResponse
@@ -40,6 +42,7 @@ from sqlalchemy.orm import Session as DbSession
 
 from apps.api import assistant as assistant_mod
 from apps.api import emailer
+from apps.api import icalendar
 from apps.api import photos as photos_mod
 from apps.api.auth import (
     AppSessionExpired,
@@ -1094,6 +1097,52 @@ def events_upcoming(
         }
         for e in events
     ]
+
+
+# ---- подписка на календарь СОР (Google/Apple/Outlook) ----------------------
+
+CALENDAR_PAST_DAYS = 30
+
+
+def _calendar_json(student: Student) -> dict:
+    return {"url": f"{PUBLIC_BASE_URL}/calendar/{student.calendar_token}.ics"}
+
+
+@app.get("/api/me/calendar")
+def my_calendar(student: Student = Depends(get_current_student), db: DbSession = Depends(get_db)):
+    if not student.calendar_token:
+        student.calendar_token = secrets.token_urlsafe(32)
+        db.flush()
+    return _calendar_json(student)
+
+
+@app.post("/api/me/calendar/reset")
+def reset_my_calendar(student: Student = Depends(get_current_student), db: DbSession = Depends(get_db)):
+    student.calendar_token = secrets.token_urlsafe(32)
+    db.flush()
+    return _calendar_json(student)
+
+
+@app.get("/calendar/{token}.ics")
+def calendar_feed(token: str, db: DbSession = Depends(get_db), auth: AuthService = Depends(get_auth)):
+    """Без куки — календарь забирает сам Google со своих серверов, токен в
+    пути и есть доступ. Любой сбой источника — 503, не пустой календарь:
+    на пустой ответ подписчик удалил бы все уже показанные СОР."""
+    student = db.scalar(select(Student).where(Student.calendar_token == token))
+    if student is None:
+        raise HTTPException(404, "календарь не найден")
+    try:
+        client = auth.get_edupage_client(student)
+        events = client.calendar_events(date.today() - timedelta(days=CALENDAR_PAST_DAYS))
+    except Exception as exc:
+        print(f"[calendar] EduPage недоступен для ленты: {exc!r}")
+        raise HTTPException(503, "EduPage сейчас недоступен", headers={"Retry-After": "3600"})
+    body = icalendar.build_calendar(
+        [e for e in events if e.kind == "assessment"],
+        name="Nis3 — СОР и СОЧ",
+        host=urlparse(PUBLIC_BASE_URL).hostname or "nis3",
+    )
+    return Response(body, media_type="text/calendar; charset=utf-8")
 
 
 @app.get("/api/notifications")

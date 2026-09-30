@@ -120,6 +120,7 @@ class FakeEdupageClient:
     behavior = "ok"
     session_alive_after_restore = True
     notifications_data: list = []  # settable per-test, см. test_main.py::test_notifications_*
+    calendar_events_data: list = []  # см. test_main.py::test_calendar_feed_*
     auto_subdomain = "autodetected"  # см. link_edupage_auto — что "узнаёт" автовход
 
     def __init__(self, subdomain: str | None = None, own_class=None):
@@ -161,7 +162,10 @@ class FakeEdupageClient:
         return []  # пусто достаточно: проверяем факт запроса, не разбор
 
     def calendar_events(self, since):
-        return []
+        if FakeEdupageClient.behavior == "calendar_down":
+            from apps.api.sources.edupage import SourceError
+            raise SourceError("EduPage недоступен (имитация)")
+        return FakeEdupageClient.calendar_events_data
 
     def notifications(self, since):
         return FakeEdupageClient.notifications_data

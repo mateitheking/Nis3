@@ -76,6 +76,10 @@ class Student(Base):
     # аватарки нет, фронт показывает инициалы (см. ui/dashboardParts.tsx).
     avatar_storage_path: Mapped[Optional[str]] = mapped_column(String(500), default=None)
     avatar_content_type: Mapped[Optional[str]] = mapped_column(String(100), default=None)
+    # Секрет в адресе подписки на календарь СОР (/calendar/<токен>.ics) —
+    # хранится как есть, не хешем: ссылку нужно показывать в настройках
+    # повторно, а утечка даёт лишь даты СОР. Сброс — новый токен.
+    calendar_token: Mapped[Optional[str]] = mapped_column(String(64), default=None)
     created_at: Mapped[datetime] = mapped_column(DateTime(), default=utcnow)
 
     credentials: Mapped[list["SourceCredential"]] = relationship(
@@ -318,7 +322,11 @@ def init_db(engine) -> None:
     _ensure_columns(engine, "custom_schedule_entries", [("period", "INTEGER")])
     _ensure_columns(
         engine, "students",
-        [("avatar_storage_path", "VARCHAR(500)"), ("avatar_content_type", "VARCHAR(100)")],
+        [
+            ("avatar_storage_path", "VARCHAR(500)"),
+            ("avatar_content_type", "VARCHAR(100)"),
+            ("calendar_token", "VARCHAR(64)"),
+        ],
     )
     _ensure_columns(
         engine, "account_credentials",

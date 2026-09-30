@@ -546,6 +546,32 @@ select.home-settings-input {
   border: 1px solid var(--border-input);
   color: var(--text-primary);
 }
+/* <a> с видом кнопки — глобальный a:hover иначе красит текст в акцент
+   прямо на акцентном фоне. */
+a.home-settings-linkbtn,
+a.home-settings-linkbtn:hover {
+  display: block;
+  color: var(--bg-page);
+}
+a.home-settings-linkbtn[aria-disabled='true'] {
+  opacity: 0.5;
+  pointer-events: none;
+}
+.home-settings-textbtn {
+  align-self: center;
+  font-size: 11.5px;
+  color: var(--text-tertiary);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-family: inherit;
+  text-decoration: underline;
+}
+.home-settings-textbtn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
 
 .home-settings-logout {
   text-align: center;
